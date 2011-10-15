@@ -40,17 +40,20 @@ namespace Castle.DynamicProxy.Generators
 	///   Base class that exposes the common functionalities
 	///   to proxy generation.
 	/// </summary>
-	public abstract class BaseProxyGenerator
+	public abstract class BaseProxyGenerator : IProxyTypeGenerator
 	{
 		protected readonly Type targetType;
+		private readonly ProxyGenerationOptions proxyGenerationOptions;
 		private readonly ModuleScope scope;
 		private ILogger logger = NullLogger.Instance;
-		private ProxyGenerationOptions proxyGenerationOptions;
 
-		protected BaseProxyGenerator(ModuleScope scope, Type targetType)
+		protected BaseProxyGenerator(ModuleScope scope, Type targetType, ProxyGenerationOptions proxyGenerationOptions)
 		{
 			this.scope = scope;
 			this.targetType = targetType;
+
+			proxyGenerationOptions.Initialize();
+			this.proxyGenerationOptions = proxyGenerationOptions;
 		}
 
 		public ILogger Logger
@@ -61,28 +64,15 @@ namespace Castle.DynamicProxy.Generators
 
 		protected ProxyGenerationOptions ProxyGenerationOptions
 		{
-			get
-			{
-				if (proxyGenerationOptions == null)
-				{
-					throw new InvalidOperationException("ProxyGenerationOptions must be set before being retrieved.");
-				}
-				return proxyGenerationOptions;
-			}
-			set
-			{
-				if (proxyGenerationOptions != null)
-				{
-					throw new InvalidOperationException("ProxyGenerationOptions can only be set once.");
-				}
-				proxyGenerationOptions = value;
-			}
+			get { return proxyGenerationOptions; }
 		}
 
 		protected ModuleScope Scope
 		{
 			get { return scope; }
 		}
+
+		public abstract Type GetProxyType();
 
 		protected void AddMapping(Type @interface, ITypeContributor implementer, IDictionary<Type, ITypeContributor> mapping)
 		{

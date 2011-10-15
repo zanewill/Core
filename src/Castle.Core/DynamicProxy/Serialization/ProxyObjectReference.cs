@@ -22,12 +22,10 @@ namespace Castle.DynamicProxy.Serialization
 	using System.Diagnostics;
 	using System.Reflection;
 	using System.Runtime.Serialization;
-	using System.Security;
 
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
-#if DOTNET40
-#endif
+
 
 	/// <summary>
 	///   Handles the deserialization of proxies.
@@ -89,7 +87,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		protected ProxyObjectReference(SerializationInfo info, StreamingContext context)
 		{
@@ -121,7 +119,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		protected virtual object RecreateProxy()
 		{
@@ -141,17 +139,17 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		private object RecreateClassProxyWithTarget()
 		{
 			var generator = new ClassProxyWithTargetGenerator(scope, baseType, interfaces, proxyGenerationOptions);
-			var proxyType = generator.GetGeneratedType();
+			var proxyType = generator.GetProxyType();
 			return InstantiateClassProxy(proxyType);
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		public object RecreateInterfaceProxy(string generatorType)
 		{
@@ -161,15 +159,15 @@ namespace Castle.DynamicProxy.Serialization
 			InterfaceProxyWithTargetGenerator generator;
 			if (generatorType == ProxyTypeConstants.InterfaceWithTarget)
 			{
-				generator = new InterfaceProxyWithTargetGenerator(scope, @interface);
+				generator = new InterfaceProxyWithTargetGenerator(scope, @interface, targetType, interfaces, proxyGenerationOptions);
 			}
 			else if (generatorType == ProxyTypeConstants.InterfaceWithoutTarget)
 			{
-				generator = new InterfaceProxyWithoutTargetGenerator(scope, @interface);
+				generator = new InterfaceProxyWithoutTargetGenerator(scope, @interface, interfaces, proxyGenerationOptions);
 			}
 			else if (generatorType == ProxyTypeConstants.InterfaceWithTargetInterface)
 			{
-				generator = new InterfaceProxyWithTargetInterfaceGenerator(scope, @interface);
+				generator = new InterfaceProxyWithTargetInterfaceGenerator(scope, @interface, targetType, interfaces, proxyGenerationOptions);
 			}
 			else
 			{
@@ -179,22 +177,22 @@ namespace Castle.DynamicProxy.Serialization
 						generatorType));
 			}
 
-			var proxyType = generator.GenerateCode(targetType, interfaces, proxyGenerationOptions);
+			var proxyType = generator.GetProxyType();
 			return FormatterServices.GetSafeUninitializedObject(proxyType);
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		public object RecreateClassProxy()
 		{
-			var generator = new ClassProxyGenerator(scope, baseType);
-			var proxyType = generator.GenerateCode(interfaces, proxyGenerationOptions);
+			var generator = new ClassProxyGenerator(scope, baseType, interfaces, proxyGenerationOptions);
+			var proxyType = generator.GetProxyType();
 			return InstantiateClassProxy(proxyType);
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		private object InstantiateClassProxy(Type proxy_type)
 		{
@@ -218,7 +216,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		public object GetRealObject(StreamingContext context)
 		{
@@ -226,7 +224,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -235,7 +233,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecuritySafeCritical]
+		[System.Security.SecurityCritical]
 #endif
 		public void OnDeserialization(object sender)
 		{
@@ -250,7 +248,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		private void DeserializeProxyMembers()
 		{
@@ -277,7 +275,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[SecurityCritical]
+		[System.Security.SecurityCritical]
 #endif
 		private void DeserializeProxyState()
 		{

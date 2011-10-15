@@ -24,7 +24,8 @@ namespace Castle.DynamicProxy.Generators
 
 	public class InterfaceProxyWithoutTargetGenerator : InterfaceProxyWithTargetGenerator
 	{
-		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface) : base(scope, @interface)
+		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface, Type[] additionalInterfacesToProxy, ProxyGenerationOptions proxyGenerationOptions)
+			: base(scope, @interface, typeof(object), additionalInterfacesToProxy, proxyGenerationOptions)
 		{
 		}
 

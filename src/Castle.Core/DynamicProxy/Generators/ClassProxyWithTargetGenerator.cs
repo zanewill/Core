@@ -31,20 +31,17 @@ namespace Castle.DynamicProxy.Generators
 	{
 		private readonly Type[] additionalInterfacesToProxy;
 
-		public ClassProxyWithTargetGenerator(ModuleScope scope, Type classToProxy, Type[] additionalInterfacesToProxy,
-		                                     ProxyGenerationOptions options)
-			: base(scope, classToProxy)
+		public ClassProxyWithTargetGenerator(ModuleScope scope, Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
+			: base(scope, classToProxy, options)
 		{
 			CheckNotGenericTypeDefinition(targetType, "targetType");
 			EnsureDoesNotImplementIProxyTargetAccessor(targetType, "targetType");
 			CheckNotGenericTypeDefinitions(additionalInterfacesToProxy, "additionalInterfacesToProxy");
 
-			options.Initialize();
-			ProxyGenerationOptions = options;
 			this.additionalInterfacesToProxy = TypeUtil.GetAllInterfaces(additionalInterfacesToProxy).ToArray();
 		}
 
-		public Type GetGeneratedType()
+		public override Type GetProxyType()
 		{
 			var cacheKey = new CacheKey(targetType, targetType, additionalInterfacesToProxy, ProxyGenerationOptions);
 			return ObtainProxyType(cacheKey, GenerateType);

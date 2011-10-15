@@ -1,5 +1,18 @@
 === version 3.0
 ================================================================================================
+change - All proxy generator types have now different constructors and common proxy type 
+	generation method.
+
+impact - medium
+fixability - easy
+
+description - The change was made to allow support for generic proxy types, unify generator's
+	interface and better protect their invariants
+
+fix - Adjust your calls. The arguments that used to go to method generating proxy type now go
+	to the constructor. To get proxy type use IProxyTypeGenerator.GetProxyType() (implemented by
+	every generator type now).
+================================================================================================
 change - Removed overloads of logging methods that were taking format string from ILogger and
 	ILogger and IExtendedLogger and didn't have word Format in their name.
 	For example:

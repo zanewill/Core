@@ -28,13 +28,11 @@ namespace Castle.DynamicProxy.Generators
 
 	public class DelegateProxyGenerator : BaseProxyGenerator
 	{
-		public DelegateProxyGenerator(ModuleScope scope, Type delegateType) : base(scope, delegateType)
+		public DelegateProxyGenerator(ModuleScope scope, Type delegateType) : base(scope, delegateType, new ProxyGenerationOptions(new DelegateProxyGenerationHook()))
 		{
-			ProxyGenerationOptions = new ProxyGenerationOptions(new DelegateProxyGenerationHook());
-			ProxyGenerationOptions.Initialize();
 		}
 
-		public Type GetProxyType()
+		public override Type GetProxyType()
 		{
 			var cacheKey = new CacheKey(targetType, null, null);
 			return ObtainProxyType(cacheKey, GenerateType);
