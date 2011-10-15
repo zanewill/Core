@@ -16,6 +16,9 @@ namespace CastleTests.GenInterfaces
 {
 	public interface IEmpty<T>
 	{
-		
+	}
+
+	public interface IEmpty<T, T2>
+	{
 	}
 }

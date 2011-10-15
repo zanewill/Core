@@ -336,9 +336,15 @@ namespace Castle.DynamicProxy.Generators
 			var indexOfGenericBacktick = name.IndexOf('`');
 			if (indexOfGenericBacktick > 0)
 			{
-				name = targetType.Name.Substring(0, indexOfGenericBacktick);
+				var actualName = targetType.Name.Substring(0, indexOfGenericBacktick);
+				var genericPart = targetType.Name.Substring(indexOfGenericBacktick);
+				name = "Castle.Proxies." + actualName + "Proxy" + genericPart;
 			}
-			return namingScope.GetUniqueName("Castle.Proxies." + name + "Proxy");
+			else
+			{
+				name = "Castle.Proxies." + targetType.Name + "Proxy";
+			}
+			return namingScope.GetUniqueName(name);
 		}
 
 		protected void HandleExplicitlyPassedProxyTargetAccessor(ICollection<Type> targetInterfaces, ICollection<Type> additionalInterfaces)
