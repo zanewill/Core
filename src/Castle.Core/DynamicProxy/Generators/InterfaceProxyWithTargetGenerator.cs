@@ -38,7 +38,6 @@ namespace Castle.DynamicProxy.Generators
 		{
 			this.proxyTargetType = proxyTargetType;
 			this.additionalInterfacesToProxy = additionalInterfacesToProxy;
-			CheckNotGenericTypeDefinition(@interface, "@interface");
 		}
 
 		protected virtual bool AllowChangeTarget
@@ -109,7 +108,7 @@ namespace Castle.DynamicProxy.Generators
 
 		protected virtual Type GenerateType(string typeName, Type proxyTargetType, Type[] interfaces, INamingScope namingScope)
 		{
-			IEnumerable<ITypeContributor> contributors;
+			ITypeContributor[] contributors;
 			var allInterfaces = GetTypeImplementerMapping(interfaces, proxyTargetType, out contributors, namingScope);
 
 			ClassEmitter emitter;
@@ -167,9 +166,7 @@ namespace Castle.DynamicProxy.Generators
 			return new InterfaceProxyWithoutTargetContributor(namingScope, (c, m) => NullExpression.Instance) { Logger = Logger };
 		}
 
-		protected virtual IEnumerable<Type> GetTypeImplementerMapping(Type[] interfaces, Type proxyTargetType,
-		                                                              out IEnumerable<ITypeContributor> contributors,
-		                                                              INamingScope namingScope)
+		protected virtual Type[] GetTypeImplementerMapping(Type[] interfaces, Type proxyTargetType, out ITypeContributor[] contributors, INamingScope namingScope)
 		{
 			IDictionary<Type, ITypeContributor> typeImplementerMapping = new Dictionary<Type, ITypeContributor>();
 			var mixins = new MixinContributor(namingScope, AllowChangeTarget) { Logger = Logger };
@@ -236,18 +233,17 @@ namespace Castle.DynamicProxy.Generators
 				HandleExplicitlyPassedProxyTargetAccessor(targetInterfaces, additionalInterfaces);
 			}
 
-			contributors = new List<ITypeContributor>
+			contributors = new[]
 			{
 				target,
 				additionalInterfacesContributor,
 				mixins,
 				instance
 			};
-			return typeImplementerMapping.Keys;
+			return typeImplementerMapping.Keys.ToArray();
 		}
 
-		protected virtual Type Init(string typeName, out ClassEmitter emitter, Type proxyTargetType,
-		                            out FieldReference interceptorsField, IEnumerable<Type> interfaces)
+		protected virtual Type Init(string typeName, out ClassEmitter emitter, Type proxyTargetType, out FieldReference interceptorsField, Type[] interfaces)
 		{
 			var baseType = ProxyGenerationOptions.BaseTypeForInterfaceProxy;
 

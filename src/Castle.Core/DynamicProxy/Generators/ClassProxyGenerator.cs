@@ -106,7 +106,7 @@ namespace Castle.DynamicProxy.Generators
 			return proxyType;
 		}
 
-		protected virtual IEnumerable<Type> GetTypeImplementerMapping(Type[] interfaces,
+		protected virtual Type[] GetTypeImplementerMapping(Type[] interfaces,
 		                                                              out IEnumerable<ITypeContributor> contributors,
 		                                                              INamingScope namingScope)
 		{
@@ -195,7 +195,7 @@ namespace Castle.DynamicProxy.Generators
 				additionalInterfacesContributor,
 				proxyInstance
 			};
-			return typeImplementerMapping.Keys;
+			return typeImplementerMapping.Keys.ToArray();
 		}
 
 		private void EnsureDoesNotImplementIProxyTargetAccessor(Type type, string name)

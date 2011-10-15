@@ -16,30 +16,27 @@ namespace Castle.DynamicProxy.Generators.Emitters
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Reflection;
 	using System.Reflection.Emit;
 
 	public class ClassEmitter : AbstractTypeEmitter
 	{
-		private const TypeAttributes DefaultAttributes =
-			TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Serializable;
+		private const TypeAttributes DefaultAttributes = TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Serializable;
 
 		private readonly ModuleScope moduleScope;
 
-		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, IEnumerable<Type> interfaces)
+		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, Type[] interfaces)
 			: this(modulescope, name, baseType, interfaces, DefaultAttributes, ShouldForceUnsigned())
 		{
 		}
 
-		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, IEnumerable<Type> interfaces,
-		                    TypeAttributes flags)
+		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, Type[] interfaces, TypeAttributes flags)
 			: this(modulescope, name, baseType, interfaces, flags, ShouldForceUnsigned())
 		{
 		}
 
-		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, IEnumerable<Type> interfaces,
-		                    TypeAttributes flags,
-		                    bool forceUnsigned)
+		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, Type[] interfaces, TypeAttributes flags, bool forceUnsigned)
 			: this(CreateTypeBuilder(modulescope, name, baseType, interfaces, flags, forceUnsigned))
 		{
 			interfaces = InitializeGenericArgumentsFromBases(ref baseType, interfaces);
@@ -51,7 +48,17 @@ namespace Castle.DynamicProxy.Generators.Emitters
 					TypeBuilder.AddInterfaceImplementation(inter);
 				}
 			}
-
+			var namingScope = modulescope.NamingScope.SafeSubScope();
+			var cache = new List<string>();
+			CollectGenericParameters(baseType, namingScope, cache);
+			if (interfaces != null)
+			{
+				foreach (var @interface in interfaces)
+				{
+					CollectGenericParameters(@interface, namingScope, cache);
+				}
+			}
+			DefineGenericParameters(cache);
 			TypeBuilder.SetParent(baseType);
 			moduleScope = modulescope;
 		}
@@ -66,27 +73,35 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			get { return moduleScope; }
 		}
 
-		protected virtual IEnumerable<Type> InitializeGenericArgumentsFromBases(ref Type baseType,
-		                                                                        IEnumerable<Type> interfaces)
+		protected virtual Type[] InitializeGenericArgumentsFromBases(ref Type baseType, Type[] interfaces)
 		{
 			if (baseType != null && baseType.IsGenericTypeDefinition)
 			{
 				throw new NotSupportedException("ClassEmitter does not support open generic base types. Type: " + baseType.FullName);
 			}
-
-			if (interfaces == null)
-			{
-				return interfaces;
-			}
-
-			foreach (var inter in interfaces)
-			{
-				if (inter.IsGenericTypeDefinition)
-				{
-					throw new NotSupportedException("ClassEmitter does not support open generic interfaces. Type: " + inter.FullName);
-				}
-			}
 			return interfaces;
+		}
+
+		private void CollectGenericParameters(Type type, INamingScope namingScope, IList<string> cache)
+		{
+			if (type.IsGenericTypeDefinition == false)
+			{
+				return;
+			}
+			var arguments = type.GetGenericArguments();
+			foreach (var argument in arguments)
+			{
+				cache.Add(namingScope.GetUniqueName(argument.Name));
+			}
+		}
+
+		private void DefineGenericParameters(IList<string> cache)
+		{
+			if (cache.Count == 0)
+			{
+				return;
+			}
+			var arguments = TypeBuilder.DefineGenericParameters(cache.ToArray());
 		}
 
 		private static TypeBuilder CreateTypeBuilder(ModuleScope modulescope, string name, Type baseType,

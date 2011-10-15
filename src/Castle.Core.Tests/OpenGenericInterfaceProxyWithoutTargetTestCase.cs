@@ -21,6 +21,24 @@ namespace CastleTests
 	public class OpenGenericInterfaceProxyWithoutTargetTestCase : BasePEVerifyTestCase
 	{
 		[Test]
+		public void Can_generate_generic_proxy_twice_closed_over_different_types()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
+			var two = generator.CreateInterfaceProxyWithoutTarget<IEmpty<int>>();
+
+			Assert.AreEqual(one.GetType().GetGenericTypeDefinition(), two.GetType().GetGenericTypeDefinition());
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_twice_closed_over_same_type()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
+			var two = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
+
+			Assert.AreEqual(one.GetType(), two.GetType());
+		}
+
+		[Test]
 		public void Simple_proxy_for_open_generic_interface_is_itself_open_generic_type()
 		{
 			var proxy = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();

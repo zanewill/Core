@@ -111,10 +111,9 @@ namespace Castle.DynamicProxy.Generators
 			scope.RegisterInCache(key, type);
 		}
 
-		protected virtual ClassEmitter BuildClassEmitter(string typeName, Type parentType, IEnumerable<Type> interfaces)
+		protected virtual ClassEmitter BuildClassEmitter(string typeName, Type parentType, Type[] interfaces)
 		{
 			CheckNotGenericTypeDefinition(parentType, "parentType");
-			CheckNotGenericTypeDefinitions(interfaces, "interfaces");
 
 			return new ClassEmitter(Scope, typeName, parentType, interfaces);
 		}
@@ -373,10 +372,12 @@ namespace Castle.DynamicProxy.Generators
 
 		protected void InitializeStaticFields(Type builtType)
 		{
+			if (builtType.IsGenericTypeDefinition) return;
 			builtType.SetStaticField("proxyGenerationOptions", BindingFlags.Public, ProxyGenerationOptions);
+
 		}
 
-		protected Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
+		protected virtual Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
 		{
 			using (var locker = Scope.Lock.ForReadingUpgradeable())
 			{
