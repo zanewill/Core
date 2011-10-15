@@ -339,6 +339,7 @@
     <Compile Include="MethodsWithAttributesOnParametersTestCase.cs" />
     <Compile Include="MixinTestCase.cs" />
     <Compile Include="NLogIntegration\NLogTests.cs" />
+    <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
     <Compile Include="XmlConfigurationDeserializerTests.cs" />
     <Compile Include="XmlSerializationTestCase.cs" />
