@@ -18,6 +18,9 @@ namespace Castle.DynamicProxy.Tests
 	using System.Collections.Generic;
 	using Castle.DynamicProxy.Tests.GenClasses;
 	using Castle.DynamicProxy.Tests.Interceptors;
+
+	using CastleTests;
+
 	using NUnit.Framework;
 
 	[TestFixture]

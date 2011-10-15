@@ -22,6 +22,8 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.Interfaces;
 	using Castle.InterClasses;
 
+	using CastleTests;
+
 	using Interceptors;
 	using NUnit.Framework;
 

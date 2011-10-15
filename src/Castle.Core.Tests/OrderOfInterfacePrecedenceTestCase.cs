@@ -16,6 +16,8 @@ namespace Castle.DynamicProxy.Tests
 {
 	using System;
 
+	using CastleTests;
+
 	using Interceptors;
 	using InterClasses;
 	using Mixins;

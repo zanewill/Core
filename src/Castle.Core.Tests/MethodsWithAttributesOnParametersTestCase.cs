@@ -18,6 +18,8 @@ namespace Castle.DynamicProxy.Tests
 
 	using Castle.Core.Tests.Classes;
 
+	using CastleTests;
+
 	using Interceptors;
 	using NUnit.Framework;
 

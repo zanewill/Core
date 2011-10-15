@@ -17,6 +17,9 @@ namespace Castle.DynamicProxy.Tests
 	using System;
 
 	using Castle.DynamicProxy.Tests.BugsReported;
+
+	using CastleTests;
+
 	using Interceptors;
 	using InterClasses;
 	using NUnit.Framework;

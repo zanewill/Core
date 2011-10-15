@@ -22,6 +22,9 @@ namespace Castle.DynamicProxy.Tests
 	using System.Runtime.InteropServices;
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.Interfaces;
+
+	using CastleTests;
+
 	using NUnit.Framework;
 	using RhinoMocksCPPInterfaces;
 

@@ -17,6 +17,9 @@ namespace Castle.DynamicProxy.Tests
 {
 	using System.Reflection;
 	using ADODB;
+
+	using CastleTests;
+
 	using NUnit.Framework;
 
 	[TestFixture]

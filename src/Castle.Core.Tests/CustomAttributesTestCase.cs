@@ -14,6 +14,8 @@
 
 namespace Castle.DynamicProxy.Tests
 {
+	using CastleTests;
+
 	using NUnit.Framework;
 
 	[TestFixture]

@@ -19,6 +19,9 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.Classes;
 	using Castle.DynamicProxy.Tests.Mixins;
 	using Castle.DynamicProxy.Tests.InterClasses;
+
+	using CastleTests;
+
 	using Interceptors;
 	using NUnit.Framework;
 
