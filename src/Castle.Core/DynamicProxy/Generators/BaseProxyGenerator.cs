@@ -199,8 +199,7 @@ namespace Castle.DynamicProxy.Generators
 			}
 		}
 
-		protected void GenerateConstructor(ClassEmitter emitter, ConstructorInfo baseConstructor,
-		                                   params FieldReference[] fields)
+		protected void GenerateConstructor(ClassEmitter emitter, ConstructorInfo baseConstructor, params FieldReference[] fields)
 		{
 			ArgumentReference[] args;
 			ParameterInfo[] baseConstructorParams = null;
@@ -311,10 +310,8 @@ namespace Castle.DynamicProxy.Generators
 
 			// initialize fields with an empty interceptor
 
-			constructor.CodeBuilder.AddStatement(new AssignStatement(interceptorField,
-			                                                         new NewArrayExpression(1, typeof(IInterceptor))));
-			constructor.CodeBuilder.AddStatement(
-				new AssignArrayStatement(interceptorField, 0, new NewInstanceExpression(typeof(StandardInterceptor), new Type[0])));
+			constructor.CodeBuilder.AddStatement(new AssignStatement(interceptorField, new NewArrayExpression(1, typeof(IInterceptor))));
+			constructor.CodeBuilder.AddStatement(new AssignArrayStatement(interceptorField, 0, new NewInstanceExpression(typeof(StandardInterceptor), Type.EmptyTypes)));
 
 			// Invoke base constructor
 
@@ -333,8 +330,18 @@ namespace Castle.DynamicProxy.Generators
 			return scope.GetFromCache(key);
 		}
 
-		protected void HandleExplicitlyPassedProxyTargetAccessor(ICollection<Type> targetInterfaces,
-		                                                         ICollection<Type> additionalInterfaces)
+		protected virtual string GetUniqueProxyTypeName(INamingScope namingScope, Type targetType)
+		{
+			var name = targetType.Name;
+			var indexOfGenericBacktick = name.IndexOf('`');
+			if (indexOfGenericBacktick > 0)
+			{
+				name = targetType.Name.Substring(0, indexOfGenericBacktick);
+			}
+			return namingScope.GetUniqueName("Castle.Proxies." + name + "Proxy");
+		}
+
+		protected void HandleExplicitlyPassedProxyTargetAccessor(ICollection<Type> targetInterfaces, ICollection<Type> additionalInterfaces)
 		{
 			var interfaceName = typeof(IProxyTargetAccessor).ToString();
 			//ok, let's determine who tried to sneak the IProxyTargetAccessor in...
@@ -372,9 +379,11 @@ namespace Castle.DynamicProxy.Generators
 
 		protected void InitializeStaticFields(Type builtType)
 		{
-			if (builtType.IsGenericTypeDefinition) return;
+			if (builtType.IsGenericTypeDefinition)
+			{
+				return;
+			}
 			builtType.SetStaticField("proxyGenerationOptions", BindingFlags.Public, ProxyGenerationOptions);
-
 		}
 
 		protected virtual Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
@@ -403,7 +412,7 @@ namespace Castle.DynamicProxy.Generators
 				Logger.DebugFormat("No cached proxy type was found for target type {0}.", targetType.FullName);
 				EnsureOptionsOverrideEqualsAndGetHashCode(ProxyGenerationOptions);
 
-				var name = Scope.NamingScope.GetUniqueName("Castle.Proxies." + targetType.Name + "Proxy");
+				var name = GetUniqueProxyTypeName(Scope.NamingScope, targetType);
 				var proxyType = factory.Invoke(name, Scope.NamingScope.SafeSubScope());
 
 				AddToCache(cacheKey, proxyType);
