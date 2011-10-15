@@ -45,6 +45,20 @@ namespace Castle.Core.Internal
 			}
 		}
 
+		public static bool Any<T>(this T[] items, Predicate<T> predicate)
+		{
+#if SILVERLIGHT
+			if (items == null)
+				throw new ArgumentNullException("items");
+
+			if (predicate == null)
+				throw new ArgumentNullException("predicate");
+			return items.Any(predicate.Invoke);
+#else
+			return Array.Exists(items, predicate);
+#endif
+		}
+
 		public static T Find<T>(this T[] items, Predicate<T> predicate)
 		{
 #if SILVERLIGHT

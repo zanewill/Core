@@ -19,8 +19,8 @@ namespace Castle.DynamicProxy.Generators
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Reflection;
-#if !SILVERLIGHT
 	using System.Runtime.Serialization;
+#if !SILVERLIGHT
 	using System.Xml.Serialization;
 #endif
 
@@ -426,7 +426,7 @@ namespace Castle.DynamicProxy.Generators
 			       || constructor.IsFamily
 			       || constructor.IsFamilyOrAssembly
 #if !Silverlight
-			       || (constructor.IsAssembly && InternalsUtil.IsInternalToDynamicProxy(constructor.DeclaringType.Assembly));
+			       || (constructor.IsAssembly && constructor.DeclaringType.Assembly.IsInternalToDynamicProxy());
 #else
             ;
 #endif

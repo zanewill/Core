@@ -12,20 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace CastleTests
+namespace CastleTests.GenInterfaces
 {
-	using CastleTests.GenInterfaces;
-
-	using NUnit.Framework;
-
-	public class OpenGenericInterfaceProxyWithoutTargetTestCase : BasePEVerifyTestCase
+	public interface IEmpty<T>
 	{
-		[Test]
-		public void Simple_proxy_for_open_generic_interface_is_itself_open_generic_type()
-		{
-			var proxy = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
-
-			Assert.True(proxy.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", proxy.GetType()));
-		}
+		
 	}
 }
