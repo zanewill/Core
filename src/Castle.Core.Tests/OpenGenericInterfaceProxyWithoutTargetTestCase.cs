@@ -19,6 +19,7 @@ namespace CastleTests
 
 	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.GenClasses;
+	using Castle.DynamicProxy.Tests.GenInterfaces;
 	using Castle.DynamicProxy.Tests.Interfaces;
 
 	using CastleTests.GenInterfaces;
@@ -109,6 +110,22 @@ namespace CastleTests
 			var exception = Assert.Throws<ArgumentException>(() => generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options));
 
 			Assert.AreEqual("Type cannot be a generic type definition. Type: " + baseType.FullName + Environment.NewLine + "Parameter name: parentType", exception.Message);
+		}
+
+		[Test]
+		public void Proxy_is_non_generic_if_has_generic_additional_interfaces()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), new[] { typeof(IEmpty<string, int>) });
+			Assert.False(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be non-generic", one.GetType()));
+		}
+
+		[Test]
+		public void Proxy_is_non_generic_if_has_generic_mixin()
+		{
+			var options = new ProxyGenerationOptions();
+			options.AddMixinInstance(new GenInterfaceImpl<int>());
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options);
+			Assert.False(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be non-generic", one.GetType()));
 		}
 
 		[Test]

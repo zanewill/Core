@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
 
 namespace Castle.DynamicProxy.Tests.GenInterfaces
 {
+	using System;
+
 	public interface GenInterface<T> where T : new()
 	{
 		T DoSomething(T t);
 	}
 
+	[Serializable]
 	public class GenInterfaceImpl<T> : GenInterface<T> where T : new()
 	{
 		public T DoSomething(T t)
