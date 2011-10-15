@@ -17,6 +17,8 @@ namespace CastleTests
 	using System;
 	using System.Collections.Generic;
 
+	using Castle.DynamicProxy;
+	using Castle.DynamicProxy.Tests.GenClasses;
 	using Castle.DynamicProxy.Tests.Interfaces;
 
 	using CastleTests.GenInterfaces;
@@ -63,6 +65,50 @@ namespace CastleTests
 			var two = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
 
 			Assert.AreEqual(one.GetType(), two.GetType());
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_with_additional_interface()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), new[] { typeof(IEmpty) });
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_with_additional_interface_and_mixin()
+		{
+			var options = new ProxyGenerationOptions();
+			options.AddMixinInstance(new Empty());
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), new[] { typeof(ISimple) }, options);
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_with_mixin()
+		{
+			var options = new ProxyGenerationOptions();
+			options.AddMixinInstance(new Empty());
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options);
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Generic_base_interface_proxy_type_allowed_closed()
+		{
+			var options = new ProxyGenerationOptions { BaseTypeForInterfaceProxy = typeof(ClassWithGenArgs<int>) };
+			var one = generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options);
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test(Description = "We might allow that if we can close base type over primary interface's generic args, but let's wait for someone who actually needs this first.")]
+		public void Generic_base_interface_proxy_type_not_allowed_open()
+		{
+			var baseType = typeof(ClassWithGenArgs<>);
+			var options = new ProxyGenerationOptions { BaseTypeForInterfaceProxy = baseType };
+
+			var exception = Assert.Throws<ArgumentException>(() => generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options));
+
+			Assert.AreEqual("Type cannot be a generic type definition. Type: " + baseType.FullName + Environment.NewLine + "Parameter name: parentType", exception.Message);
 		}
 
 		[Test]
