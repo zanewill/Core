@@ -40,6 +40,22 @@ namespace CastleTests
 		}
 
 		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_constraint_base_generic_interface()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyWithBaseGenericInterfaceConstraint<GenInterfaceImpl<int>>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_constraint_base_interface()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyWithBaseInterfaceConstraint<Empty>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
 		public void Can_generate_generic_proxy_for_two_generic_interfaces_with_same_name_different_arity()
 		{
 			var one = generator.CreateInterfaceProxyWithoutTarget<IEmpty<string>>();
