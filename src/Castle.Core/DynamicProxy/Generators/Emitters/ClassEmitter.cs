@@ -48,17 +48,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 					TypeBuilder.AddInterfaceImplementation(inter);
 				}
 			}
-			var namingScope = modulescope.NamingScope.SafeSubScope();
-			var cache = new List<string>();
-			CollectGenericParameters(baseType, namingScope, cache);
-			if (interfaces != null)
-			{
-				foreach (var @interface in interfaces)
-				{
-					CollectGenericParameters(@interface, namingScope, cache);
-				}
-			}
-			DefineGenericParameters(cache);
+
 			TypeBuilder.SetParent(baseType);
 			moduleScope = modulescope;
 		}
@@ -80,28 +70,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new NotSupportedException("ClassEmitter does not support open generic base types. Type: " + baseType.FullName);
 			}
 			return interfaces;
-		}
-
-		private void CollectGenericParameters(Type type, INamingScope namingScope, IList<string> cache)
-		{
-			if (type.IsGenericTypeDefinition == false)
-			{
-				return;
-			}
-			var arguments = type.GetGenericArguments();
-			foreach (var argument in arguments)
-			{
-				cache.Add(namingScope.GetUniqueName(argument.Name));
-			}
-		}
-
-		private void DefineGenericParameters(IList<string> cache)
-		{
-			if (cache.Count == 0)
-			{
-				return;
-			}
-			var arguments = TypeBuilder.DefineGenericParameters(cache.ToArray());
 		}
 
 		private static TypeBuilder CreateTypeBuilder(ModuleScope modulescope, string name, Type baseType,

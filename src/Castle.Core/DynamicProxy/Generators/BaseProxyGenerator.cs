@@ -111,11 +111,11 @@ namespace Castle.DynamicProxy.Generators
 			scope.RegisterInCache(key, type);
 		}
 
-		protected virtual ClassEmitter BuildClassEmitter(string typeName, Type parentType, Type[] interfaces)
+		protected virtual ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
 		{
-			CheckNotGenericTypeDefinition(parentType, "parentType");
+			CheckNotGenericTypeDefinition(baseType, "parentType");
 
-			return new ClassEmitter(Scope, typeName, parentType, interfaces);
+			return new ClassEmitter(Scope, typeName, baseType, interfaces);
 		}
 
 		protected void CheckNotGenericTypeDefinition(Type type, string argumentName)

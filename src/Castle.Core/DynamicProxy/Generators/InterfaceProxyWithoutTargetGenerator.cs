@@ -17,6 +17,7 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Linq;
 
 	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
@@ -54,6 +55,23 @@ namespace Castle.DynamicProxy.Generators
 				AddMappingNoCheck(@interface, contributor, interfaceTypeImplementerMapping);
 			}
 			return contributor;
+		}
+
+		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
+		{
+			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
+			var namingScope = Scope.NamingScope.SafeSubScope();
+			var cache = new List<string>();
+			CollectGenericParameters(baseType, namingScope, cache);
+			if (interfaces != null)
+			{
+				foreach (var @interface in interfaces)
+				{
+					CollectGenericParameters(@interface, namingScope, cache);
+				}
+			}
+			DefineGenericParameters(cache, emitter);
+			return emitter;
 		}
 
 		protected override Type GenerateType(string typeName, Type proxyTargetType, Type[] interfaces, INamingScope namingScope)
@@ -119,6 +137,28 @@ namespace Castle.DynamicProxy.Generators
 				return proxyType;
 			}
 			return type;
+		}
+
+		private void CollectGenericParameters(Type type, INamingScope namingScope, IList<string> cache)
+		{
+			if (type.IsGenericTypeDefinition == false)
+			{
+				return;
+			}
+			var arguments = type.GetGenericArguments();
+			foreach (var argument in arguments)
+			{
+				cache.Add(namingScope.GetUniqueName(argument.Name));
+			}
+		}
+
+		private void DefineGenericParameters(IList<string> cache, ClassEmitter emitter)
+		{
+			if (cache.Count == 0)
+			{
+				return;
+			}
+			emitter.TypeBuilder.DefineGenericParameters(cache.ToArray());
 		}
 
 		private static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
