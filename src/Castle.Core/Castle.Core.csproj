@@ -420,29 +420,58 @@
     <Compile Include="DynamicProxy\Generators\BaseProxyGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\CacheKey.cs" />
     <Compile Include="DynamicProxy\Generators\ClassProxyGenerator.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\AbstractTypeEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\ArgumentsUtil.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\ClassEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\AbstractCodeBuilder.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\ConstructorCodeBuilder.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\MethodCodeBuilder.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\ConstructorCollection.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\ConstructorEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\EventCollection.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\EventEmitter.cs" />
+    <Compile Include="DynamicProxy\Generators\Emitters\AbstractTypeEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\ArgumentsUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\ClassEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\AbstractCodeBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\ConstructorCodeBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\CodeBuilders\MethodCodeBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\ConstructorEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\EventEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DynamicProxy\Generators\Emitters\GenericUtil.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\IMemberEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\LdcOpCodesDictionary.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\LdindOpCodesDictionary.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\MethodCollection.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\MethodEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\NestedClassCollection.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\NestedClassEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\OpCodeUtil.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\PropertiesCollection.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\PropertyEmitter.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\AddressOfReferenceExpression.cs" />
-    <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\ArgumentReference.cs" />
+    <Compile Include="DynamicProxy\Generators\Emitters\IMemberEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\LdcOpCodesDictionary.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\LdindOpCodesDictionary.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\MethodEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\NestedClassEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\OpCodeUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\PropertyEmitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\AddressOfReferenceExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\ArgumentReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\AssignArrayStatement.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\AssignStatement.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\ByRefReference.cs" />
@@ -611,9 +640,6 @@
     <None Include="..\..\buildscripts\CastleKey.snk">
       <Link>CastleKey.snk</Link>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components.DictionaryAdapter\Xml\Internal\Cursors\XLinq\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" Condition="($(MSBuildTargets) == '') Or ($(MSBuildTargets) == 'CSharp')" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v4.0\Microsoft.Silverlight.CSharp.targets" Condition="$(MSBuildTargets) == 'Silverlight 4.0'" />
