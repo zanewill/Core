@@ -29,9 +29,9 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
 		private readonly List<EventEmitter> events = new List<EventEmitter>();
-		private readonly Dictionary<string, FieldReference> fields = new Dictionary<string, FieldReference>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, FieldReference> fields = new Dictionary<string, FieldReference>();
 		private readonly List<MethodEmitter> methods = new List<MethodEmitter>();
-		private readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>();
 		private readonly List<NestedClassEmitter> nested = new List<NestedClassEmitter>();
 		private readonly List<PropertyEmitter> properties = new List<PropertyEmitter>();
 		private readonly TypeBuilder typebuilder;
