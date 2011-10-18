@@ -23,15 +23,16 @@ namespace Castle.DynamicProxy.Generators.Emitters
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Internal;
 
+	[DebuggerDisplay("{typeBuilder.Name}")]
 	public abstract class AbstractTypeEmitter
 	{
 		private const MethodAttributes defaultAttributes = MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public;
 
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
 		private readonly List<EventEmitter> events = new List<EventEmitter>();
-		private readonly Dictionary<string, FieldReference> fields = new Dictionary<string, FieldReference>();
+		private readonly Dictionary<String, FieldReference> fields = new Dictionary<String, FieldReference>();
 		private readonly List<MethodEmitter> methods = new List<MethodEmitter>();
-		private readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>();
+		protected  readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>();
 		private readonly List<NestedClassEmitter> nested = new List<NestedClassEmitter>();
 		private readonly List<PropertyEmitter> properties = new List<PropertyEmitter>();
 		private readonly TypeBuilder typebuilder;
@@ -117,6 +118,17 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 
 			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(methodToCopyGenericsFrom, typebuilder, name2GenericType));
+		}
+
+		public void CopyGenericParametersFromType(Type typeToCopyGenericsFrom)
+		{
+			// big sanity check
+			if (genericTypeParams != null)
+			{
+				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
+			}
+
+			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, typebuilder, name2GenericType));
 		}
 
 		public ConstructorEmitter CreateConstructor(params ArgumentReference[] arguments)
@@ -277,7 +289,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		public Type[] GetGenericArgumentsFor(Type genericType)
 		{
 			var types = new List<Type>();
-
 			foreach (var genType in genericType.GetGenericArguments())
 			{
 				if (genType.IsGenericParameter)
