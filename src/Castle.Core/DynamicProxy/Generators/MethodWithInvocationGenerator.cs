@@ -100,7 +100,7 @@ namespace Castle.DynamicProxy.Generators
 			emitter.CodeBuilder.AddStatement(new AssignStatement(invocationLocal,
 			                                                     new NewInstanceExpression(constructor, ctorArguments)));
 
-			if (MethodToOverride.ContainsGenericParameters)
+			if (MethodToOverride.IsGenericMethod)
 			{
 				EmitLoadGenricMethodArguments(emitter, MethodToOverride.MakeGenericMethod(genericArguments), invocationLocal);
 			}

@@ -26,7 +26,7 @@ namespace CastleTests
 
 	using NUnit.Framework;
 
-	public class OpenGenericInterfaceProxyWithoutTargetTestCase : BasePEVerifyTestCase
+	public class OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase : BasePEVerifyTestCase
 	{
 		[Test]
 		public void Can_generate_generic_and_non_generic_proxy_for_interfaces_with_same_name_one_generic_one_not()

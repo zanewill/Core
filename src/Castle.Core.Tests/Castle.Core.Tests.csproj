@@ -334,6 +334,9 @@
     <Compile Include="GenInterfaces\IEmptyWithBase.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseGenericInterfaceConstraint.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseInterfaceConstraint.cs" />
+    <Compile Include="GenInterfaces\ISimple.cs" />
+    <Compile Include="GenInterfaces\ISimpleArg.cs" />
+    <Compile Include="GenInterfaces\ISimpleReturn.cs" />
     <Compile Include="Interceptors\LogInvocationInterceptor.cs" />
     <Compile Include="Interceptors\ProceedNTimesInterceptor.cs" />
     <Compile Include="Interceptors\ThrowingInterceptor.cs" />
@@ -348,6 +351,8 @@
     <Compile Include="MixinTestCase.cs" />
     <Compile Include="NLogIntegration\NLogTests.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
+    <Compile Include="OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
+    <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
     <Compile Include="XmlConfigurationDeserializerTests.cs" />
     <Compile Include="XmlSerializationTestCase.cs" />
