@@ -40,6 +40,14 @@ namespace CastleTests
 		}
 
 		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_class_constraint()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyClass<object>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
 		public void Can_generate_generic_proxy_for_interface_with_generic_constraint_base_generic_interface()
 		{
 			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyWithBaseGenericInterfaceConstraint<GenInterfaceImpl<int>>>();
@@ -53,6 +61,31 @@ namespace CastleTests
 			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyWithBaseInterfaceConstraint<Empty>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_new_constraint()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyNew<int>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_struct_constraint()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyStruct<int>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_variance()
+		{
+			var one = generator.CreateInterfaceProxyWithoutTarget<IEmptyVariant<object, string>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+			IEmptyVariant<string, object> other = one;
 		}
 
 		[Test]

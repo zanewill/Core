@@ -327,6 +327,10 @@
     <Compile Include="GenInterfaces\IConstraint_Method1IsTypeStructAndMethod2.cs" />
     <Compile Include="GenInterfaces\IHaveGenericMethodWithNewClassStructConstraints.cs" />
     <Compile Include="GenInterfaces\IEmpty.cs" />
+    <Compile Include="GenInterfaces\IEmptyClass.cs" />
+    <Compile Include="GenInterfaces\IEmptyNew.cs" />
+    <Compile Include="GenInterfaces\IEmptyStruct.cs" />
+    <Compile Include="GenInterfaces\IEmptyVariant.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseGenericInterfaceConstraint.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseInterfaceConstraint.cs" />
     <Compile Include="Interceptors\LogInvocationInterceptor.cs" />
