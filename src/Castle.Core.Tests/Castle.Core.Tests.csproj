@@ -331,6 +331,7 @@
     <Compile Include="GenInterfaces\IEmptyNew.cs" />
     <Compile Include="GenInterfaces\IEmptyStruct.cs" />
     <Compile Include="GenInterfaces\IEmptyVariant.cs" />
+    <Compile Include="GenInterfaces\IEmptyWithBase.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseGenericInterfaceConstraint.cs" />
     <Compile Include="GenInterfaces\IEmptyWithBaseInterfaceConstraint.cs" />
     <Compile Include="Interceptors\LogInvocationInterceptor.cs" />

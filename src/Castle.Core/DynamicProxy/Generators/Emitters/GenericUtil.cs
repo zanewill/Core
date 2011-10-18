@@ -216,21 +216,20 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 		}
 
-		private static void SetGenericParameterAttributes(GenericTypeParameterBuilder newGenericParameter, Type originalGenericArgument)
-		{
-			var attributes = originalGenericArgument.GenericParameterAttributes;
-			// we reset variance flags - they are only allowed on delegates and interfaces and we never generate any of those...
-			attributes &=~(GenericParameterAttributes.Contravariant | GenericParameterAttributes.Covariant);
-			newGenericParameter.SetGenericParameterAttributes(attributes);
-		}
-
-		private static void CopyNonInheritableAttributes(GenericTypeParameterBuilder newGenericParameter,
-		                                                 Type originalGenericArgument)
+		private static void CopyNonInheritableAttributes(GenericTypeParameterBuilder newGenericParameter, Type originalGenericArgument)
 		{
 			foreach (var attribute in originalGenericArgument.GetNonInheritableAttributes())
 			{
 				newGenericParameter.SetCustomAttribute(attribute);
 			}
+		}
+
+		private static void SetGenericParameterAttributes(GenericTypeParameterBuilder newGenericParameter, Type originalGenericArgument)
+		{
+			var attributes = originalGenericArgument.GenericParameterAttributes;
+			// we reset variance flags - they are only allowed on delegates and interfaces and we never generate any of those...
+			attributes &= ~(GenericParameterAttributes.Contravariant | GenericParameterAttributes.Covariant);
+			newGenericParameter.SetGenericParameterAttributes(attributes);
 		}
 	}
 }

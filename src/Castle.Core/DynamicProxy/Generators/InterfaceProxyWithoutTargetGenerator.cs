@@ -27,6 +27,7 @@ namespace Castle.DynamicProxy.Generators
 	public class InterfaceProxyWithoutTargetGenerator : InterfaceProxyWithTargetGenerator
 	{
 		private readonly Type[] genericArguments;
+		private readonly Type openInterface;
 
 		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface, Type[] additionalInterfacesToProxy, ProxyGenerationOptions proxyGenerationOptions)
 			: base(scope, GetTargetType(@interface, additionalInterfacesToProxy, proxyGenerationOptions), typeof(object), additionalInterfacesToProxy, proxyGenerationOptions)
@@ -34,6 +35,7 @@ namespace Castle.DynamicProxy.Generators
 			if (targetType.IsGenericTypeDefinition)
 			{
 				genericArguments = @interface.GetGenericArguments();
+				openInterface = @interface.GetGenericTypeDefinition();
 			}
 		}
 
@@ -59,11 +61,9 @@ namespace Castle.DynamicProxy.Generators
 		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
 		{
 			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
-			if(genericArguments != null)
+			if(openInterface != null)
 			{
-				var targetInterface = interfaces[0];
-				Debug.Assert(targetInterface.IsGenericTypeDefinition);
-				emitter.CopyGenericParametersFromType(targetInterface);
+				emitter.CopyGenericParametersFromType(openInterface);
 			}
 
 			return emitter;
