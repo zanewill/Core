@@ -27,7 +27,7 @@ namespace CastleTests.OpenGenerics
 		[Test]
 		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument_return_without_invocation()
 		{
-			var one = generator.CreateInterfaceProxyWithoutTarget<ISimpleReturn<object>>(proxyNothing);
+			var one = ProxyFor<ISimpleReturn<object>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 
@@ -37,7 +37,7 @@ namespace CastleTests.OpenGenerics
 		[Test]
 		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument_without_invocation()
 		{
-			var one = generator.CreateInterfaceProxyWithoutTarget<ISimpleArg<object>>(proxyNothing);
+			var one = ProxyFor<ISimpleArg<object>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 
@@ -47,11 +47,16 @@ namespace CastleTests.OpenGenerics
 		[Test]
 		public void Can_generate_generic_proxy_for_interface_with_method_without_invocation()
 		{
-			var one = generator.CreateInterfaceProxyWithoutTarget<ISimple<object>>(proxyNothing);
+			var one = ProxyFor<ISimple<object>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 
 			one.Method();
+		}
+
+		private T ProxyFor<T>()
+		{
+			return generator.CreateInterfaceProxyWithoutTarget<T>(proxyNothing);
 		}
 	}
 }
