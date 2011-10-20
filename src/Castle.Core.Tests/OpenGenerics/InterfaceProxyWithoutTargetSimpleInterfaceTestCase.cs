@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace CastleTests
+namespace CastleTests.OpenGenerics
 {
 	using Castle.DynamicProxy;
 
@@ -20,7 +20,7 @@ namespace CastleTests
 
 	using NUnit.Framework;
 
-	public class OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase : BasePEVerifyTestCase
+	public class InterfaceProxyWithoutTargetSimpleInterfaceTestCase : BasePEVerifyTestCase
 	{
 		private readonly ProxyGenerationOptions proxyNothing = new ProxyGenerationOptions(new ProxyNothingHook());
 

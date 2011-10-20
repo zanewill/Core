@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace CastleTests
+namespace CastleTests.OpenGenerics
 {
 	using System;
 	using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace CastleTests
 
 	using NUnit.Framework;
 
-	public class OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase : BasePEVerifyTestCase
+	public class InterfaceProxyWithoutTargetEmptyInterfaceTestCase : BasePEVerifyTestCase
 	{
 		[Test]
 		public void Can_generate_generic_and_non_generic_proxy_for_interfaces_with_same_name_one_generic_one_not()

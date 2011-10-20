@@ -353,6 +353,8 @@
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
+    <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
+    <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
     <Compile Include="XmlConfigurationDeserializerTests.cs" />
     <Compile Include="XmlSerializationTestCase.cs" />
