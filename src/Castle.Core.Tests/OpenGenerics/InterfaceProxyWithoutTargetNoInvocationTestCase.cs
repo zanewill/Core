@@ -45,6 +45,16 @@ namespace CastleTests.OpenGenerics
 		}
 
 		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_method_return_constraint_on_type_parameter()
+		{
+			var one = ProxyFor<ISimpleGenericConstraint<object>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+
+			one.Method<int>();
+		}
+
+		[Test]
 		public void Can_generate_generic_proxy_for_interface_with_method()
 		{
 			var one = ProxyFor<ISimple<object>>();

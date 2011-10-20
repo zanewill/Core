@@ -337,6 +337,7 @@
     <Compile Include="GenInterfaces\ISimple.cs" />
     <Compile Include="GenInterfaces\ISimpleArg.cs" />
     <Compile Include="GenInterfaces\ISimpleGeneric.cs" />
+    <Compile Include="GenInterfaces\ISimpleGenericConstraint.cs" />
     <Compile Include="GenInterfaces\ISimpleReturn.cs" />
     <Compile Include="GenInterfaces\ISimpleReturnGeneric.cs" />
     <Compile Include="Interceptors\LogInvocationInterceptor.cs" />
