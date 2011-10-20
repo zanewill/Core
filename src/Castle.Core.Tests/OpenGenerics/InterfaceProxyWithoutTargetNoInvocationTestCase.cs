@@ -20,14 +20,34 @@ namespace CastleTests.OpenGenerics
 
 	using NUnit.Framework;
 
-	public class InterfaceProxyWithoutTargetSimpleInterfaceTestCase : BasePEVerifyTestCase
+	public class InterfaceProxyWithoutTargetNoInvocationTestCase : BasePEVerifyTestCase
 	{
 		private readonly ProxyGenerationOptions proxyNothing = new ProxyGenerationOptions(new ProxyNothingHook());
 
 		[Test]
-		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument_return_without_invocation()
+		public void Can_generate_generic_proxy_for_interface_with_generic_method()
 		{
-			var one = ProxyFor<ISimpleReturn<object>>();
+			var one = ProxyFor<ISimpleGeneric<object>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+
+			one.Method<int>();
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_generic_method_return()
+		{
+			var one = ProxyFor<ISimpleReturnGeneric<object>>();
+
+			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+
+			one.Method<int>();
+		}
+
+		[Test]
+		public void Can_generate_generic_proxy_for_interface_with_method()
+		{
+			var one = ProxyFor<ISimple<object>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 
@@ -35,7 +55,7 @@ namespace CastleTests.OpenGenerics
 		}
 
 		[Test]
-		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument_without_invocation()
+		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument()
 		{
 			var one = ProxyFor<ISimpleArg<object>>();
 
@@ -45,16 +65,16 @@ namespace CastleTests.OpenGenerics
 		}
 
 		[Test]
-		public void Can_generate_generic_proxy_for_interface_with_method_without_invocation()
+		public void Can_generate_generic_proxy_for_interface_with_method_using_generic_argument_return()
 		{
-			var one = ProxyFor<ISimple<object>>();
+			var one = ProxyFor<ISimpleReturn<object>>();
 
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 
 			one.Method();
 		}
 
-		private T ProxyFor<T>()
+		private T ProxyFor<T>() where T : class
 		{
 			return generator.CreateInterfaceProxyWithoutTarget<T>(proxyNothing);
 		}
