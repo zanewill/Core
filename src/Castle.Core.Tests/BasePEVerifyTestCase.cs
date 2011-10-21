@@ -105,14 +105,14 @@ namespace CastleTests
 			var process = new Process
 			{
 				StartInfo =
-				{
-					FileName = FindPeVerify.PeVerifyPath,
-					RedirectStandardOutput = true,
-					UseShellExecute = false,
-					WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-					Arguments = "\"" + assemblyPath + "\" /VERBOSE",
-					CreateNoWindow = true
-				}
+					{
+						FileName = FindPeVerify.PeVerifyPath,
+						RedirectStandardOutput = true,
+						UseShellExecute = false,
+						WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+						Arguments = "\"" + assemblyPath + "\" /VERBOSE",
+						CreateNoWindow = true
+					}
 			};
 			process.Start();
 			var processOutput = process.StandardOutput.ReadToEnd();
@@ -129,20 +129,23 @@ namespace CastleTests
 			}
 		}
 #else
-#if !SILVERLIGHT
+		#if !SILVERLIGHT
 		[TearDown]
-#endif
+		#endif
 		public virtual void TearDown()
 		{
 		}
 #endif
 	}
 }
+// NOTE: temporary solution until we can move everything to a single namespace
 namespace Castle.DynamicProxy.Tests
 {
 	using System;
 	using System.Diagnostics;
 	using System.IO;
+
+	using Castle.DynamicProxy;
 
 	using CastleTests.Properties;
 
@@ -229,14 +232,14 @@ namespace Castle.DynamicProxy.Tests
 			var process = new Process
 			{
 				StartInfo =
-					{
-						FileName = FindPeVerify.PeVerifyPath,
-						RedirectStandardOutput = true,
-						UseShellExecute = false,
-						WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-						Arguments = "\"" + assemblyPath + "\" /VERBOSE",
-						CreateNoWindow = true
-					}
+				{
+					FileName = FindPeVerify.PeVerifyPath,
+					RedirectStandardOutput = true,
+					UseShellExecute = false,
+					WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+					Arguments = "\"" + assemblyPath + "\" /VERBOSE",
+					CreateNoWindow = true
+				}
 			};
 			process.Start();
 			var processOutput = process.StandardOutput.ReadToEnd();
@@ -253,9 +256,9 @@ namespace Castle.DynamicProxy.Tests
 			}
 		}
 #else
-		#if !SILVERLIGHT
+#if !SILVERLIGHT
 		[TearDown]
-		#endif
+#endif
 		public virtual void TearDown()
 		{
 		}
