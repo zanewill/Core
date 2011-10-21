@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests.BugsReported
+namespace CastleTests.BugsReported
 {
 	using System;
+
+	using Castle.DynamicProxy;
 
 	using CastleTests;
 
@@ -28,13 +30,14 @@ namespace Castle.DynamicProxy.Tests.BugsReported
 	}
 
 	[TestFixture]
-	public class Core40 : BasePEVerifyTestCase
+	public class NullCtorArgumentsForClassProxyException : BasePEVerifyTestCase
 	{
 		[Test]
+		[Bug("CORE-40")]
 		[ExpectedException(typeof(InvalidProxyConstructorArgumentsException))]
-		public void ShouldGenerateTypeWithIndexers()
+		public void Null_is_properly_described_in_the_exception_message()
 		{
-			var proxy = generator.CreateClassProxy(typeof(Core40ClassToProxy), new object[] { null, null, null });
+			generator.CreateClassProxy(typeof(Core40ClassToProxy), new object[] { null, null, null });
 		}
 	}
 }

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests.BugsReported
+namespace CastleTests.BugsReported
 {
 	using System;
+
+	using Castle.DynamicProxy;
 
 	using CastleTests;
 
