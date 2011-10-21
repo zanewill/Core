@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 //  
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,29 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests
+namespace CastleTests
 {
 	using System;
 	using System.Collections.Generic;
+
+	using Castle;
+	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.InterClasses;
 	using Castle.Interceptors;
 
-	using CastleTests;
-
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class BasicInterfaceProxyWithoutTargetTestCase : BasePEVerifyTestCase
+	public class BasicInterfaceProxyWithoutTargetTestCase : Castle.DynamicProxy.Tests.BasePEVerifyTestCase
 	{
 		[Test]
 		public void BasicInterfaceProxyWithValidTarget_ThrowsIfInterceptorCallsProceed()
 		{
-			var service = (IService)
-			              generator.CreateInterfaceProxyWithoutTarget(
-			              	typeof (IService), new StandardInterceptor());
-			var exception = (NotImplementedException) Assert.Throws(typeof (NotImplementedException), () =>
-			                                                                                          service.Sum(1, 2));
+			var service = generator.CreateInterfaceProxyWithoutTarget<IService>(new StandardInterceptor());
+			var exception = Assert.Throws<NotImplementedException>(() => service.Sum(1, 2));
 
 			Assert.AreEqual(
 				"This is a DynamicProxy2 error: The interceptor attempted to 'Proceed' for method 'Int32 Sum(Int32, Int32)' which has no target. " +
@@ -86,7 +84,7 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void Target_is_null()
 		{
-			var proxy = generator.CreateInterfaceProxyWithoutTarget<IService>() as IProxyTargetAccessor;
+			var proxy = (IProxyTargetAccessor)generator.CreateInterfaceProxyWithoutTarget<IService>();
 			Assert.IsNull(proxy.DynProxyGetTarget());
 		}
 	}
