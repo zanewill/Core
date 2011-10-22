@@ -61,9 +61,9 @@ namespace Castle.DynamicProxy.Contributors
 			                                         null);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter emitter, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy, ProxyGenerationOptions options)
 		{
-			var scope = emitter.ModuleScope;
+			var scope = proxy.ModuleScope;
 			Type[] invocationInterfaces;
 			if (canChangeTarget)
 			{
@@ -88,7 +88,7 @@ namespace Castle.DynamicProxy.Contributors
 																method.Method,
 																canChangeTarget,
 																null)
-				.Generate(emitter, options, namingScope)
+				.Generate(proxy, options, namingScope)
 				.BuildType();
 
 			scope.RegisterInCache(key, invocation);
