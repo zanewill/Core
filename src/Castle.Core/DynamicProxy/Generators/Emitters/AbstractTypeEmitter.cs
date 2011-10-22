@@ -109,6 +109,17 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return type;
 		}
 
+		public MethodInfo AdjustMethod(MethodInfo method)
+		{
+			if(method.DeclaringType.IsGenericTypeDefinition == false || genericTypeParams == null)
+			{
+				return method;
+			}
+			var closedType = method.DeclaringType.GetGenericTypeDefinition().MakeGenericType(genericTypeParams);
+			var closedMethod = TypeBuilder.GetMethod(closedType, method);
+			return closedMethod;
+		}
+
 		public void CopyGenericParametersFromMethod(MethodInfo methodToCopyGenericsFrom)
 		{
 			// big sanity check

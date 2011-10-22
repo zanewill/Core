@@ -14,6 +14,10 @@
 
 namespace CastleTests.OpenGenerics
 {
+	using System;
+	using System.Linq.Expressions;
+	using System.Reflection;
+
 	using NUnit.Framework;
 
 	public static class OpenGenericAssertionExtensions
@@ -21,6 +25,13 @@ namespace CastleTests.OpenGenerics
 		public static void AssertIsOpenGenericType(this object proxy)
 		{
 			Assert.True(proxy.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", proxy.GetType()));
+		}
+
+		public static void MustBe<TType>(this MethodInfo method, Expression<Action<TType>> methodCall)
+		{
+			var callExpression = (MethodCallExpression)methodCall.Body;
+			Assert.AreEqual(callExpression.Method.DeclaringType, method.DeclaringType, "Methods declaring types must be same");
+			Assert.AreEqual(callExpression.Method, method);
 		}
 	}
 }

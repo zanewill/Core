@@ -15,7 +15,6 @@
 namespace Castle.DynamicProxy.Generators
 {
 	using System;
-	using System.Diagnostics;
 	using System.Reflection;
 	using System.Reflection.Emit;
 #if !SILVERLIGHT
@@ -58,8 +57,7 @@ namespace Castle.DynamicProxy.Generators
 			return methodInterceptors;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter @class,
-		                                                        ProxyGenerationOptions options, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
 		{
 			var invocationType = invocation;
 
@@ -81,10 +79,9 @@ namespace Castle.DynamicProxy.Generators
 			}
 			else
 			{
-				var proxiedMethodToken = @class.CreateStaticField(namingScope.GetUniqueName("token_" + MethodToOverride.Name),
-				                                                  typeof(MethodInfo));
-				@class.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken,
-				                                                                     new MethodTokenExpression(MethodToOverride)));
+				var methodForToken = @class.AdjustMethod(MethodToOverride);
+				var proxiedMethodToken = @class.CreateStaticField(namingScope.GetUniqueName("token_" + MethodToOverride.Name), typeof(MethodInfo));
+				@class.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodTokenExpression(methodForToken)));
 
 				proxiedMethodTokenExpression = proxiedMethodToken.ToExpression();
 			}
@@ -92,13 +89,11 @@ namespace Castle.DynamicProxy.Generators
 			var dereferencedArguments = IndirectReference.WrapIfByRef(emitter.Arguments);
 			var hasByRefArguments = HasByRefArguments(emitter.Arguments);
 
-			var arguments = GetCtorArguments(@class, namingScope, proxiedMethodTokenExpression,
-			                                 dereferencedArguments);
+			var arguments = GetCtorArguments(@class, namingScope, proxiedMethodTokenExpression, dereferencedArguments);
 			var ctorArguments = ModifyArguments(@class, arguments);
 
 			var invocationLocal = emitter.CodeBuilder.DeclareLocal(invocationType);
-			emitter.CodeBuilder.AddStatement(new AssignStatement(invocationLocal,
-			                                                     new NewInstanceExpression(constructor, ctorArguments)));
+			emitter.CodeBuilder.AddStatement(new AssignStatement(invocationLocal, new NewInstanceExpression(constructor, ctorArguments)));
 
 			if (MethodToOverride.IsGenericMethod)
 			{

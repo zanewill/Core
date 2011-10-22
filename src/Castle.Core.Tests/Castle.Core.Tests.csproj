@@ -360,6 +360,7 @@
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetWithInvocationTestCase.cs" />
+    <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="OpenGenerics\OpenGenericAssertionExtensions.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
     <Compile Include="XmlConfigurationDeserializerTests.cs" />

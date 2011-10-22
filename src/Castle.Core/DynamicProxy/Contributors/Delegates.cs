@@ -19,8 +19,7 @@ namespace Castle.DynamicProxy.Contributors
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
-	public delegate MethodEmitter OverrideMethodDelegate(
-		string name, MethodAttributes attributes, MethodInfo methodToOverride);
+	public delegate MethodEmitter OverrideMethodDelegate(string name, MethodAttributes attributes, MethodInfo methodToOverride);
 
 	public delegate Expression GetTargetExpressionDelegate(ClassEmitter @class, MethodInfo method);
 

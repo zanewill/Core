@@ -17,6 +17,7 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 
 	public class TypeElementCollection<TElement> : ICollection<TElement>
 		where TElement : MetaTypeElement, IEquatable<TElement>
@@ -54,15 +55,7 @@ namespace Castle.DynamicProxy.Generators
 
 		public bool Contains(TElement item)
 		{
-			foreach (var element in items)
-			{
-				if (element.Equals(item))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return items.Any(element => element.Equals(item));
 		}
 
 		public IEnumerator<TElement> GetEnumerator()

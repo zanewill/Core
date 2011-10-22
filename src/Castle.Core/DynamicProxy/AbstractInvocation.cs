@@ -34,7 +34,7 @@ namespace Castle.DynamicProxy
 		private readonly IInterceptor[] interceptors;
 		private readonly object[] arguments;
 		private int currentInterceptorIndex = -1;
-		private Type[] genericMethodArguments;
+		private Type[] genericMethodArguments = Type.EmptyTypes;
 		private readonly MethodInfo proxiedMethod;
 		protected readonly object proxyObject;
 
