@@ -63,7 +63,7 @@ namespace Castle.DynamicProxy.Generators
 		{
 			var invocationType = invocation;
 
-			Trace.Assert(MethodToOverride.IsGenericMethod == invocationType.IsGenericTypeDefinition);
+			
 			var genericArguments = Type.EmptyTypes;
 
 			var constructor = invocation.GetConstructors()[0];

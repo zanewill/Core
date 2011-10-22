@@ -226,7 +226,7 @@ namespace Castle.DynamicProxy
 
 		private MethodInfo EnsureClosedMethod(MethodInfo method)
 		{
-			if (method.ContainsGenericParameters)
+			if (method.IsGenericMethodDefinition)
 			{
 				Debug.Assert(genericMethodArguments != null);
 				return method.GetGenericMethodDefinition().MakeGenericMethod(genericMethodArguments);

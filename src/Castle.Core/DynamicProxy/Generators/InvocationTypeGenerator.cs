@@ -60,7 +60,7 @@ namespace Castle.DynamicProxy.Generators
 		{
 			var methodInfo = method.Method;
 
-			var interfaces = new Type[0];
+			var interfaces = Type.EmptyTypes;
 
 			if (canChangeTarget)
 			{
@@ -70,7 +70,14 @@ namespace Castle.DynamicProxy.Generators
 
 			// invocation only needs to mirror the generic parameters of the MethodInfo
 			// targetType cannot be a generic type definition (YET!)
-			invocation.CopyGenericParametersFromMethod(methodInfo);
+			if(@class.TypeBuilder.IsGenericTypeDefinition)
+			{
+				invocation.CopyGenericParametersFromType(@class.TypeBuilder);
+			}
+			else
+			{
+				invocation.CopyGenericParametersFromMethod(methodInfo);
+			}
 
 			CreateConstructor(invocation, options);
 

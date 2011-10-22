@@ -12,26 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace CastleTests
+namespace CastleTests.OpenGenerics
 {
-	using System;
-	using System.Reflection;
+	using Castle.DynamicProxy.Tests.Interceptors;
+
+	using CastleTests.GenInterfaces;
 
 	using NUnit.Framework;
 
-	public class GenericTestUtility
+	public class InterfaceProxyWithoutTargetWithInvocationTestCase : BasePEVerifyTestCase
 	{
-		public static void CheckMethodInfoIsClosed(MethodInfo method, Type returnType, params Type[] parameterTypes)
+		[Test]
+		public void Plain_method()
 		{
-			Assert.IsFalse(method.ContainsGenericParameters);
-			Assert.AreEqual(returnType, method.ReturnType);
+			var one = ProxyFor<ISimple<object>>();
 
-			var parameters = method.GetParameters();
-			Assert.AreEqual(parameterTypes.Length, parameters.Length);
-			for (var i = 0; i < parameterTypes.Length; ++i)
-			{
-				Assert.AreEqual(parameterTypes[i], parameters[i].ParameterType);
-			}
+			one.AssertIsOpenGenericType();
+
+			one.Method();
+		}
+
+		private T ProxyFor<T>() where T : class
+		{
+			return generator.CreateInterfaceProxyWithoutTarget<T>(new DoNothingInterceptor());
 		}
 	}
 }

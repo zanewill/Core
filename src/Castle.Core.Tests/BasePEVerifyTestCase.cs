@@ -62,6 +62,12 @@ namespace CastleTests
 		{
 			ResetGeneratorAndBuilder();
 			verificationDisabled = false;
+			AfterInit();
+		}
+
+		protected virtual void AfterInit()
+		{
+			
 		}
 
 		public void ResetGeneratorAndBuilder()
