@@ -35,13 +35,13 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		protected  readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>();
 		private readonly List<NestedClassEmitter> nested = new List<NestedClassEmitter>();
 		private readonly List<PropertyEmitter> properties = new List<PropertyEmitter>();
-		private readonly TypeBuilder typebuilder;
+		private readonly TypeBuilder typeBuilder;
 
 		private GenericTypeParameterBuilder[] genericTypeParams;
 
 		protected AbstractTypeEmitter(TypeBuilder typeBuilder)
 		{
-			typebuilder = typeBuilder;
+			this.typeBuilder = typeBuilder;
 		}
 
 		public Type BaseType
@@ -75,7 +75,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		public TypeBuilder TypeBuilder
 		{
-			get { return typebuilder; }
+			get { return typeBuilder; }
 		}
 
 		public void AddCustomAttributes(ProxyGenerationOptions proxyGenerationOptions)
@@ -85,13 +85,13 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				var customAttributeBuilder = AttributeUtil.CreateBuilder(attr);
 				if (customAttributeBuilder != null)
 				{
-					typebuilder.SetCustomAttribute(customAttributeBuilder);
+					typeBuilder.SetCustomAttribute(customAttributeBuilder);
 				}
 			}
 
 			foreach (var attribute in proxyGenerationOptions.AdditionalAttributes)
 			{
-				typebuilder.SetCustomAttribute(attribute);
+				typeBuilder.SetCustomAttribute(attribute);
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		{
 			EnsureBuildersAreInAValidState();
 
-			var type = CreateType(typebuilder);
+			var type = CreateType(typeBuilder);
 
 			foreach (var builder in nested)
 			{
@@ -117,7 +117,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
 			}
 
-			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(methodToCopyGenericsFrom, typebuilder, name2GenericType));
+			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(methodToCopyGenericsFrom, typeBuilder, name2GenericType));
 		}
 
 		public void CopyGenericParametersFromType(Type typeToCopyGenericsFrom)
@@ -128,7 +128,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
 			}
 
-			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, typebuilder, name2GenericType));
+			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, typeBuilder, name2GenericType));
 		}
 
 		public ConstructorEmitter CreateConstructor(params ArgumentReference[] arguments)
@@ -179,7 +179,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		public FieldReference CreateField(string name, Type fieldType, FieldAttributes atts)
 		{
-			var fieldBuilder = typebuilder.DefineField(name, fieldType, atts);
+			var fieldBuilder = typeBuilder.DefineField(name, fieldType, atts);
 			var reference = new FieldReference(fieldBuilder);
 			fields[name] = reference;
 			return reference;
@@ -237,19 +237,19 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		public void DefineCustomAttribute(CustomAttributeBuilder attribute)
 		{
-			typebuilder.SetCustomAttribute(attribute);
+			typeBuilder.SetCustomAttribute(attribute);
 		}
 
 		public void DefineCustomAttribute<TAttribute>(object[] constructorArguments) where TAttribute : Attribute
 		{
 			var customAttributeBuilder = AttributeUtil.CreateBuilder(typeof(TAttribute), constructorArguments);
-			typebuilder.SetCustomAttribute(customAttributeBuilder);
+			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 		}
 
 		public void DefineCustomAttribute<TAttribute>() where TAttribute : Attribute, new()
 		{
 			var customAttributeBuilder = AttributeUtil.CreateBuilder<TAttribute>();
-			typebuilder.SetCustomAttribute(customAttributeBuilder);
+			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 		}
 
 		public void DefineCustomAttributeFor<TAttribute>(FieldReference field) where TAttribute : Attribute, new()
@@ -356,7 +356,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		protected virtual void EnsureBuildersAreInAValidState()
 		{
-			if (!typebuilder.IsInterface && constructors.Count == 0)
+			if (!typeBuilder.IsInterface && constructors.Count == 0)
 			{
 				CreateDefaultConstructor();
 			}
