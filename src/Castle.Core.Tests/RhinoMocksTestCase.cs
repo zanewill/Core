@@ -168,9 +168,7 @@ namespace Castle.DynamicProxy.Tests
 		public void GenericClassWithGenericMethodWitoutTarget()
 		{
 			var interceptor = new SetReturnValueInterceptor(3);
-			var proxy =
-				(IDoubleGeneric<int>) generator.CreateInterfaceProxyWithoutTarget(typeof (IDoubleGeneric<int>),
-				                                                                  interceptor);
+			var proxy = generator.CreateInterfaceProxyWithoutTarget<IDoubleGeneric<int>>(interceptor);
 			var o = proxy.Call(1, "");
 			Assert.AreEqual(3, o);
 		}

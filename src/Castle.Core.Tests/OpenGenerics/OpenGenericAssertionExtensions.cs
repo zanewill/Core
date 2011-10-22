@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests.InterClasses
+namespace CastleTests.OpenGenerics
 {
-	public interface IInterfaceWithGenericMethodWithDependentConstraint
+	using NUnit.Framework;
+
+	public static class OpenGenericAssertionExtensions
 	{
-		IInterfaceWithGenericMethodWithDependentConstraint RegisterType<TFrom, TTo> () where TTo : TFrom;
+		public static void AssertIsOpenGenericType(this object proxy)
+		{
+			Assert.True(proxy.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", proxy.GetType()));
+		}
 	}
 }

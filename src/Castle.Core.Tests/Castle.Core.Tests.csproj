@@ -344,6 +344,7 @@
     <Compile Include="Interceptors\ProceedNTimesInterceptor.cs" />
     <Compile Include="Interceptors\ThrowingInterceptor.cs" />
     <Compile Include="InterClasses\IExtendedService.cs" />
+    <Compile Include="InterClasses\IGenericInterfaceWithGenericMethodWithDependentConstraint.cs" />
     <Compile Include="InterClasses\IService.cs" />
     <Compile Include="InterClasses\ServiceImpl.cs" />
     <Compile Include="InterClasses\OneAndEmpty.cs" />
@@ -358,6 +359,7 @@
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />
+    <Compile Include="OpenGenerics\OpenGenericAssertionExtensions.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
     <Compile Include="XmlConfigurationDeserializerTests.cs" />
     <Compile Include="XmlSerializationTestCase.cs" />

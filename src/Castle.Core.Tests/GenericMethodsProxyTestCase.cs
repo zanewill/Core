@@ -56,17 +56,14 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void GenericMethod_WithConstraintOnSurroundingTypeParameter()
 		{
-			var type = typeof(IGenericInterfaceWithGenericMethodWithDependentConstraint<object>);
-
 			var interceptor = new KeepDataInterceptor();
-			var proxy = (IGenericInterfaceWithGenericMethodWithDependentConstraint<object>)
-			            generator.CreateInterfaceProxyWithoutTarget(type, new Type[] { }, interceptor);
+			var proxy = generator.CreateInterfaceProxyWithoutTarget<IGenericInterfaceWithGenericMethodWithDependentConstraint<object>>(interceptor);
 
 			proxy.RegisterType<string>();
 
-			var expectedMethod =
-				typeof(IGenericInterfaceWithGenericMethodWithDependentConstraint<object>).GetMethod("RegisterType").
-					MakeGenericMethod(typeof(string));
+			var expectedMethod = typeof(IGenericInterfaceWithGenericMethodWithDependentConstraint<object>)
+				.GetMethod("RegisterType")
+				.MakeGenericMethod(typeof(string));
 
 			Assert.AreEqual(expectedMethod, interceptor.Invocation.Method);
 		}
