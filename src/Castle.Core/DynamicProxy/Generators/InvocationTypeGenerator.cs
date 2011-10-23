@@ -68,11 +68,9 @@ namespace Castle.DynamicProxy.Generators
 			}
 			var invocation = GetEmitter(@class, interfaces, namingScope, methodInfo);
 
-			// invocation only needs to mirror the generic parameters of the MethodInfo
-			// targetType cannot be a generic type definition (YET!)
 			if(@class.TypeBuilder.IsGenericTypeDefinition)
 			{
-				invocation.CopyGenericParametersFromType(@class.TypeBuilder);
+				invocation.CopyGenericParametersFromType(@class.TypeBuilder, methodInfo);
 			}
 			else
 			{

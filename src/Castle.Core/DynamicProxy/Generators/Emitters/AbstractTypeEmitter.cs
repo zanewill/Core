@@ -32,12 +32,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
 		private readonly List<EventEmitter> events = new List<EventEmitter>();
 		private readonly Dictionary<String, FieldReference> fields = new Dictionary<String, FieldReference>();
+		private GenericTypeParameterBuilder[] genericTypeParams;
 		private readonly List<MethodEmitter> methods = new List<MethodEmitter>();
 		private readonly List<NestedClassEmitter> nested = new List<NestedClassEmitter>();
 		private readonly List<PropertyEmitter> properties = new List<PropertyEmitter>();
 		private readonly TypeBuilder typeBuilder;
-
-		private GenericTypeParameterBuilder[] genericTypeParams;
 
 		protected AbstractTypeEmitter(TypeBuilder typeBuilder)
 		{
@@ -95,6 +94,17 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 		}
 
+		public MethodInfo AdjustMethod(MethodInfo method)
+		{
+			if (method.DeclaringType.IsGenericTypeDefinition == false || genericTypeParams == null)
+			{
+				return method;
+			}
+			var closedType = method.DeclaringType.GetGenericTypeDefinition().MakeGenericType(GenericTypeParams);
+			var closedMethod = TypeBuilder.GetMethod(closedType, method);
+			return closedMethod;
+		}
+
 		public virtual Type BuildType()
 		{
 			EnsureBuildersAreInAValidState();
@@ -109,17 +119,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return type;
 		}
 
-		public MethodInfo AdjustMethod(MethodInfo method)
-		{
-			if(method.DeclaringType.IsGenericTypeDefinition == false || genericTypeParams == null)
-			{
-				return method;
-			}
-			var closedType = method.DeclaringType.GetGenericTypeDefinition().MakeGenericType(genericTypeParams);
-			var closedMethod = TypeBuilder.GetMethod(closedType, method);
-			return closedMethod;
-		}
-
 		public void CopyGenericParametersFromMethod(MethodInfo methodToCopyGenericsFrom)
 		{
 			// big sanity check
@@ -128,10 +127,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
 			}
 
-			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(methodToCopyGenericsFrom, typeBuilder, name2GenericType));
+			var arguments = GenericUtil.CopyGenericArguments(methodToCopyGenericsFrom, typeBuilder, name2GenericType);
+			SetGenericTypeParameters(arguments);
 		}
 
-		public void CopyGenericParametersFromType(Type typeToCopyGenericsFrom)
+		public void CopyGenericParametersFromType(Type typeToCopyGenericsFrom, MethodInfo methodToCopyGenericsFrom = null)
 		{
 			// big sanity check
 			if (genericTypeParams != null)
@@ -139,7 +139,8 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
 			}
 
-			SetGenericTypeParameters(GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, typeBuilder, name2GenericType));
+			var arguments = GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, methodToCopyGenericsFrom, typeBuilder, name2GenericType);
+			SetGenericTypeParameters(arguments);
 		}
 
 		public ConstructorEmitter CreateConstructor(params ArgumentReference[] arguments)
@@ -326,7 +327,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return types.ToArray();
 		}
 
-		public void SetGenericTypeParameters(GenericTypeParameterBuilder[] genericTypeParameterBuilders)
+		protected void SetGenericTypeParameters(GenericTypeParameterBuilder[] genericTypeParameterBuilders)
 		{
 			genericTypeParams = genericTypeParameterBuilders;
 		}

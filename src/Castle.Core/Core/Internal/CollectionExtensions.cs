@@ -41,6 +41,20 @@ namespace Castle.Core.Internal
 #endif
 		}
 
+		public static T[] ConcatAll<T>(params T[][] arrays)
+		{
+			var temp = new List<T>();
+			foreach (var array in arrays)
+			{
+				if (array == null)
+				{
+					continue;
+				}
+				temp.AddRange(array);
+			}
+			return temp.ToArray();
+		}
+
 		public static TResult[] ConvertAll<T, TResult>(this T[] items, Converter<T, TResult> transformation)
 		{
 #if SILVERLIGHT

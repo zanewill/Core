@@ -216,8 +216,7 @@ namespace CastleTests
 		public void MethodInfoClosedInGenIfcGenMethodValueTypeNoTarget()
 		{
 			var interceptor = new KeepDataInterceptor();
-			var proxy =
-				generator.CreateInterfaceProxyWithoutTarget<GenInterfaceWithGenMethods<int>>(interceptor);
+			var proxy = generator.CreateInterfaceProxyWithoutTarget<GenInterfaceWithGenMethods<int>>(interceptor);
 
 			proxy.DoSomething(1, 1);
 			GenericTestUtility.CheckMethodInfoIsClosed(interceptor.Invocation.GetConcreteMethod(), typeof(void), typeof(int),

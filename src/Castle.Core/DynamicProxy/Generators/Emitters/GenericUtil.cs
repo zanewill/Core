@@ -17,6 +17,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Linq;
 	using System.Reflection;
 	using System.Reflection.Emit;
 
@@ -30,6 +31,18 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		public static GenericTypeParameterBuilder[] CopyGenericArguments(Type typeToCopyGenericsFrom, TypeBuilder builder, Dictionary<String, GenericTypeParameterBuilder> name2GenericType)
 		{
 			return CopyGenericArguments(name2GenericType, builder.DefineGenericParameters, typeToCopyGenericsFrom.GetGenericArguments(), typeToCopyGenericsFrom.DeclaringType);
+		}
+
+		public static GenericTypeParameterBuilder[] CopyGenericArguments(Type typeToCopyGenericsFrom, MethodInfo methodToCopyGenericsFrom, TypeBuilder builder,
+		                                                                 Dictionary<String, GenericTypeParameterBuilder> name2GenericType)
+		{
+			if(methodToCopyGenericsFrom == null)
+			{
+				return CopyGenericArguments(typeToCopyGenericsFrom, builder, name2GenericType);
+			}
+			var typeArguments = typeToCopyGenericsFrom.GetGenericArguments();
+			var methodArguments = methodToCopyGenericsFrom.GetGenericArguments();
+			return CopyGenericArguments(name2GenericType, builder.DefineGenericParameters, typeArguments.Concat(methodArguments).ToArray(), typeToCopyGenericsFrom);
 		}
 
 		public static GenericTypeParameterBuilder[] CopyGenericArguments(MethodInfo methodToCopyGenericsFrom, TypeBuilder builder, Dictionary<String, GenericTypeParameterBuilder> name2GenericType)
