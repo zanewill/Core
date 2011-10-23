@@ -77,7 +77,8 @@ namespace Castle.DynamicProxy.Generators
 				constructor = TypeBuilder.GetConstructor(invocationType, constructor);
 
 				// Not in the cache: generic method
-				proxiedMethodTokenExpression = new MethodTokenExpression(MethodToOverride.MakeGenericMethod(genericArguments));
+				var methodForToken = @class.AdjustMethod(MethodToOverride);
+				proxiedMethodTokenExpression = new MethodTokenExpression(methodForToken.MakeGenericMethod(genericArguments));
 			}
 			else
 			{
