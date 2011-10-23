@@ -42,7 +42,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 			var typeArguments = typeToCopyGenericsFrom.GetGenericArguments();
 			var methodArguments = methodToCopyGenericsFrom.GetGenericArguments();
-			return CopyGenericArguments(name2GenericType, builder.DefineGenericParameters, typeArguments.Concat(methodArguments).ToArray(), typeToCopyGenericsFrom);
+			return CopyGenericArguments(name2GenericType, builder.DefineGenericParameters, typeArguments.Concat(methodArguments).ToArray(), methodToCopyGenericsFrom.DeclaringType);
 		}
 
 		public static GenericTypeParameterBuilder[] CopyGenericArguments(MethodInfo methodToCopyGenericsFrom, TypeBuilder builder, Dictionary<String, GenericTypeParameterBuilder> name2GenericType)
