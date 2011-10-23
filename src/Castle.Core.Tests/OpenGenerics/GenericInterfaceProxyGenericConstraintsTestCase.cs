@@ -14,6 +14,8 @@
 
 namespace CastleTests.OpenGenerics
 {
+	using System;
+
 	using Castle.DynamicProxy.Tests.Interceptors;
 
 	using CastleTests.GenInterfaces;
@@ -43,7 +45,14 @@ namespace CastleTests.OpenGenerics
 		}
 
 		[Test]
-		public void Method_argument_is_constrained_to_type_and_value_type_argument()
+		public void Method_argument_one_is_constrained_to_type_secod_argument_and_being_value_type()
+		{
+			var one = ProxyFor<IConstraint_Method1IsTypeStructAndMethod2<object>>();
+			one.Method<DayOfWeek, Enum>();
+		}
+		
+		[Test]
+		public void Method_argument_is_constrained_to_type_and_being_value_type()
 		{
 			var one = ProxyFor<IConstraint_MethodIsTypeAndStruct<object>>();
 			one.Method<int>();

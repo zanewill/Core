@@ -128,31 +128,5 @@ namespace Castle.Core.Internal
 			return Array.Exists(items, predicate) == false;
 #endif
 		}
-
-		/// <summary>
-		/// Splits collection based on <paramref name="collection"/>. Returns a <see cref="Tuple{T1, T2}"/> where Item1 contains elements matched by the predicate and Item2 contains remaining elements.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="collection"></param>
-		/// <param name="condition"></param>
-		/// <returns></returns>
-		public static Tuple<T[], T[]> Split<T>(this IEnumerable<T> collection, Predicate<T> condition)
-		{
-			var matching = new List<T>();
-			var nonMatching = new List<T>();
-
-			foreach (var item in collection)
-			{
-				if (condition(item))
-				{
-					matching.Add(item);
-				}
-				else
-				{
-					nonMatching.Add(item);
-				}
-			}
-			return Tuple.Create(matching.ToArray(), nonMatching.ToArray());
-		}
 	}
 }
