@@ -23,6 +23,16 @@ namespace CastleTests.OpenGenerics
 	public class InterfaceProxyWithoutTargetWithInvocationTestCase : BasePEVerifyTestCase
 	{
 		[Test]
+		public void Generic_method_arg_on_type_and_method_has_same_name()
+		{
+			var one = ProxyFor<ISimpleGenericSameName<object>>();
+
+			one.AssertIsOpenGenericType();
+
+			one.Method<int>();
+		}
+
+		[Test]
 		public void Plain_method()
 		{
 			var one = ProxyFor<ISimple<object>>();
