@@ -36,7 +36,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		public static GenericTypeParameterBuilder[] CopyGenericArguments(Type typeToCopyGenericsFrom, MethodInfo methodToCopyGenericsFrom, TypeBuilder builder,
 		                                                                 Dictionary<String, GenericTypeParameterBuilder> name2GenericType)
 		{
-			if(methodToCopyGenericsFrom == null)
+			if (methodToCopyGenericsFrom == null)
 			{
 				return CopyGenericArguments(typeToCopyGenericsFrom, builder, name2GenericType);
 			}
@@ -203,30 +203,21 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		private static void CopyGenericConstraintsAndAttributes(Type[] originalGenericArguments, GenericTypeParameterBuilder[] newGenericParameters, Type declaringType,
 		                                                        GenericTypeParameterBuilder newGenericParameter, Type originalGenericArgument)
 		{
-			try
+			SetGenericParameterAttributes(newGenericParameter, originalGenericArgument);
+			var types = AdjustGenericConstraints(declaringType, newGenericParameters, originalGenericArguments, originalGenericArgument.GetGenericParameterConstraints());
+			var interfacesConstraints = types.FindAll(type => type.IsInterface);
+			var baseClassConstraint = types.Find(type => type.IsClass);
+
+			if (interfacesConstraints.Length != 0)
 			{
-				SetGenericParameterAttributes(newGenericParameter, originalGenericArgument);
-				var types = AdjustGenericConstraints(declaringType, newGenericParameters, originalGenericArguments, originalGenericArgument.GetGenericParameterConstraints());
-				var interfacesConstraints = types.FindAll(type => type.IsInterface);
-				var baseClassConstraint = types.Find(type => type.IsClass);
-
-				if (interfacesConstraints.Length != 0)
-				{
-					newGenericParameter.SetInterfaceConstraints(interfacesConstraints);
-				}
-
-				if (baseClassConstraint != null)
-				{
-					newGenericParameter.SetBaseTypeConstraint(baseClassConstraint);
-				}
-				CopyNonInheritableAttributes(newGenericParameter, originalGenericArgument);
+				newGenericParameter.SetInterfaceConstraints(interfacesConstraints);
 			}
-			catch (NotSupportedException)
+
+			if (baseClassConstraint != null)
 			{
-				// Doesnt matter
-
-				newGenericParameter.SetGenericParameterAttributes(GenericParameterAttributes.None);
+				newGenericParameter.SetBaseTypeConstraint(baseClassConstraint);
 			}
+			CopyNonInheritableAttributes(newGenericParameter, originalGenericArgument);
 		}
 
 		private static void CopyNonInheritableAttributes(GenericTypeParameterBuilder newGenericParameter, Type originalGenericArgument)

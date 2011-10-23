@@ -326,6 +326,8 @@
     <Compile Include="GenInterfaces\GenInterfaceWithGenMethodsAndGenReturn.cs" />
     <Compile Include="GenInterfaces\IConstraint_Method1IsTypeStructAndMethod2.cs" />
     <Compile Include="GenInterfaces\IHaveGenericMethodWithNewClassStructConstraints.cs" />
+    <Compile Include="GenInterfaces\IConstraint_MethodIsType.cs" />
+    <Compile Include="GenInterfaces\IConstraint_MethodIsType_TypeIsClass.cs" />
     <Compile Include="GenInterfaces\IEmpty.cs" />
     <Compile Include="GenInterfaces\IEmptyClass.cs" />
     <Compile Include="GenInterfaces\IEmptyNew.cs" />
@@ -357,6 +359,7 @@
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
+    <Compile Include="OpenGenerics\GenericInterfaceProxyGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetWithInvocationTestCase.cs" />
