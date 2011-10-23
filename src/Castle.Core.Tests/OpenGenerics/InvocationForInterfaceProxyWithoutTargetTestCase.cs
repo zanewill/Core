@@ -21,49 +21,67 @@ namespace CastleTests.OpenGenerics
 
 	using NUnit.Framework;
 
-	public class InvocationForInterfaceProxyWithoutTargetTestCase : BasePEVerifyTestCase
+	public class InvocationForInterfaceProxyWithoutTargetSimpleMethodTestCase : BasePEVerifyTestCase
 	{
-		private KeepDataInterceptor interceptor;
+		private IInvocation invocation;
 
 		[Test]
-		public void Plain_method()
+		public void Concrete_method_invocation_target_is_null()
 		{
-			var one = ProxyFor<ISimple<object>>();
-			one.Method();
-
-			var invocation = GetLastInvocation();
-			Assert.IsEmpty(invocation.Arguments);
-			Assert.IsEmpty(invocation.GenericArguments);
-			invocation.GetConcreteMethod().MustBe<ISimple<object>>(g => g.Method());
+			Assert.IsNull(invocation.GetConcreteMethodInvocationTarget());
 		}
 
 		[Test]
-		public void Generic_method()
+		public void Concrete_method_is_on_closed_Type()
 		{
-			var one = ProxyFor<ISimpleGeneric<object>>();
-
-			one.Method<int>();
-
-			var invocation = GetLastInvocation();
-			Assert.IsEmpty(invocation.Arguments);
-			CollectionAssert.AreEqual(invocation.GenericArguments, new[] { typeof(int) });
 			invocation.GetConcreteMethod().MustBe<ISimpleGeneric<object>>(g => g.Method<int>());
+		}
 
+		[Test]
+		public void GenericArguments_has_arguments_of_the_method()
+		{
+			CollectionAssert.AreEqual(new[] { typeof(int) }, invocation.GenericArguments);
+		}
+
+		[Test]
+		public void Has_no_arguments()
+		{
+			Assert.IsEmpty(invocation.Arguments);
+		}
+
+		[Test]
+		public void Invocation_target_is_null()
+		{
+			Assert.IsNull(invocation.InvocationTarget);
+		}
+
+		[Test]
+		public void MethodInvocationTarget_is_null()
+		{
+			Assert.IsNull(invocation.MethodInvocationTarget);
+		}
+
+		[Test(Description = "Not too sure if perhaps that should be the open version of the method?")]
+		public void Method_is_open_generic()
+		{
+			invocation.Method.MustBe<ISimpleGeneric<object>>(g => g.Method<int>());
+		}
+
+		[Test]
+		public void TargetType_is_closed()
+		{
+			Assert.IsNull(invocation.TargetType);
 		}
 
 		protected override void AfterInit()
 		{
-			interceptor = new KeepDataInterceptor();
-		}
+			var interceptor = new KeepDataInterceptor();
 
-		private IInvocation GetLastInvocation()
-		{
-			return interceptor.Invocation;
-		}
+			var one = generator.CreateInterfaceProxyWithoutTarget<ISimpleGeneric<object>>(interceptor);
 
-		private T ProxyFor<T>() where T : class
-		{
-			return generator.CreateInterfaceProxyWithoutTarget<T>(interceptor);
+			one.Method<int>();
+
+			invocation = interceptor.Invocation;
 		}
 	}
 }
