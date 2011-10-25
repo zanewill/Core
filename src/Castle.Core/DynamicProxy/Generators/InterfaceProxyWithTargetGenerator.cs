@@ -259,6 +259,11 @@ namespace Castle.DynamicProxy.Generators
 		private void CreateFields(ClassEmitter emitter, Type proxyTargetType)
 		{
 			base.CreateFields(emitter);
+			CreateTargetField(emitter, proxyTargetType);
+		}
+
+		protected virtual void CreateTargetField(ClassEmitter emitter, Type proxyTargetType)
+		{
 			targetField = emitter.CreateField("__target", proxyTargetType);
 #if !SILVERLIGHT
 			emitter.DefineCustomAttributeFor<XmlIgnoreAttribute>(targetField);

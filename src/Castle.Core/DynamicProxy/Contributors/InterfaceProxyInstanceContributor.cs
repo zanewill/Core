@@ -25,7 +25,14 @@ namespace Castle.DynamicProxy.Contributors
 	{
 		protected override Expression GetTargetReferenceExpression(ClassEmitter emitter)
 		{
-			return emitter.GetField("__target").ToExpression();
+			var target = emitter.GetField("__target");
+			if (target == null)
+			{
+				// no target field... that's proxy w/o target
+				// NOTE: this class should not know that... refactor this
+				return NullExpression.Instance;
+			}
+			return target.ToExpression();
 		}
 
 		public InterfaceProxyInstanceContributor(Type targetType, string proxyGeneratorId, Type[] interfaces)
@@ -38,13 +45,15 @@ namespace Castle.DynamicProxy.Contributors
 		                                               ArgumentReference streamingContext, ClassEmitter emitter)
 		{
 			var targetField = emitter.GetField("__target");
-
-			codebuilder.AddStatement(new ExpressionStatement(
-			                         	new MethodInvocationExpression(serializationInfo, SerializationInfoMethods.AddValue_Object,
-			                         	                               new ConstReference("__targetFieldType").ToExpression(),
-			                         	                               new ConstReference(
-			                         	                               	targetField.Reference.FieldType.AssemblyQualifiedName).
-			                         	                               	ToExpression())));
+			if (targetField != null)
+			{
+				codebuilder.AddStatement(new ExpressionStatement(
+				                         	new MethodInvocationExpression(serializationInfo, SerializationInfoMethods.AddValue_Object,
+				                         	                               new ConstReference("__targetFieldType").ToExpression(),
+				                         	                               new ConstReference(
+				                         	                               	targetField.Reference.FieldType.AssemblyQualifiedName).
+				                         	                               	ToExpression())));
+			}
 
 			codebuilder.AddStatement(new ExpressionStatement(
 			                         	new MethodInvocationExpression(serializationInfo, SerializationInfoMethods.AddValue_Object,

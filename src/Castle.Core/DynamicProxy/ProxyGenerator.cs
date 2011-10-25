@@ -18,15 +18,15 @@ namespace Castle.DynamicProxy
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Reflection;
-#if !SILVERLIGHT
 	using System.Runtime.InteropServices;
 	using System.Runtime.Remoting;
 	using System.Security;
+#if !SILVERLIGHT
 	using System.Security.Permissions;
-	using Castle.Core.Internal;
 #endif
 	using System.Text;
 
+	using Castle.Core.Internal;
 	using Castle.Core.Logging;
 
 	/// <summary>
@@ -346,11 +346,21 @@ namespace Castle.DynamicProxy
 			return Activator.CreateInstance(generatedType, arguments.ToArray());
 		}
 
-		protected List<object> GetConstructorArguments(object target, IInterceptor[] interceptors,
-		                                               ProxyGenerationOptions options)
+		protected List<object> GetConstructorArguments(object target, IInterceptor[] interceptors, ProxyGenerationOptions options)
 		{
 			// create constructor arguments (initialized with mixin implementations, interceptors and target type constructor arguments)
 			var arguments = new List<object>(options.MixinData.Mixins) { interceptors, target };
+			if (options.Selector != null)
+			{
+				arguments.Add(options.Selector);
+			}
+			return arguments;
+		}
+
+		protected List<object> GetConstructorArguments(IInterceptor[] interceptors, ProxyGenerationOptions options)
+		{
+			// create constructor arguments (initialized with mixin implementations, interceptors and target type constructor arguments)
+			var arguments = new List<object>(options.MixinData.Mixins) { interceptors };
 			if (options.Selector != null)
 			{
 				arguments.Add(options.Selector);
@@ -879,7 +889,7 @@ namespace Castle.DynamicProxy
 			CheckNotGenericTypeDefinitions(additionalInterfacesToProxy, "additionalInterfacesToProxy");
 
 			var generatedType = CreateInterfaceProxyTypeWithoutTarget(interfaceToProxy, additionalInterfacesToProxy, options);
-			var arguments = GetConstructorArguments(null, interceptors, options);
+			var arguments = GetConstructorArguments(interceptors, options);
 			return Activator.CreateInstance(generatedType, arguments.ToArray());
 		}
 
@@ -1488,7 +1498,7 @@ namespace Castle.DynamicProxy
 					}
 				}
 
-				throw new InvalidProxyConstructorArgumentsException(message.ToString(),proxyType,classToProxy);
+				throw new InvalidProxyConstructorArgumentsException(message.ToString(), proxyType, classToProxy);
 			}
 		}
 

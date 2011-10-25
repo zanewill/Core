@@ -268,12 +268,11 @@ namespace Castle.DynamicProxy.Generators
 
 		protected void GenerateConstructors(ClassEmitter emitter, Type baseType, params FieldReference[] fields)
 		{
-			var constructors =
-				baseType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			var constructors = baseType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
 			foreach (var constructor in constructors)
 			{
-				if (!IsConstructorVisible(constructor))
+				if (IsConstructorVisible(constructor) == false)
 				{
 					continue;
 				}

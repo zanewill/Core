@@ -102,7 +102,7 @@ namespace Castle.DynamicProxy.Generators
 				}
 			}
 
-			var ctorArguments = new List<FieldReference>(mixinFieldsList) { interceptorsField, targetField };
+			var ctorArguments = new List<FieldReference>(mixinFieldsList) { interceptorsField };
 			var selector = emitter.GetField("__selector");
 			if (selector != null)
 			{
@@ -119,6 +119,11 @@ namespace Castle.DynamicProxy.Generators
 
 			InitializeStaticFields(generatedType);
 			return generatedType;
+		}
+
+		protected override void CreateTargetField(ClassEmitter emitter, Type proxyTargetType)
+		{
+			// we don't
 		}
 
 		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
