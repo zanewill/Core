@@ -26,6 +26,7 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
 	public class MethodWithInvocationGenerator : MethodGenerator
@@ -62,7 +63,6 @@ namespace Castle.DynamicProxy.Generators
 		{
 			var invocationType = invocation;
 
-			
 			var genericArguments = Type.EmptyTypes;
 
 			var constructor = invocation.GetConstructors()[0];
@@ -76,9 +76,25 @@ namespace Castle.DynamicProxy.Generators
 				invocationType = invocationType.MakeGenericType(invocationTypeGenericArguments);
 				constructor = TypeBuilder.GetConstructor(invocationType, constructor);
 
-				// Not in the cache: generic method
-				var methodForToken = @class.AdjustMethod(MethodToOverride);
-				proxiedMethodTokenExpression = new MethodTokenExpression(methodForToken.MakeGenericMethod(genericArguments));
+				if (MethodToOverride.DeclaringType.IsGenericType && @class.GenericTypeParams != null)
+				{
+					//var methodForToken = @class.AdjustMethod(MethodToOverride);
+					var proxiedMethodToken = @class.CreateStaticField(namingScope.GetUniqueName("token_" + MethodToOverride.Name), typeof(MethodInfo));
+					@class.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodInvocationExpression(
+					                                                                                         	null,
+					                                                                                         	GenericsHelper.GetAdjustedOpenMethodToken,
+					                                                                                         	new TypeTokenExpression(@class.AdjustMethod(MethodToOverride).DeclaringType),
+					                                                                                         	new ConstReference(MethodToOverride.MetadataToken).ToExpression())));
+					proxiedMethodTokenExpression = proxiedMethodToken.ToExpression();
+				}
+				else
+				{
+					var methodForToken = @class.AdjustMethod(MethodToOverride);
+					var proxiedMethodToken = @class.CreateStaticField(namingScope.GetUniqueName("token_" + MethodToOverride.Name), typeof(MethodInfo));
+					@class.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodTokenExpression(methodForToken)));
+					@class.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodInvocationExpression(proxiedMethodToken, MethodInfoMethods.GetGenericMethodDefinition) { VirtualCall = true }));
+					proxiedMethodTokenExpression = proxiedMethodToken.ToExpression();
+				}
 			}
 			else
 			{

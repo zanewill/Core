@@ -388,6 +388,7 @@
     <Compile Include="DynamicProxy\Contributors\OptionallyForwardingMethodGenerator.cs" />
     <Compile Include="DynamicProxy\Contributors\WrappedClassMembersCollector.cs" />
     <Compile Include="DynamicProxy\Generators\AttributeDisassembler.cs" />
+    <Compile Include="DynamicProxy\Internal\GenericsHelper.cs" />
     <Compile Include="DynamicProxy\InvalidProxyConstructorArgumentsException.cs" />
     <Compile Include="DynamicProxy\ProxyUtil.cs" />
     <Compile Include="DynamicProxy\Serialization\CacheMappingsAttribute.cs" />
@@ -553,6 +554,7 @@
     <Compile Include="DynamicProxy\Tokens\FormatterServicesMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\InvocationMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\MethodBaseMethods.cs" />
+    <Compile Include="DynamicProxy\Tokens\MethodInfoMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\SerializationInfoMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\TypeBuilderMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\TypeMethods.cs" />

@@ -61,10 +61,10 @@ namespace CastleTests.OpenGenerics
 			Assert.IsNull(invocation.MethodInvocationTarget);
 		}
 
-		[Test(Description = "Not too sure if perhaps that should be the open version of the method?")]
+		[Test]
 		public void Method_is_open_generic()
 		{
-			invocation.Method.MustBe<ISimpleGeneric<object>>(g => g.Method<int>());
+			invocation.Method.MustBeOpen<ISimpleGeneric<object>>(g => g.Method<int>());
 		}
 
 		[Test]
