@@ -32,11 +32,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
 		private readonly List<EventEmitter> events = new List<EventEmitter>();
 		private readonly Dictionary<String, FieldReference> fields = new Dictionary<String, FieldReference>();
-		private GenericTypeParameterBuilder[] genericTypeParams;
 		private readonly List<MethodEmitter> methods = new List<MethodEmitter>();
 		private readonly List<NestedClassEmitter> nested = new List<NestedClassEmitter>();
 		private readonly List<PropertyEmitter> properties = new List<PropertyEmitter>();
 		private readonly TypeBuilder typeBuilder;
+		private GenericTypeParameterBuilder[] genericTypeParams;
 
 		protected AbstractTypeEmitter(TypeBuilder typeBuilder)
 		{
@@ -65,6 +65,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		public GenericTypeParameterBuilder[] GenericTypeParams
 		{
 			get { return genericTypeParams; }
+		}
+
+		public bool IsGenericType
+		{
+			get { return genericTypeParams != null; }
 		}
 
 		public ICollection<NestedClassEmitter> Nested
@@ -327,11 +332,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return types.ToArray();
 		}
 
-		protected void SetGenericTypeParameters(GenericTypeParameterBuilder[] genericTypeParameterBuilders)
-		{
-			genericTypeParams = genericTypeParameterBuilders;
-		}
-
 		protected Type CreateType(TypeBuilder type)
 		{
 			try
@@ -393,6 +393,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				builder.EnsureValidCodeBlock();
 				builder.Generate();
 			}
+		}
+
+		protected void SetGenericTypeParameters(GenericTypeParameterBuilder[] genericTypeParameterBuilders)
+		{
+			genericTypeParams = genericTypeParameterBuilders;
 		}
 	}
 }
