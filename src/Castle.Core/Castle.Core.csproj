@@ -374,6 +374,7 @@
     <Compile Include="DynamicProxy\AbstractInvocation.cs" />
     <Compile Include="DynamicProxy\AllMethodsHook.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DynamicProxy\Generators\Emitters\GenericMap.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\TryStatement.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\FinallyStatement.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\EndExceptionBlockStatement.cs" />

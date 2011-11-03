@@ -20,6 +20,7 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.Interceptors;
 
 	using CastleTests;
+	using CastleTests.OpenGenerics;
 
 	using NUnit.Framework;
 
@@ -221,16 +222,14 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void MethodInfoClosedInGenTypeGenMethodRefType()
 		{
-			KeepDataInterceptor interceptor = new KeepDataInterceptor();
-			GenClassWithGenMethods<List<object>> proxy = generator.CreateClassProxy<GenClassWithGenMethods<List<object>>>(interceptor);
+			var interceptor = new KeepDataInterceptor();
+			var proxy = generator.CreateClassProxy<GenClassWithGenMethods<List<object>>>(interceptor);
 
 			proxy.DoSomething(1);
-			GenericTestUtility.CheckMethodInfoIsClosed(interceptor.Invocation.GetConcreteMethod(), typeof (List<object>),
-			                                           typeof (int));
+			interceptor.Invocation.GetConcreteMethod().MustBe<GenClassWithGenMethods<List<object>>>(c => c.DoSomething(default(int)));
 
 			proxy.DoSomething(new List<object>());
-			GenericTestUtility.CheckMethodInfoIsClosed(interceptor.Invocation.GetConcreteMethod(), typeof (List<object>),
-			                                           typeof (List<object>));
+			interceptor.Invocation.GetConcreteMethod().MustBe<GenClassWithGenMethods<List<object>>>(c => c.DoSomething(default(List<object>)));
 		}
 
 		[Test]

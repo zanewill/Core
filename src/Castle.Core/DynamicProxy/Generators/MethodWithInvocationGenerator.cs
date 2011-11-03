@@ -75,9 +75,9 @@ namespace Castle.DynamicProxy.Generators
 				invocationType = invocationType.MakeGenericType(invocationTypeGenericArguments);
 				constructor = TypeBuilder.GetConstructor(invocationType, constructor);
 
-				if (proxy.IsGenericType)
+				if (proxy.IsGenericType && emitter.HasConstraintOnTypeParameter)
 				{
-					// NOTE: going through GenericsHelper.GetAdjustedOpenMethod seems to be only necessary when the method has generic constraint over a generic parameter of the type
+					// NOTE: This works around VerificationException that's thrown if we try to load directly via ldtoken a method with some generic arguments that have constraints on type arguments
 					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodInvocationExpression(
 					                                                                                         	null,
 					                                                                                         	GenericsHelper.GetAdjustedOpenMethodToken,
@@ -88,8 +88,9 @@ namespace Castle.DynamicProxy.Generators
 				{
 					var methodForToken = proxy.AdjustMethod(MethodToOverride);
 					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodTokenExpression(methodForToken)));
-					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken,
-					                                                                     new MethodInvocationExpression(proxiedMethodToken, MethodInfoMethods.GetGenericMethodDefinition) { VirtualCall = true }));
+					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(
+					                                                	proxiedMethodToken,
+					                                                	new MethodInvocationExpression(proxiedMethodToken, MethodInfoMethods.GetGenericMethodDefinition) { VirtualCall = true }));
 				}
 			}
 			else

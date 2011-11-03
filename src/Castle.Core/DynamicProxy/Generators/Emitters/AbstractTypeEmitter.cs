@@ -27,7 +27,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 	public abstract class AbstractTypeEmitter
 	{
 		private const MethodAttributes defaultAttributes = MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public;
-		protected readonly Dictionary<String, GenericTypeParameterBuilder> name2GenericType = new Dictionary<String, GenericTypeParameterBuilder>();
+		protected readonly GenericMap name2GenericType = new GenericMap();
 
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
 		private readonly List<EventEmitter> events = new List<EventEmitter>();
@@ -300,7 +300,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		public Type GetGenericArgument(String genericArgumentName)
 		{
-			return name2GenericType[genericArgumentName];
+			return name2GenericType.GetBuilder(genericArgumentName);
 		}
 
 		public Type[] GetGenericArgumentsFor(Type genericType)
@@ -310,7 +310,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			{
 				if (genType.IsGenericParameter)
 				{
-					types.Add(name2GenericType[genType.Name]);
+					types.Add(name2GenericType.GetBuilder(genType.Name));
 				}
 				else
 				{
@@ -326,7 +326,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			var types = new List<Type>();
 			foreach (var genType in genericMethod.GetGenericArguments())
 			{
-				types.Add(name2GenericType[genType.Name]);
+				types.Add(name2GenericType.GetBuilder(genType.Name));
 			}
 
 			return types.ToArray();
