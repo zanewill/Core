@@ -359,6 +359,7 @@ limitations under the License.
       <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="PrivateStaticReadonly" />
       <Abbreviation Text="NH" />
       <Abbreviation Text="CLR" />
+      <Abbreviation Text="PE" />
     </Naming2>
   </CodeStyleSettings>
   <SharedSolutionTemplateManager>
