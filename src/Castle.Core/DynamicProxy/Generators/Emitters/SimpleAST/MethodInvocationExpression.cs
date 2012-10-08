@@ -22,10 +22,18 @@ namespace Castle.DynamicProxy.Generators.Emitters.SimpleAST
 		protected readonly Expression[] args;
 		protected readonly MethodInfo method;
 		protected readonly Reference owner;
+		private Expression ownerExpression;
 
 		public MethodInvocationExpression(MethodInfo method, params Expression[] args) :
 			this(SelfReference.Self, method, args)
 		{
+		}
+
+		public MethodInvocationExpression(Expression owner, MethodInfo method, params Expression[] args)
+		{
+			ownerExpression = owner;
+			this.method = method;
+			this.args = args;
 		}
 
 		public MethodInvocationExpression(MethodEmitter method, params Expression[] args) :
@@ -49,7 +57,14 @@ namespace Castle.DynamicProxy.Generators.Emitters.SimpleAST
 
 		public override void Emit(IMemberEmitter member, ILGenerator gen)
 		{
-			ArgumentsUtil.EmitLoadOwnerAndReference(owner, gen);
+			if (ownerExpression != null)
+			{
+				ownerExpression.Emit(member, gen);
+			}
+			else
+			{
+				ArgumentsUtil.EmitLoadOwnerAndReference(owner, gen);
+			}
 
 			foreach (var exp in args)
 			{

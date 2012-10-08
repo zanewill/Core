@@ -75,7 +75,7 @@ namespace Castle.DynamicProxy.Contributors
 		                                    Type closedDelegateType, MethodInfo closedMethodOnTarget)
 		{
 			var delegateCreateDelegate = new MethodInvocationExpression(
-				null,
+				(Expression) null,
 				DelegateMethods.CreateDelegate,
 				new TypeTokenExpression(closedDelegateType),
 				localTarget,

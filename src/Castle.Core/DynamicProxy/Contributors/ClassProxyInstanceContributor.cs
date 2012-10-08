@@ -104,20 +104,20 @@ namespace Castle.DynamicProxy.Contributors
 			var data = codebuilder.DeclareLocal(typeof(object[]));
 
 			var getSerializableMembers = new MethodInvocationExpression(
-				null,
+				(Expression)null,
 				FormatterServicesMethods.GetSerializableMembers,
 				new TypeTokenExpression(targetType));
 			codebuilder.AddStatement(new AssignStatement(members, getSerializableMembers));
 
 			// Sort to keep order on both serialize and deserialize side the same, c.f DYNPROXY-ISSUE-127
 			var callSort = new MethodInvocationExpression(
-				null,
+				(Expression) null,
 				TypeUtilMethods.Sort,
 				members.ToExpression());
 			codebuilder.AddStatement(new AssignStatement(members, callSort));
 
 			var getObjectData = new MethodInvocationExpression(
-				null,
+				(Expression) null,
 				FormatterServicesMethods.GetObjectData,
 				SelfReference.Self.ToExpression(),
 				members.ToExpression());

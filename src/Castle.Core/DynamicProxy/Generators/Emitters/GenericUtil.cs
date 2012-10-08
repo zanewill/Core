@@ -159,7 +159,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 					var index = Array.IndexOf(constraint.DeclaringType.GetGenericArguments(), constraint);
 					Trace.Assert(index != -1, "The generic parameter comes from the given type.");
-					map.HasConstraintOnTypeParameter = true;
 					var declaringTypeGenericArguments = declaringType.GetGenericArguments();
 					return declaringTypeGenericArguments[index]; // these are the actual, concrete types
 				}

@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,11 +75,11 @@ namespace Castle.DynamicProxy.Generators
 				invocationType = invocationType.MakeGenericType(invocationTypeGenericArguments);
 				constructor = TypeBuilder.GetConstructor(invocationType, constructor);
 
-				if (proxy.IsGenericType && emitter.HasConstraintOnTypeParameter)
+				if (proxy.IsGenericType)
 				{
 					// NOTE: This works around VerificationException that's thrown if we try to load directly via ldtoken a method with some generic arguments that have constraints on type arguments
 					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodInvocationExpression(
-					                                                                                         	null,
+					                                                                                         	(Expression) null,
 					                                                                                         	GenericsHelper.GetAdjustedOpenMethodToken,
 					                                                                                         	new TypeTokenExpression(proxy.AdjustMethod(MethodToOverride).DeclaringType),
 					                                                                                         	new ConstReference(MethodToOverride.MetadataToken).ToExpression())));
@@ -87,10 +87,10 @@ namespace Castle.DynamicProxy.Generators
 				else
 				{
 					var methodForToken = proxy.AdjustMethod(MethodToOverride);
-					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodTokenExpression(methodForToken)));
 					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(
-					                                                	proxiedMethodToken,
-					                                                	new MethodInvocationExpression(proxiedMethodToken, MethodInfoMethods.GetGenericMethodDefinition) { VirtualCall = true }));
+						                                                proxiedMethodToken,
+						                                                new MethodTokenExpression(
+							                                                methodForToken.GetGenericMethodDefinition())));
 				}
 			}
 			else

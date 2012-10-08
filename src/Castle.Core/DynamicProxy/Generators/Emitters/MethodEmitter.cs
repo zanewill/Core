@@ -63,7 +63,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			var baseMethodParameters = methodToUseAsATemplate.GetParameters();
 			var parameters = GenericUtil.ExtractParametersTypes(baseMethodParameters, name2GenericType);
 			genericTypeParams = GenericUtil.CopyGenericArguments(methodToUseAsATemplate, builder, name2GenericType);
-			HasConstraintOnTypeParameter = name2GenericType.HasConstraintOnTypeParameter;
 			SetParameters(parameters);
 			SetReturnType(returnType);
 			SetSignature(returnType, methodToUseAsATemplate.ReturnParameter, parameters, baseMethodParameters);
@@ -91,8 +90,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		{
 			get { return genericTypeParams; }
 		}
-
-		public bool HasConstraintOnTypeParameter { get; set; }
 
 		public MethodBuilder MethodBuilder
 		{

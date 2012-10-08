@@ -77,7 +77,7 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var callback = proxy.CreateStaticField(namingScope.GetUniqueName("callback_" + method.Method.Name), delegateType);
 			var createDelegate = new MethodInvocationExpression(
-				null,
+				(Expression) null,
 				DelegateMethods.CreateDelegate,
 				new TypeTokenExpression(delegateType),
 				NullExpression.Instance,

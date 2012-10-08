@@ -84,7 +84,7 @@ namespace Castle.DynamicProxy.Contributors
 				new AssignStatement(
 					typeLocal,
 					new MethodInvocationExpression(
-						null,
+						(Expression) null,
 						TypeMethods.StaticGetType,
 						new ConstReference(typeof(ProxyObjectReference).AssemblyQualifiedName).ToExpression(),
 						new ConstReference(1).ToExpression(),
