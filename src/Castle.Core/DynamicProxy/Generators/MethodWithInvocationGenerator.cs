@@ -87,10 +87,9 @@ namespace Castle.DynamicProxy.Generators
 				else
 				{
 					var methodForToken = proxy.AdjustMethod(MethodToOverride);
-					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(
-						                                                proxiedMethodToken,
-						                                                new MethodTokenExpression(
-							                                                methodForToken.GetGenericMethodDefinition())));
+					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken,
+					                                                                    new MethodTokenExpression(
+						                                                                    methodForToken.GetGenericMethodDefinition())));
 				}
 			}
 			else

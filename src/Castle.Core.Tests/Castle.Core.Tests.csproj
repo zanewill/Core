@@ -286,6 +286,7 @@
     <Compile Include="DynamicProxy.Tests\Classes\NonPublicMethodsClass.cs" />
     <Compile Include="DynamicProxy.Tests\Classes\ServiceClass.cs" />
     <Compile Include="ClassWithAttributesTestCase.cs" />
+    <Compile Include="DynamicProxy.Tests\Explicit\SimpleGenericExplicit.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\TwoInterfacesExplicit.cs" />
     <Compile Include="DynamicProxy.Tests\InterceptionRetryTestCase.cs" />
     <Compile Include="DynamicProxy.Tests\InterfaceProxyWithTargetInterfaceAdditionalInterfacesTestCase.cs" />
@@ -364,6 +365,7 @@
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
+    <Compile Include="OpenGenericProxiesTestCase.cs" />
     <Compile Include="OpenGenerics\GenericInterfaceProxyGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />

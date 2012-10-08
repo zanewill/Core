@@ -20,9 +20,8 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.GenInterfaces;
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.Interfaces;
-
-	using CastleTests;
-
+	using CastleTests.DynamicProxy.Tests.Explicit;
+	using CastleTests.GenInterfaces;
 	using NUnit.Framework;
 
 #if !SILVERLIGHT
@@ -49,6 +48,18 @@ namespace Castle.DynamicProxy.Tests
 
 			Assert.AreEqual(5, result);
 			Assert.AreEqual("DoSomething ", interceptor.LogContents);
+		}
+
+		[Test]
+		public void ExplicitGenericInterface_GenericMethod()
+		{
+			var proxy = (ISimpleGeneric<int>)generator.CreateClassProxy(typeof(SimpleGenericExplicit<int>),
+			                                                           new[] {typeof (ISimpleGeneric<int>)},
+			                                                           interceptor);
+
+			proxy.Method<string>();
+
+			Assert.AreEqual("Method ", interceptor.LogContents);
 		}
 
 		[Test]
