@@ -60,7 +60,7 @@ namespace Castle.DynamicProxy.Generators
 			// make sure ProxyGenerationOptions is initialized
 			options.Initialize();
 
-			CheckNotGenericTypeDefinition(proxyTargetType, "proxyTargetType");
+			CheckTargetTypeNotGenericTypeDefinition(proxyTargetType);
 			CheckNotGenericTypeDefinitions(interfaces, "interfaces");
 			EnsureValidBaseType(options.BaseTypeForInterfaceProxy);
 
@@ -68,6 +68,11 @@ namespace Castle.DynamicProxy.Generators
 			var cacheKey = new CacheKey(proxyTargetType, targetType, interfaces, options);
 
 			return ObtainProxyType(cacheKey, (n, s) => GenerateType(n, proxyTargetType, interfaces, s));
+		}
+
+		protected virtual void CheckTargetTypeNotGenericTypeDefinition(Type proxyTargetType)
+		{
+			CheckNotGenericTypeDefinition(proxyTargetType, "proxyTargetType");
 		}
 
 		protected virtual ITypeContributor AddMappingForTargetType(IDictionary<Type, ITypeContributor> typeImplementerMapping,

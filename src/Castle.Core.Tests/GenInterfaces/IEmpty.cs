@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,15 @@ namespace CastleTests.GenInterfaces
 	{
 	}
 
+	public class Empty<T> : IEmpty<T>
+	{
+	}
+
 	public interface IEmpty<T, T2>
+	{
+	}
+
+	public class Empty<T, T2> : IEmpty<T, T2>
 	{
 	}
 }

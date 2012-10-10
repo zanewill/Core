@@ -19,4 +19,8 @@ namespace CastleTests.GenInterfaces
 	public interface IEmptyWithBaseGenericInterfaceConstraint<T> where T : GenInterface<int>
 	{
 	}
+
+	public class EmptyWithBaseGenericInterfaceConstraint<T> : IEmptyWithBaseGenericInterfaceConstraint<T> where T : GenInterface<int>
+	{
+	}
 }

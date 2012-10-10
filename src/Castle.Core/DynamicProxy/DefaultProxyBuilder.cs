@@ -93,7 +93,7 @@ namespace Castle.DynamicProxy
 			AssertValidType(interfaceToProxy);
 			AssertValidTypes(additionalInterfacesToProxy);
 
-			var generator = new InterfaceProxyWithTargetInterfaceGenerator(scope, interfaceToProxy, interfaceToProxy, additionalInterfacesToProxy, options) { Logger = logger };
+			var generator = new InterfaceProxyWithTargetInterfaceGenerator(scope, interfaceToProxy, additionalInterfacesToProxy, options) { Logger = logger };
 			return generator.GetProxyType();
 		}
 

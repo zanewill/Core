@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-
 	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
@@ -29,8 +28,11 @@ namespace Castle.DynamicProxy.Generators
 		private readonly Type[] genericArguments;
 		private readonly Type openInterface;
 
-		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface, Type[] additionalInterfacesToProxy, ProxyGenerationOptions proxyGenerationOptions)
-			: base(scope, GetTargetType(@interface, additionalInterfacesToProxy, proxyGenerationOptions), typeof(object), additionalInterfacesToProxy, proxyGenerationOptions)
+		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface, Type[] additionalInterfacesToProxy,
+		                                            ProxyGenerationOptions proxyGenerationOptions)
+			: base(
+				scope, GetTargetType(@interface, additionalInterfacesToProxy, proxyGenerationOptions), typeof (object),
+				additionalInterfacesToProxy, proxyGenerationOptions)
 		{
 			if (targetType.IsGenericTypeDefinition)
 			{
@@ -49,7 +51,7 @@ namespace Castle.DynamicProxy.Generators
 			ICollection<Type> targetInterfaces, ICollection<Type> additionalInterfaces, INamingScope namingScope)
 		{
 			var contributor = new InterfaceProxyWithoutTargetContributor(namingScope, (c, m) => NullExpression.Instance)
-			{ Logger = Logger };
+				                  {Logger = Logger};
 			foreach (var @interface in targetType.GetAllInterfaces())
 			{
 				contributor.AddInterfaceToProxy(@interface);
@@ -61,7 +63,7 @@ namespace Castle.DynamicProxy.Generators
 		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
 		{
 			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
-			if(openInterface != null)
+			if (openInterface != null)
 			{
 				emitter.CopyGenericParametersFromType(openInterface);
 			}
@@ -69,7 +71,8 @@ namespace Castle.DynamicProxy.Generators
 			return emitter;
 		}
 
-		protected override Type GenerateType(string typeName, Type proxyTargetType, Type[] interfaces, INamingScope namingScope)
+		protected override Type GenerateType(string typeName, Type proxyTargetType, Type[] interfaces,
+		                                     INamingScope namingScope)
 		{
 			ITypeContributor[] contributors;
 			var allInterfaces = GetTypeImplementerMapping(interfaces, targetType, out contributors, namingScope);
@@ -102,7 +105,7 @@ namespace Castle.DynamicProxy.Generators
 				}
 			}
 
-			var ctorArguments = new List<FieldReference>(mixinFieldsList) { interceptorsField };
+			var ctorArguments = new List<FieldReference>(mixinFieldsList) {interceptorsField};
 			var selector = emitter.GetField("__selector");
 			if (selector != null)
 			{
@@ -142,7 +145,8 @@ namespace Castle.DynamicProxy.Generators
 		private static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
 		{
 			options.Initialize();
-			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) && options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
+			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
+			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
 			{
 				return @interface.GetGenericTypeDefinition();
 			}
