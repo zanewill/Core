@@ -16,6 +16,7 @@ namespace CastleTests.OpenGenerics
 {
 	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.Interceptors;
+	using CastleTests.DynamicProxy.Tests.Explicit;
 	using CastleTests.GenInterfaces;
 	using NUnit.Framework;
 
@@ -66,6 +67,25 @@ namespace CastleTests.OpenGenerics
 			invocation.Method.MustBeOpen<ISimpleGeneric<object>>(g => g.Method<int>());
 		}
 
+		[Test]
+		public void Can_change_invocation_target()
+		{
+			var change = (IChangeProxyTarget) invocation;
+			change.ChangeInvocationTarget(new SimpleGenericExplicit<object>());
+			Assert.IsInstanceOf<SimpleGenericExplicit<object>>(invocation.InvocationTarget);
+		}
+
+#if DOTNET40
+		[Test]
+		public void Can_change_proxy_target()
+		{
+			var change = (IChangeProxyTarget)invocation;
+			change.ChangeProxyTarget(new SimpleGenericExplicit<object>());
+			dynamic proxy = invocation.Proxy;
+			Assert.IsInstanceOf<SimpleGenericExplicit<object>>(proxy.__target);
+
+		}
+#endif
 		[Test]
 		public void TargetType_is_closed()
 		{
