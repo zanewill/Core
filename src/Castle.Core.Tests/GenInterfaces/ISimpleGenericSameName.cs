@@ -21,5 +21,13 @@ namespace CastleTests.GenInterfaces
 	{
 		void Method<T>();
 	}
+
+	public class SimpleGenericSameName<T> : ISimpleGenericSameName<T>
+	{
+		public void Method<T>()
+		{
+			
+		}
+	}
 #pragma warning restore
 }
