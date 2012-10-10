@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,5 +17,12 @@ namespace CastleTests.GenInterfaces
 	public interface ISimpleGeneric<T>
 	{
 		void Method<T2>();
+	}
+
+	public class SimpleGeneric<T> : ISimpleGeneric<T>
+	{
+		public void Method<T2>()
+		{
+		}
 	}
 }

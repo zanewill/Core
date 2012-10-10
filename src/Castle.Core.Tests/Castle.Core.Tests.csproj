@@ -371,6 +371,7 @@
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetInterfaceEmptyInterfaceTestCase.cs" />
+    <Compile Include="OpenGenerics\InterfaceProxyWithTargetInterfaceNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithoutTargetTestCase.cs" />
     <Compile Include="OpenGenerics\OpenGenericAssertionExtensions.cs" />
     <Compile Include="Scratchpad.cs" />

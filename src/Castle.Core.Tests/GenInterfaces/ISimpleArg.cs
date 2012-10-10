@@ -18,4 +18,12 @@ namespace CastleTests.GenInterfaces
 	{
 		void Method(T arg);
 	}
+
+	public class SimpleArg<T> : ISimpleArg<T>
+	{
+		public void Method(T arg)
+		{
+			
+		}
+	}
 }
