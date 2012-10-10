@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,5 +17,13 @@ namespace CastleTests.GenInterfaces
 	public interface IConstraint_MethodIsTypeAndStruct_TypeIsClass<TType> where TType : class
 	{
 		void Method<TMethod>() where TMethod : struct, TType;
+	}
+
+	public class Constraint_MethodIsTypeAndStruct_TypeIsClass<TType> : IConstraint_MethodIsTypeAndStruct_TypeIsClass<TType>
+		where TType : class
+	{
+		public void Method<TMethod>() where TMethod : struct, TType
+		{
+		}
 	}
 }
