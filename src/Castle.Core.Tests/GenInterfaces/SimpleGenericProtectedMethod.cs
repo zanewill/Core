@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,15 @@
 
 namespace CastleTests.GenInterfaces
 {
-
-#pragma warning disable 0693 // Type parameter 'type parameter' has the same name as the type parameter from outer type 'type'
-
-	public interface ISimpleGenericSameName<T>
+	public class SimpleGenericProtectedMethod<T>
 	{
-		void Method<T>();
-	}
-
-	public class SimpleGenericSameName<T> : ISimpleGenericSameName<T>
-	{
-		public virtual void Method<T>()
+		public void Method()
 		{
-			
+			ProtectedMethod();
+		}
+
+		protected virtual void ProtectedMethod()
+		{
 		}
 	}
-#pragma warning restore
 }

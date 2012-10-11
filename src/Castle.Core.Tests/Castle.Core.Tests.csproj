@@ -348,6 +348,8 @@
     <Compile Include="GenInterfaces\ISimpleGenericSameName.cs" />
     <Compile Include="GenInterfaces\ISimpleReturn.cs" />
     <Compile Include="GenInterfaces\ISimpleReturnGeneric.cs" />
+    <Compile Include="GenInterfaces\SimpleGenericProtectedGenericMethod.cs" />
+    <Compile Include="GenInterfaces\SimpleGenericProtectedMethod.cs" />
     <Compile Include="Interceptors\LogInvocationInterceptor.cs" />
     <Compile Include="Interceptors\ProceedNTimesInterceptor.cs" />
     <Compile Include="Interceptors\ThrowingInterceptor.cs" />
@@ -368,6 +370,7 @@
     <Compile Include="OpenGenericProxiesTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyEmptyClassTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyNoInvocationTestCase.cs" />
+    <Compile Include="OpenGenerics\ClassProxyWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />

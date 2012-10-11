@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,18 +21,19 @@ namespace Castle.DynamicProxy.Internal
 
 	public class GenericsHelper
 	{
-		public static readonly MethodInfo GetAdjustedOpenMethodToken = typeof(GenericsHelper).GetMethods(BindingFlags.Public | BindingFlags.Static).Single();
+		public static readonly MethodInfo GetAdjustedOpenMethodToken =
+			typeof (GenericsHelper).GetMethods(BindingFlags.Public | BindingFlags.Static).Single();
 
 		/// <summary>
-		/// This method works around the bug (?) in Reflection API which causes VerificationException when we load directly token of a generic method which has some of its generic arguments
-		/// constrained over type's generic arguments.
+		///     This method works around the bug in Reflection API which causes VerificationException when we load directly token of a generic method which has some of its generic arguments
+		///     constrained over type's generic arguments.
 		/// </summary>
-		/// <param name="declaringType"></param>
-		/// <param name="metadataToken"></param>
-		/// <returns></returns>
+		/// <param name="declaringType"> </param>
+		/// <param name="metadataToken"> </param>
+		/// <returns> </returns>
 		public static MethodInfo GetAdjustedOpenMethod(Type declaringType, int metadataToken)
 		{
-			var methods = declaringType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+			var methods = declaringType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 			var method = methods.Single(m => m.MetadataToken == metadataToken);
 			Debug.Assert(method.IsGenericMethodDefinition);
 			return method;
