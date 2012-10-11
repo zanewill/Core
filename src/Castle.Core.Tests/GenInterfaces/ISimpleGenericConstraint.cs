@@ -21,7 +21,7 @@ namespace CastleTests.GenInterfaces
 
 	public class SimpleGenericConstraint<T> : ISimpleGenericConstraint<T>
 	{
-		public void Method<T2>() where T2 : T
+		public virtual void Method<T2>() where T2 : T
 		{
 		}
 	}

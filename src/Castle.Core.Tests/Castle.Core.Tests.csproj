@@ -367,6 +367,7 @@
     <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
     <Compile Include="OpenGenericProxiesTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyEmptyClassTestCase.cs" />
+    <Compile Include="OpenGenerics\ClassProxyNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />

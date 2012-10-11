@@ -21,7 +21,7 @@ namespace CastleTests.GenInterfaces
 
 	public class SimpleGeneric<T> : ISimpleGeneric<T>
 	{
-		public void Method<T2>()
+		public virtual void Method<T2>()
 		{
 		}
 	}

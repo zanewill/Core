@@ -21,7 +21,7 @@ namespace CastleTests.GenInterfaces
 
 	public class SimpleReturn<T> : ISimpleReturn<T>
 	{
-		public T Method()
+		public virtual T Method()
 		{
 			return default(T);
 		}

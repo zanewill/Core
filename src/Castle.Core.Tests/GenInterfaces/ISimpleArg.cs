@@ -21,7 +21,7 @@ namespace CastleTests.GenInterfaces
 
 	public class SimpleArg<T> : ISimpleArg<T>
 	{
-		public void Method(T arg)
+		public virtual void Method(T arg)
 		{
 			
 		}
