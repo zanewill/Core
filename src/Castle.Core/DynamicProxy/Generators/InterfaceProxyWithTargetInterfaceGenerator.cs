@@ -16,34 +16,20 @@ namespace Castle.DynamicProxy.Generators
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Reflection;
-	using Castle.Core.Internal;
+
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
-	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Serialization;
 
 	public class InterfaceProxyWithTargetInterfaceGenerator : InterfaceProxyWithTargetGenerator
 	{
-		private readonly Type[] genericArguments;
-		private readonly Type openInterface;
-
 		public InterfaceProxyWithTargetInterfaceGenerator(ModuleScope scope, Type @interface,
 		                                                  Type[] additionalInterfacesToProxy,
 		                                                  ProxyGenerationOptions proxyGenerationOptions)
-			: base(scope,
-			       GetTargetType(@interface, additionalInterfacesToProxy ?? Type.EmptyTypes, proxyGenerationOptions),
-			       GetTargetType(@interface, additionalInterfacesToProxy ?? Type.EmptyTypes, proxyGenerationOptions),
-			       additionalInterfacesToProxy,
-			       proxyGenerationOptions)
+			: base(scope, @interface, @interface, additionalInterfacesToProxy, proxyGenerationOptions)
 		{
-			if (targetType.IsGenericTypeDefinition)
-			{
-				genericArguments = @interface.GetGenericArguments();
-				openInterface = @interface.GetGenericTypeDefinition();
-			}
 		}
+
 
 		protected override bool AllowChangeTarget
 		{
@@ -55,20 +41,11 @@ namespace Castle.DynamicProxy.Generators
 			get { return ProxyTypeConstants.InterfaceWithTargetInterface; }
 		}
 
-		private static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
+		protected override void AdjustTargetTypes(ref Type proxyTargetInterface, ref Type targetFieldType)
 		{
-			options.Initialize();
-			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
-			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
-			{
-				return @interface.GetGenericTypeDefinition();
-			}
-			return @interface;
-		}
-
-		protected override void CheckTargetTypeNotGenericTypeDefinition(Type proxyTargetType)
-		{
-			// this is valid now. Carry on
+			proxyTargetInterface = GetTargetType(proxyTargetInterface, additionalInterfacesToProxy ?? Type.EmptyTypes,
+			                                     ProxyGenerationOptions);
+			targetFieldType = proxyTargetInterface;
 		}
 
 		protected override ITypeContributor AddMappingForTargetType(
@@ -78,7 +55,7 @@ namespace Castle.DynamicProxy.Generators
 			var contributor = new InterfaceProxyWithTargetInterfaceTargetContributor(
 				proxyTargetType,
 				AllowChangeTarget,
-				namingScope) {Logger = Logger};
+				namingScope) { Logger = Logger };
 			foreach (var @interface in targetType.GetAllInterfaces())
 			{
 				contributor.AddInterfaceToProxy(@interface);
@@ -86,47 +63,6 @@ namespace Castle.DynamicProxy.Generators
 			}
 
 			return contributor;
-		}
-
-		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
-		{
-			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
-			if (openInterface != null)
-			{
-				emitter.CopyGenericParametersFromType(openInterface);
-			}
-
-			return emitter;
-		}
-
-		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
-		{
-			var type = base.ObtainProxyType(cacheKey, factory);
-			Debug.Assert(type.IsGenericType == (genericArguments != null));
-			if (genericArguments != null)
-			{
-				var proxyType = type.MakeGenericType(genericArguments);
-				InitializeStaticFields(proxyType);
-				return proxyType;
-			}
-			return type;
-		}
-
-		protected override InterfaceProxyWithoutTargetContributor GetContributorForAdditionalInterfaces(
-			INamingScope namingScope)
-		{
-			return new InterfaceProxyWithOptionalTargetContributor(namingScope, GetTargetExpression, GetTarget)
-				       {Logger = Logger};
-		}
-
-		private Reference GetTarget(ClassEmitter @class, MethodInfo method)
-		{
-			return new AsTypeReference(@class.GetField("__target"), method.DeclaringType);
-		}
-
-		private Expression GetTargetExpression(ClassEmitter @class, MethodInfo method)
-		{
-			return GetTarget(@class, method).ToExpression();
 		}
 	}
 }

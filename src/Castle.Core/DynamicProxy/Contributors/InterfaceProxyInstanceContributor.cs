@@ -58,8 +58,13 @@ namespace Castle.DynamicProxy.Contributors
 			codebuilder.AddStatement(new ExpressionStatement(
 			                         	new MethodInvocationExpression(serializationInfo, SerializationInfoMethods.AddValue_Object,
 			                         	                               new ConstReference("__theInterface").ToExpression(),
-			                         	                               new ConstReference(targetType.AssemblyQualifiedName).
+			                         	                               new ConstReference(EffectiveTypeName()).
 			                         	                               	ToExpression())));
+		}
+
+		private string EffectiveTypeName()
+		{
+			return targetType.AssemblyQualifiedName ?? targetType.GetGenericTypeDefinition().AssemblyQualifiedName;
 		}
 #endif
 	}

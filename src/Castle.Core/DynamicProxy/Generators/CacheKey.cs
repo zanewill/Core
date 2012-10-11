@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,42 +18,47 @@ namespace Castle.DynamicProxy.Generators
 	using System.Reflection;
 
 	[Serializable]
-	public class CacheKey
+	public sealed class CacheKey
 	{
-		private readonly MemberInfo target;
+		private readonly bool canChangeTarget;
 		private readonly Type[] interfaces;
 		private readonly ProxyGenerationOptions options;
+		private readonly MemberInfo target;
 		private readonly Type type;
 
 		/// <summary>
-		///   Initializes a new instance of the <see cref = "CacheKey" /> class.
+		///     Initializes a new instance of the <see cref="CacheKey" /> class.
 		/// </summary>
-		/// <param name = "target">Target element. This is either target type or target method for invocation types.</param>
-		/// <param name = "type">The type of the proxy. This is base type for invocation types.</param>
-		/// <param name = "interfaces">The interfaces.</param>
-		/// <param name = "options">The options.</param>
-		public CacheKey(MemberInfo target, Type type, Type[] interfaces, ProxyGenerationOptions options)
+		/// <param name="target"> Target element. This is either target type or target method for invocation types. </param>
+		/// <param name="type"> The type of the proxy. This is base type for invocation types. </param>
+		/// <param name="interfaces"> The interfaces. </param>
+		/// <param name="options"> The options. </param>
+		/// <param name="canChangeTarget"> If <c>true</c> <see cref="IInvocation" /> s used by this proxy will support <see
+		///     cref="IChangeProxyTarget" /> . </param>
+		public CacheKey(MemberInfo target, Type type, Type[] interfaces, ProxyGenerationOptions options,
+		                bool canChangeTarget = false)
 		{
 			this.target = target;
 			this.type = type;
 			this.interfaces = interfaces ?? Type.EmptyTypes;
 			this.options = options;
+			this.canChangeTarget = canChangeTarget;
 		}
 
 		/// <summary>
-		///   Initializes a new instance of the <see cref = "CacheKey" /> class.
+		///     Initializes a new instance of the <see cref="CacheKey" /> class.
 		/// </summary>
-		/// <param name = "target">Type of the target.</param>
-		/// <param name = "interfaces">The interfaces.</param>
-		/// <param name = "options">The options.</param>
-		public CacheKey(Type target, Type[] interfaces, ProxyGenerationOptions options)
-			: this(target, null, interfaces, options)
+		/// <param name="target"> Type of the target. </param>
+		/// <param name="interfaces"> The interfaces. </param>
+		/// <param name="options"> The options. </param>
+		public CacheKey(Type target, Type[] interfaces, ProxyGenerationOptions options, bool canChangeTarget = false)
+			: this(target, null, interfaces, options, canChangeTarget)
 		{
 		}
 
 		public override int GetHashCode()
 		{
-			var result = target.GetHashCode();
+			var result = target != null ? target.GetHashCode() : 0;
 			foreach (var inter in interfaces)
 			{
 				result += 29 + inter.GetHashCode();
@@ -66,6 +71,7 @@ namespace Castle.DynamicProxy.Generators
 			{
 				result = 29*result + type.GetHashCode();
 			}
+			result = 29*result + canChangeTarget.GetHashCode();
 			return result;
 		}
 
@@ -105,7 +111,7 @@ namespace Castle.DynamicProxy.Generators
 			{
 				return false;
 			}
-			return true;
+			return canChangeTarget == cacheKey.canChangeTarget;
 		}
 	}
 }

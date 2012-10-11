@@ -16,8 +16,7 @@ namespace Castle.DynamicProxy.Generators
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	using Castle.Core.Internal;
+
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
@@ -25,20 +24,10 @@ namespace Castle.DynamicProxy.Generators
 
 	public class InterfaceProxyWithoutTargetGenerator : InterfaceProxyWithTargetGenerator
 	{
-		private readonly Type[] genericArguments;
-		private readonly Type openInterface;
-
 		public InterfaceProxyWithoutTargetGenerator(ModuleScope scope, Type @interface, Type[] additionalInterfacesToProxy,
 		                                            ProxyGenerationOptions proxyGenerationOptions)
-			: base(
-				scope, GetTargetType(@interface, additionalInterfacesToProxy, proxyGenerationOptions), typeof (object),
-				additionalInterfacesToProxy, proxyGenerationOptions)
+			: base(scope, @interface, typeof (object), additionalInterfacesToProxy, proxyGenerationOptions)
 		{
-			if (targetType.IsGenericTypeDefinition)
-			{
-				genericArguments = @interface.GetGenericArguments();
-				openInterface = @interface.GetGenericTypeDefinition();
-			}
 		}
 
 		protected override string GeneratorType
@@ -46,29 +35,31 @@ namespace Castle.DynamicProxy.Generators
 			get { return ProxyTypeConstants.InterfaceWithoutTarget; }
 		}
 
+
+		protected override InterfaceProxyWithoutTargetContributor GetContributorForAdditionalInterfaces(
+			INamingScope namingScope)
+		{
+			return new InterfaceProxyWithoutTargetContributor(namingScope, (c, m) => NullExpression.Instance) { Logger = Logger };
+		}
+
+		protected override void AdjustTargetTypes(ref Type proxyTargetInterface, ref Type targetFieldType)
+		{
+			proxyTargetInterface = GetTargetType(proxyTargetInterface, additionalInterfacesToProxy ?? Type.EmptyTypes,
+			                                     ProxyGenerationOptions);
+		}
+
 		protected override ITypeContributor AddMappingForTargetType(
 			IDictionary<Type, ITypeContributor> interfaceTypeImplementerMapping, Type proxyTargetType,
 			ICollection<Type> targetInterfaces, ICollection<Type> additionalInterfaces, INamingScope namingScope)
 		{
 			var contributor = new InterfaceProxyWithoutTargetContributor(namingScope, (c, m) => NullExpression.Instance)
-				                  {Logger = Logger};
+				                  { Logger = Logger };
 			foreach (var @interface in targetType.GetAllInterfaces())
 			{
 				contributor.AddInterfaceToProxy(@interface);
 				AddMappingNoCheck(@interface, contributor, interfaceTypeImplementerMapping);
 			}
 			return contributor;
-		}
-
-		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
-		{
-			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
-			if (openInterface != null)
-			{
-				emitter.CopyGenericParametersFromType(openInterface);
-			}
-
-			return emitter;
 		}
 
 		protected override Type GenerateType(string typeName, Type proxyTargetType, Type[] interfaces,
@@ -105,7 +96,7 @@ namespace Castle.DynamicProxy.Generators
 				}
 			}
 
-			var ctorArguments = new List<FieldReference>(mixinFieldsList) {interceptorsField};
+			var ctorArguments = new List<FieldReference>(mixinFieldsList) { interceptorsField };
 			var selector = emitter.GetField("__selector");
 			if (selector != null)
 			{
@@ -127,30 +118,6 @@ namespace Castle.DynamicProxy.Generators
 		protected override void CreateTargetField(ClassEmitter emitter, Type proxyTargetType)
 		{
 			// we don't
-		}
-
-		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
-		{
-			var type = base.ObtainProxyType(cacheKey, factory);
-			Debug.Assert(type.IsGenericType == (genericArguments != null));
-			if (genericArguments != null)
-			{
-				var proxyType = type.MakeGenericType(genericArguments);
-				InitializeStaticFields(proxyType);
-				return proxyType;
-			}
-			return type;
-		}
-
-		private static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
-		{
-			options.Initialize();
-			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
-			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
-			{
-				return @interface.GetGenericTypeDefinition();
-			}
-			return @interface;
 		}
 	}
 }

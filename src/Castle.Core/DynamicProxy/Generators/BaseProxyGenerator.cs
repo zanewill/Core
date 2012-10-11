@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ namespace Castle.DynamicProxy.Generators
 	using System.Linq;
 	using System.Reflection;
 	using System.Runtime.Serialization;
-#if !SILVERLIGHT
 	using System.Xml.Serialization;
-#endif
 
 	using Castle.Core.Internal;
 	using Castle.Core.Logging;
@@ -37,15 +35,15 @@ namespace Castle.DynamicProxy.Generators
 #endif
 
 	/// <summary>
-	///   Base class that exposes the common functionalities
-	///   to proxy generation.
+	///     Base class that exposes the common functionalities
+	///     to proxy generation.
 	/// </summary>
 	public abstract class BaseProxyGenerator : IProxyTypeGenerator
 	{
-		protected readonly Type targetType;
 		private readonly ProxyGenerationOptions proxyGenerationOptions;
 		private readonly ModuleScope scope;
 		private ILogger logger = NullLogger.Instance;
+		protected Type targetType;
 
 		protected BaseProxyGenerator(ModuleScope scope, Type targetType, ProxyGenerationOptions proxyGenerationOptions)
 		{
@@ -90,16 +88,16 @@ namespace Castle.DynamicProxy.Generators
 		                                          ITypeContributor instance)
 		{
 #if !SILVERLIGHT
-			AddMapping(typeof(ISerializable), instance, typeImplementerMapping);
+			AddMapping(typeof (ISerializable), instance, typeImplementerMapping);
 #endif
 		}
 
 		/// <summary>
-		///   It is safe to add mapping (no mapping for the interface exists)
+		///     It is safe to add mapping (no mapping for the interface exists)
 		/// </summary>
-		/// <param name = "implementer"></param>
-		/// <param name = "interface"></param>
-		/// <param name = "mapping"></param>
+		/// <param name="implementer"> </param>
+		/// <param name="interface"> </param>
+		/// <param name="mapping"> </param>
 		protected void AddMappingNoCheck(Type @interface, ITypeContributor implementer,
 		                                 IDictionary<Type, ITypeContributor> mapping)
 		{
@@ -152,7 +150,7 @@ namespace Castle.DynamicProxy.Generators
 
 		protected void CreateInterceptorsField(ClassEmitter emitter)
 		{
-			var interceptorsField = emitter.CreateField("__interceptors", typeof(IInterceptor[]));
+			var interceptorsField = emitter.CreateField("__interceptors", typeof (IInterceptor[]));
 
 #if !SILVERLIGHT
 			emitter.DefineCustomAttributeFor<XmlIgnoreAttribute>(interceptorsField);
@@ -161,7 +159,7 @@ namespace Castle.DynamicProxy.Generators
 
 		protected FieldReference CreateOptionsField(ClassEmitter emitter)
 		{
-			return emitter.CreateStaticField("proxyGenerationOptions", typeof(ProxyGenerationOptions));
+			return emitter.CreateStaticField("proxyGenerationOptions", typeof (ProxyGenerationOptions));
 		}
 
 		protected void CreateSelectorField(ClassEmitter emitter)
@@ -171,15 +169,22 @@ namespace Castle.DynamicProxy.Generators
 				return;
 			}
 
-			emitter.CreateField("__selector", typeof(IInterceptorSelector));
-			return;
+			emitter.CreateField("__selector", typeof (IInterceptorSelector));
 		}
 
 		protected virtual void CreateTypeAttributes(ClassEmitter emitter)
 		{
 			emitter.AddCustomAttributes(ProxyGenerationOptions);
 #if !SILVERLIGHT
-			emitter.DefineCustomAttribute<XmlIncludeAttribute>(new object[] { targetType });
+			if (string.IsNullOrEmpty(targetType.AssemblyQualifiedName))
+			{
+				Debug.Assert(targetType.IsGenericType);
+				emitter.DefineCustomAttribute<XmlIncludeAttribute>(new object[] { targetType.GetGenericTypeDefinition() });
+			}
+			else
+			{
+				emitter.DefineCustomAttribute<XmlIncludeAttribute>(new object[] { targetType });
+			}
 #endif
 		}
 
@@ -199,7 +204,8 @@ namespace Castle.DynamicProxy.Generators
 			}
 		}
 
-		protected void GenerateConstructor(ClassEmitter emitter, ConstructorInfo baseConstructor, params FieldReference[] fields)
+		protected void GenerateConstructor(ClassEmitter emitter, ConstructorInfo baseConstructor,
+		                                   params FieldReference[] fields)
 		{
 			ArgumentReference[] args;
 			ParameterInfo[] baseConstructorParams = null;
@@ -282,11 +288,9 @@ namespace Castle.DynamicProxy.Generators
 		}
 
 		/// <summary>
-		///   Generates a parameters constructor that initializes the proxy
-		///   state with <see cref = "StandardInterceptor" /> just to make it non-null.
-		///   <para>
-		///     This constructor is important to allow proxies to be XML serializable
-		///   </para>
+		///     Generates a parameters constructor that initializes the proxy
+		///     state with <see cref="StandardInterceptor" /> just to make it non-null.
+		///     <para> This constructor is important to allow proxies to be XML serializable </para>
 		/// </summary>
 		protected void GenerateParameterlessConstructor(ClassEmitter emitter, Type baseClass, FieldReference interceptorField)
 		{
@@ -309,8 +313,11 @@ namespace Castle.DynamicProxy.Generators
 
 			// initialize fields with an empty interceptor
 
-			constructor.CodeBuilder.AddStatement(new AssignStatement(interceptorField, new NewArrayExpression(1, typeof(IInterceptor))));
-			constructor.CodeBuilder.AddStatement(new AssignArrayStatement(interceptorField, 0, new NewInstanceExpression(typeof(StandardInterceptor), Type.EmptyTypes)));
+			constructor.CodeBuilder.AddStatement(new AssignStatement(interceptorField,
+			                                                         new NewArrayExpression(1, typeof (IInterceptor))));
+			constructor.CodeBuilder.AddStatement(new AssignArrayStatement(interceptorField, 0,
+			                                                              new NewInstanceExpression(
+				                                                              typeof (StandardInterceptor), Type.EmptyTypes)));
 
 			// Invoke base constructor
 
@@ -346,27 +353,28 @@ namespace Castle.DynamicProxy.Generators
 			return namingScope.GetUniqueName(name);
 		}
 
-		protected void HandleExplicitlyPassedProxyTargetAccessor(ICollection<Type> targetInterfaces, ICollection<Type> additionalInterfaces)
+		protected void HandleExplicitlyPassedProxyTargetAccessor(ICollection<Type> targetInterfaces,
+		                                                         ICollection<Type> additionalInterfaces)
 		{
-			var interfaceName = typeof(IProxyTargetAccessor).ToString();
+			var interfaceName = typeof (IProxyTargetAccessor).ToString();
 			//ok, let's determine who tried to sneak the IProxyTargetAccessor in...
 			string message;
-			if (targetInterfaces.Contains(typeof(IProxyTargetAccessor)))
+			if (targetInterfaces.Contains(typeof (IProxyTargetAccessor)))
 			{
 				message =
 					string.Format(
 						"Target type for the proxy implements {0} which is a DynamicProxy infrastructure interface and you should never implement it yourself. Are you trying to proxy an existing proxy?",
 						interfaceName);
 			}
-			else if (ProxyGenerationOptions.MixinData.ContainsMixin(typeof(IProxyTargetAccessor)))
+			else if (ProxyGenerationOptions.MixinData.ContainsMixin(typeof (IProxyTargetAccessor)))
 			{
-				var mixinType = ProxyGenerationOptions.MixinData.GetMixinInstance(typeof(IProxyTargetAccessor)).GetType();
+				var mixinType = ProxyGenerationOptions.MixinData.GetMixinInstance(typeof (IProxyTargetAccessor)).GetType();
 				message =
 					string.Format(
 						"Mixin type {0} implements {1} which is a DynamicProxy infrastructure interface and you should never implement it yourself. Are you trying to mix in an existing proxy?",
 						mixinType.Name, interfaceName);
 			}
-			else if (additionalInterfaces.Contains(typeof(IProxyTargetAccessor)))
+			else if (additionalInterfaces.Contains(typeof (IProxyTargetAccessor)))
 			{
 				message =
 					string.Format(
@@ -440,13 +448,13 @@ namespace Castle.DynamicProxy.Generators
 		private bool OverridesEqualsAndGetHashCode(Type type)
 		{
 			var equalsMethod = type.GetMethod("Equals", BindingFlags.Public | BindingFlags.Instance);
-			if (equalsMethod == null || equalsMethod.DeclaringType == typeof(object) || equalsMethod.IsAbstract)
+			if (equalsMethod == null || equalsMethod.DeclaringType == typeof (object) || equalsMethod.IsAbstract)
 			{
 				return false;
 			}
 
 			var getHashCodeMethod = type.GetMethod("GetHashCode", BindingFlags.Public | BindingFlags.Instance);
-			if (getHashCodeMethod == null || getHashCodeMethod.DeclaringType == typeof(object) || getHashCodeMethod.IsAbstract)
+			if (getHashCodeMethod == null || getHashCodeMethod.DeclaringType == typeof (object) || getHashCodeMethod.IsAbstract)
 			{
 				return false;
 			}
