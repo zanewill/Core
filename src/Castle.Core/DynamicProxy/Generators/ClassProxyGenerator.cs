@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@ namespace Castle.DynamicProxy.Generators
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Reflection;
 
+	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
@@ -27,17 +29,58 @@ namespace Castle.DynamicProxy.Generators
 	public class ClassProxyGenerator : BaseProxyGenerator
 	{
 		private readonly Type[] additionalInterfacesToProxy;
+		private readonly Type[] genericArguments;
 
-		public ClassProxyGenerator(ModuleScope scope, Type targetType, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options) : base(scope, targetType, options)
+		public ClassProxyGenerator(ModuleScope scope, Type targetType, Type[] additionalInterfacesToProxy,
+		                           ProxyGenerationOptions options) : base(scope, targetType, options)
 		{
 			this.additionalInterfacesToProxy = additionalInterfacesToProxy;
-			CheckNotGenericTypeDefinition(targetType, "targetType");
 			EnsureDoesNotImplementIProxyTargetAccessor(targetType, "targetType");
+			this.targetType = GetTargetType(targetType, additionalInterfacesToProxy ?? Type.EmptyTypes, ProxyGenerationOptions);
+			if (this.targetType.IsGenericTypeDefinition)
+			{
+				genericArguments = targetType.GetGenericArguments();
+			}
 		}
 
 		public override Type GetProxyType()
 		{
 			return GenerateCode(additionalInterfacesToProxy, ProxyGenerationOptions);
+		}
+
+		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
+		{
+			var type = base.ObtainProxyType(cacheKey, factory);
+			Debug.Assert(type.IsGenericType == (genericArguments != null));
+			if (genericArguments != null)
+			{
+				var proxyType = type.MakeGenericType(genericArguments);
+				InitializeStaticFields(proxyType);
+				return proxyType;
+			}
+			return type;
+		}
+
+		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
+		{
+			var emitter = new ClassEmitterSupportingGenericsTEMP(Scope, typeName, baseType, interfaces);
+			if (targetType.IsGenericTypeDefinition)
+			{
+				emitter.CopyGenericParametersFromType(targetType);
+			}
+
+			return emitter;
+		}
+
+		private static Type GetTargetType(Type type, Type[] additionalInterfaces, ProxyGenerationOptions options)
+		{
+			options.Initialize();
+			if (type.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
+			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
+			{
+				return type.GetGenericTypeDefinition();
+			}
+			return type;
 		}
 
 		protected Type GenerateCode(Type[] interfaces, ProxyGenerationOptions options)
@@ -107,8 +150,8 @@ namespace Castle.DynamicProxy.Generators
 		}
 
 		protected virtual Type[] GetTypeImplementerMapping(Type[] interfaces,
-		                                                              out IEnumerable<ITypeContributor> contributors,
-		                                                              INamingScope namingScope)
+		                                                   out IEnumerable<ITypeContributor> contributors,
+		                                                   INamingScope namingScope)
 		{
 			var methodsToSkip = new List<MethodInfo>();
 			var proxyInstance = new ClassProxyInstanceContributor(targetType, methodsToSkip, interfaces, ProxyTypeConstants.Class);
@@ -151,7 +194,7 @@ namespace Castle.DynamicProxy.Generators
 			}
 			var additionalInterfacesContributor = new InterfaceProxyWithoutTargetContributor(namingScope,
 			                                                                                 (c, m) => NullExpression.Instance)
-			{ Logger = Logger };
+				                                      { Logger = Logger };
 			// 3. then additional interfaces
 			foreach (var @interface in additionalInterfaces)
 			{
@@ -181,7 +224,7 @@ namespace Castle.DynamicProxy.Generators
 #endif
 			try
 			{
-				AddMappingNoCheck(typeof(IProxyTargetAccessor), proxyInstance, typeImplementerMapping);
+				AddMappingNoCheck(typeof (IProxyTargetAccessor), proxyInstance, typeImplementerMapping);
 			}
 			catch (ArgumentException)
 			{
@@ -189,25 +232,25 @@ namespace Castle.DynamicProxy.Generators
 			}
 
 			contributors = new List<ITypeContributor>
-			{
-				proxyTarget,
-				mixins,
-				additionalInterfacesContributor,
-				proxyInstance
-			};
+				               {
+					               proxyTarget,
+					               mixins,
+					               additionalInterfacesContributor,
+					               proxyInstance
+				               };
 			return typeImplementerMapping.Keys.ToArray();
 		}
 
 		private void EnsureDoesNotImplementIProxyTargetAccessor(Type type, string name)
 		{
-			if (!typeof(IProxyTargetAccessor).IsAssignableFrom(type))
+			if (!typeof (IProxyTargetAccessor).IsAssignableFrom(type))
 			{
 				return;
 			}
 			var message =
 				string.Format(
 					"Target type for the proxy implements {0} which is a DynamicProxy infrastructure interface and you should never implement it yourself. Are you trying to proxy an existing proxy?",
-					typeof(IProxyTargetAccessor));
+					typeof (IProxyTargetAccessor));
 			throw new ArgumentException(message, name);
 		}
 	}

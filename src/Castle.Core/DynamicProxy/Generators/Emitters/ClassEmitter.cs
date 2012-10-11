@@ -84,4 +84,28 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return StrongNameUtil.CanStrongNameAssembly == false;
 		}
 	}
+
+	public class ClassEmitterSupportingGenericsTEMP : ClassEmitter
+	{
+		public ClassEmitterSupportingGenericsTEMP(ModuleScope modulescope, string name, Type baseType, Type[] interfaces) : base(modulescope, name, baseType, interfaces)
+		{
+		}
+
+		public ClassEmitterSupportingGenericsTEMP(ModuleScope modulescope, string name, Type baseType, Type[] interfaces, TypeAttributes flags) : base(modulescope, name, baseType, interfaces, flags)
+		{
+		}
+
+		public ClassEmitterSupportingGenericsTEMP(ModuleScope modulescope, string name, Type baseType, Type[] interfaces, TypeAttributes flags, bool forceUnsigned) : base(modulescope, name, baseType, interfaces, flags, forceUnsigned)
+		{
+		}
+
+		public ClassEmitterSupportingGenericsTEMP(TypeBuilder typeBuilder) : base(typeBuilder)
+		{
+		}
+
+		protected override Type[] InitializeGenericArgumentsFromBases(ref Type baseType, Type[] interfaces)
+		{
+			return interfaces;
+		}
+	}
 }

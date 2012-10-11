@@ -56,21 +56,9 @@ namespace Castle.DynamicProxy.Generators
 
 		protected virtual void AdjustTargetTypes(ref Type proxyTargetInterface, ref Type targetFieldType)
 		{
+			proxyTargetInterface = GetTargetType(proxyTargetInterface, additionalInterfacesToProxy ?? Type.EmptyTypes,
+												 ProxyGenerationOptions);
 			targetFieldType = proxyTargetInterface;
-			//Debug.Assert(proxyTargetInterface.IsAssignableFrom(targetFieldType),
-			//             "proxyTargetInterface.IsAssignableFrom(targetFieldType)");
-			//if (targetFieldType.IsGenericType)
-			//{
-			//    var newTargetFieldType = GetTargetType(targetFieldType, additionalInterfacesToProxy ?? Type.EmptyTypes, ProxyGenerationOptions);
-			//    if(newTargetFieldType == targetFieldType)
-			//    {
-			//        return;
-			//    }
-			//    targetFieldType = newTargetFieldType;
-			//    // NOTE: yes, very temporary hack
-			//    proxyTargetInterface = targetFieldType.GetInterfaces().Single();
-
-			//}
 		}
 
 		protected virtual bool AllowChangeTarget
