@@ -16,12 +16,14 @@ namespace Castle.DynamicProxy.Generators
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Reflection;
 #if !SILVERLIGHT
 	using System.Xml.Serialization;
 #endif
 
+	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
@@ -30,15 +32,56 @@ namespace Castle.DynamicProxy.Generators
 	public class ClassProxyWithTargetGenerator : BaseProxyGenerator
 	{
 		private readonly Type[] additionalInterfacesToProxy;
+		private readonly Type[] genericArguments;
 
 		public ClassProxyWithTargetGenerator(ModuleScope scope, Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
 			: base(scope, classToProxy, options)
 		{
-			CheckNotGenericTypeDefinition(targetType, "targetType");
 			EnsureDoesNotImplementIProxyTargetAccessor(targetType, "targetType");
 			CheckNotGenericTypeDefinitions(additionalInterfacesToProxy, "additionalInterfacesToProxy");
-
+			
 			this.additionalInterfacesToProxy = TypeUtil.GetAllInterfaces(additionalInterfacesToProxy).ToArray();
+			var newTargetType = GetTargetType(targetType, additionalInterfacesToProxy, ProxyGenerationOptions);
+			if (newTargetType.IsGenericTypeDefinition)
+			{
+				genericArguments = targetType.GetGenericArguments();
+				targetType = newTargetType;
+			}
+		}
+
+		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
+		{
+			var emitter = new ClassEmitterSupportingGenericsTEMP(Scope, typeName, baseType, interfaces);
+			if (targetType.IsGenericTypeDefinition)
+			{
+				emitter.CopyGenericParametersFromType(targetType);
+			}
+
+			return emitter;
+		}
+
+		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
+		{
+			var type = base.ObtainProxyType(cacheKey, factory);
+			Debug.Assert(type.IsGenericType == (genericArguments != null));
+			if (genericArguments != null)
+			{
+				var proxyType = type.MakeGenericType(genericArguments);
+				InitializeStaticFields(proxyType);
+				return proxyType;
+			}
+			return type;
+		}
+
+		protected static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
+		{
+			options.Initialize();
+			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
+				options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
+			{
+				return @interface.GetGenericTypeDefinition();
+			}
+			return @interface;
 		}
 
 		public override Type GetProxyType()

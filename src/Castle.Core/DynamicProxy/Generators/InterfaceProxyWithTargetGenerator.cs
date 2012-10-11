@@ -91,10 +91,11 @@ namespace Castle.DynamicProxy.Generators
 
 		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
 		{
-			var emitter = base.BuildClassEmitter(typeName, baseType, interfaces);
-			if (openInterface != null)
+
+			var emitter = new ClassEmitterSupportingGenericsTEMP(Scope, typeName, baseType, interfaces);
+			if (targetType.IsGenericTypeDefinition)
 			{
-				emitter.CopyGenericParametersFromType(openInterface);
+				emitter.CopyGenericParametersFromType(targetType);
 			}
 
 			return emitter;
