@@ -372,7 +372,9 @@
     <Compile Include="OpenGenerics\ClassProxyNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyWithTargetEmptyClassTestCase.cs" />
+    <Compile Include="OpenGenerics\ClassProxyWithTargetGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyWithTargetNoInvocationTestCase.cs" />
+    <Compile Include="OpenGenerics\ClassProxyWithTargetWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetGenericConstraintsTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithoutTargetNoInvocationTestCase.cs" />
@@ -385,6 +387,8 @@
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetInterfaceWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetWithInvocationTestCase.cs" />
+    <Compile Include="OpenGenerics\InvocationForClassProxySimpleMethodTestCase.cs" />
+    <Compile Include="OpenGenerics\InvocationForClassProxyWithTargetSimpleMethodTestCase.cs" />
     <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithoutTargetSimpleMethodTestCase.cs" />
     <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithTargetInterfaceSimpleMethodTestCase.cs" />
     <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithTargetSimpleMethodTestCase.cs" />

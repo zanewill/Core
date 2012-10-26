@@ -21,7 +21,7 @@ namespace CastleTests.GenInterfaces
 
 	public class Constraint_MethodIsTypeAndClass<TType> : IConstraint_MethodIsTypeAndClass<TType>
 	{
-		public void Method<TMethod>() where TMethod : class, TType
+		public virtual void Method<TMethod>() where TMethod : class, TType
 		{
 		}
 	}

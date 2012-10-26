@@ -82,10 +82,11 @@ namespace Castle.DynamicProxy.Contributors
 
 			var invocation = GetInvocationType(method, @class, options);
 
+			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         invocation,
-			                                         (c, m) => new TypeTokenExpression(targetType),
+			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         null);
 		}
@@ -152,10 +153,11 @@ namespace Castle.DynamicProxy.Contributors
 			var invocation = new InheritanceInvocationTypeGenerator(method.Method.DeclaringType, method, null, contributor)
 				.Generate(@class, options, namingScope)
 				.BuildType();
+			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         invocation,
-			                                         (c, m) => new TypeTokenExpression(targetType),
+			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         contributor);
 		}

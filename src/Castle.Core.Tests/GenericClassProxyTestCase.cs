@@ -72,8 +72,7 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void ProxyWithGenericArgumentsWithBaseGenericClass()
 		{
-			SubClassWithGenArgs<int, string, int> proxy =
-				generator.CreateClassProxy<SubClassWithGenArgs<int, string, int>>(logger);
+			var proxy = generator.CreateClassProxy<SubClassWithGenArgs<int, string, int>>(logger);
 
 			Assert.IsNotNull(proxy);
 

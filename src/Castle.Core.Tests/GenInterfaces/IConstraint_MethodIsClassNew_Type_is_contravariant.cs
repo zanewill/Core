@@ -22,7 +22,7 @@ namespace CastleTests.GenInterfaces
 	public class Constraint_MethodIsClassNew_Type_is_contravariant<TType> :
 		IConstraint_MethodIsClassNew_Type_is_contravariant<TType>
 	{
-		public void Method<TMethod>() where TMethod : class, new()
+		public virtual void Method<TMethod>() where TMethod : class, new()
 		{
 		}
 	}

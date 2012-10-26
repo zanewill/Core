@@ -29,9 +29,13 @@ namespace CastleTests.OpenGenerics
 
 		public static void MustBe<TType>(this MethodInfo method, Expression<Action<TType>> methodCall)
 		{
-			var callExpression = (MethodCallExpression)methodCall.Body;
-			Assert.AreEqual(callExpression.Method.DeclaringType, method.DeclaringType, "Methods declaring types must be same");
-			Assert.AreEqual(callExpression.Method, method);
+			MustBe(method, ((MethodCallExpression)methodCall.Body).Method);
+		}
+
+		public static void MustBe(this MethodInfo method, MethodInfo expectedMethod)
+		{
+			Assert.AreEqual(expectedMethod.DeclaringType, method.DeclaringType, "Methods declaring types must be same");
+			Assert.AreEqual(expectedMethod, method);
 		}
 
 		public static void MustBeOpen<TType>(this MethodInfo method, Expression<Action<TType>> methodCall)

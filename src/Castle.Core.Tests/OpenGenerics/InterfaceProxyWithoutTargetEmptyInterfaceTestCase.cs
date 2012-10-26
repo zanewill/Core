@@ -158,17 +158,6 @@ namespace CastleTests.OpenGenerics
 			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
 		}
 
-		[Test(Description = "We might allow that if we can close base type over primary interface's generic args, but let's wait for someone who actually needs this first.")]
-		public void Generic_base_interface_proxy_type_not_allowed_open()
-		{
-			var baseType = typeof(ClassWithGenArgs<>);
-			var options = new ProxyGenerationOptions { BaseTypeForInterfaceProxy = baseType };
-
-			var exception = Assert.Throws<ArgumentException>(() => generator.CreateInterfaceProxyWithoutTarget(typeof(IEmpty<string>), options));
-
-			Assert.AreEqual("Type cannot be a generic type definition. Type: " + baseType.FullName + Environment.NewLine + "Parameter name: parentType", exception.Message);
-		}
-
 		[Test]
 		public void Proxy_is_non_generic_if_has_generic_additional_interfaces()
 		{
