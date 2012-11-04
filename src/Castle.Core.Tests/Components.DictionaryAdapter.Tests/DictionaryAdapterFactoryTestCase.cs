@@ -18,7 +18,7 @@ namespace Castle.Components.DictionaryAdapter.Tests
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Reflection;
+
 	using NUnit.Framework;
 #if SILVERLIGHT
 	using Hashtable = System.Collections.Generic.Dictionary<object, object>;
