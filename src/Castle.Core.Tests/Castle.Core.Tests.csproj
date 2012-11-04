@@ -364,9 +364,6 @@
     <Compile Include="MethodsWithAttributesOnParametersTestCase.cs" />
     <Compile Include="MixinTestCase.cs" />
     <Compile Include="NLogIntegration\NLogTests.cs" />
-    <Compile Include="OpenGenericInterfaceProxyWithoutTargetTestCase.cs" />
-    <Compile Include="OpenGenericInterfaceProxyWithoutTargetEmptyInterfaceTestCase.cs" />
-    <Compile Include="OpenGenericInterfaceProxyWithoutTargetSimpleInterfaceTestCase.cs" />
     <Compile Include="OpenGenericProxiesTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyEmptyClassTestCase.cs" />
     <Compile Include="OpenGenerics\ClassProxyNoInvocationTestCase.cs" />

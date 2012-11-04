@@ -234,7 +234,7 @@ namespace Castle.DynamicProxy.Serialization
 		}
 
 #if DOTNET40
-		[System.Security.SecurityCritical]
+		[System.Security.SecuritySafeCritical]
 #endif
 		public void OnDeserialization(object sender)
 		{
