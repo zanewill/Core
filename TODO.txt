@@ -1,0 +1,4 @@
+generic class proxies with non-generic protected methods:
+	invocation type creates the delegate to call the method on target inline in InvokeMethodOnTarget()
+	since the method is non-generic it should cache the delegate in static .ctor, like non-generic proxies do
+

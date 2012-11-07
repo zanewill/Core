@@ -21,6 +21,7 @@ namespace Castle.DynamicProxy.Contributors
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
 	public class InvocationWithDelegateContributor : IInvocationCreationContributor
@@ -81,11 +82,23 @@ namespace Castle.DynamicProxy.Contributors
 				DelegateMethods.CreateDelegate,
 				new TypeTokenExpression(delegateType),
 				NullExpression.Instance,
-				new MethodTokenExpression(method.MethodOnTarget));
+				GetMethodToken(proxy));
 			var bindDelegate = new AssignStatement(callback, new ConvertExpression(delegateType, createDelegate));
-
 			proxy.ClassConstructor.CodeBuilder.AddStatement(bindDelegate);
 			return callback;
+		}
+
+		private Expression GetMethodToken(ClassEmitter proxy)
+		{
+			if (proxy.IsGenericType)
+			{
+				return new MethodInvocationExpression((Expression)null,
+				                                      GenericsHelper.GetAdjustedOpenMethodToken,
+				                                      new TypeTokenExpression(method.MethodOnTarget.DeclaringType),
+				                                      new ConstReference(method.MethodOnTarget.MetadataToken).ToExpression());
+
+			}
+			return new MethodTokenExpression(method.MethodOnTarget);
 		}
 
 		private Expression[] GetAllArgs(Expression[] args, Reference targetField)
