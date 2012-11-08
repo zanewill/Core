@@ -77,16 +77,19 @@ namespace Castle.DynamicProxy.Contributors
 			var scope = @class.ModuleScope;
 
 			Type[] invocationInterfaces;
+			var baseType = default(Type);
 			if (canChangeTarget)
 			{
 				invocationInterfaces = new[] { typeof(IInvocation), typeof(IChangeProxyTarget) };
+				baseType = ChangeTargetInvocationTypeGenerator.BaseType;
 			}
 			else
 			{
 				invocationInterfaces = new[] { typeof(IInvocation) };
+				baseType = CompositionInvocationTypeGenerator.BaseType;
 			}
 
-			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, invocationInterfaces, null);
+			var key = new CacheKey(method.Method, baseType, invocationInterfaces, null);
 
 			// no locking required as we're already within a lock
 
@@ -96,12 +99,22 @@ namespace Castle.DynamicProxy.Contributors
 				return invocation;
 			}
 
-			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                                    method,
-			                                                    method.Method,
-			                                                    canChangeTarget,
-			                                                    null)
-				.Generate(@class, options, namingScope).BuildType();
+			if(canChangeTarget)
+			{
+				invocation = new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
+				                                                     method,
+				                                                     method.Method,
+				                                                     null)
+					.Generate(@class, options, namingScope).BuildType();
+			}
+			else
+			{
+				invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+				                                                    method,
+				                                                    method.Method,
+				                                                    null)
+					.Generate(@class, options, namingScope).BuildType();
+			}
 
 			scope.RegisterInCache(key, invocation);
 

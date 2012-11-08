@@ -99,7 +99,6 @@ namespace Castle.DynamicProxy.Contributors
 			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
 			                                              method,
 			                                              method.Method,
-			                                              false,
 			                                              null)
 				.Generate(@class, options, namingScope)
 				.BuildType();
@@ -169,7 +168,7 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var @delegate = GetDelegateType(method, proxy, options);
 			var contributor = GetContributor(@delegate, method);
-			var invocation = new CompositionInvocationTypeGenerator(targetType, method, null, false, contributor)
+			var invocation = new CompositionInvocationTypeGenerator(targetType, method, null, contributor)
 				.Generate(proxy, options, namingScope)
 				.BuildType();
 			return new MethodWithInvocationGenerator(method,

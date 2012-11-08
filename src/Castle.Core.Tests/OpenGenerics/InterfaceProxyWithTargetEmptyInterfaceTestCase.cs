@@ -189,7 +189,7 @@ namespace CastleTests.OpenGenerics
 			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>),
 			                                                   new[] { typeof (IEmpty<string, int>) },
 			                                                   new Empty<string>());
-			one.AssertIsOpenGenericType();
+			one.AssertIsClosedType();
 		}
 
 		[Test]
@@ -197,8 +197,8 @@ namespace CastleTests.OpenGenerics
 		{
 			var options = new ProxyGenerationOptions();
 			options.AddMixinInstance(new GenInterfaceImpl<int>());
-			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new Empty<string>(), options);
-			Assert.False(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be non-generic", one.GetType()));
+			var one = generator.CreateInterfaceProxyWithTarget(typeof(IEmpty<string>), new Empty<string>(), options);
+			one.AssertIsClosedType();
 		}
 
 		[Test]

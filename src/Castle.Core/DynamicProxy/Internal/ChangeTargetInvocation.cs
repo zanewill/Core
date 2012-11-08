@@ -37,7 +37,8 @@ namespace Castle.DynamicProxy.Internal
 
 		public void ChangeProxyTarget(object target)
 		{
-			((IProxyTargetSetAccessor)proxyObject).DynProxySetTarget(target);
+			dynamic proxy = proxyObject;
+			proxy.__target = (dynamic)target;
 		}
 	}
 }

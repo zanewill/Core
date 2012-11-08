@@ -374,6 +374,7 @@
     <Compile Include="DynamicProxy\AbstractInvocation.cs" />
     <Compile Include="DynamicProxy\AllMethodsHook.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DynamicProxy\Generators\ChangeTargetInvocationTypeGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\GenericMap.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\TryStatement.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\FinallyStatement.cs" />
@@ -392,7 +393,6 @@
     <Compile Include="DynamicProxy\Generators\AttributeDisassembler.cs" />
     <Compile Include="DynamicProxy\Internal\GenericsHelper.cs" />
     <Compile Include="DynamicProxy\InvalidProxyConstructorArgumentsException.cs" />
-    <Compile Include="DynamicProxy\IProxyTargetSetAccessor.cs" />
     <Compile Include="DynamicProxy\ProxyUtil.cs" />
     <Compile Include="DynamicProxy\Serialization\CacheMappingsAttribute.cs" />
     <Compile Include="DynamicProxy\Contributors\ClassMembersCollector.cs" />

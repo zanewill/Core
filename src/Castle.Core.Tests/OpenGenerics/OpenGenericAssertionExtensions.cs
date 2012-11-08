@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,12 @@ namespace CastleTests.OpenGenerics
 
 	public static class OpenGenericAssertionExtensions
 	{
+		public static void AssertIsClosedType(this object proxy)
+		{
+			Assert.False(proxy.GetType().IsGenericType,
+			             string.Format("Expected proxy type ({0}) to NOT be generic", proxy.GetType()));
+		}
+
 		public static void AssertIsOpenGenericType(this object proxy)
 		{
 			Assert.True(proxy.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", proxy.GetType()));

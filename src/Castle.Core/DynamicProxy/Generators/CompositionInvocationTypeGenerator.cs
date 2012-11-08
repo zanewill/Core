@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ namespace Castle.DynamicProxy.Generators
 
 	public class CompositionInvocationTypeGenerator : InvocationTypeGenerator
 	{
-		public static readonly Type BaseType = typeof(CompositionInvocation);
+		public static readonly Type BaseType = typeof (CompositionInvocation);
 
-		public CompositionInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback, bool canChangeTarget, IInvocationCreationContributor contributor)
-			: base(target, method, callback, canChangeTarget, contributor)
+		public CompositionInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback,
+		                                          IInvocationCreationContributor contributor)
+			: base(target, method, callback, contributor)
 		{
 		}
 
@@ -41,10 +42,10 @@ namespace Castle.DynamicProxy.Generators
 				return new[]
 				{
 					new ArgumentReference(targetFieldType),
-					new ArgumentReference(typeof(object)),
-					new ArgumentReference(typeof(IInterceptor[])),
-					new ArgumentReference(typeof(MethodInfo)),
-					new ArgumentReference(typeof(object[])),
+					new ArgumentReference(typeof (object)),
+					new ArgumentReference(typeof (IInterceptor[])),
+					new ArgumentReference(typeof (MethodInfo)),
+					new ArgumentReference(typeof (object[])),
 				};
 			}
 
@@ -52,12 +53,12 @@ namespace Castle.DynamicProxy.Generators
 			return new[]
 			{
 				new ArgumentReference(targetFieldType),
-				new ArgumentReference(typeof(object)),
-				new ArgumentReference(typeof(IInterceptor[])),
-				new ArgumentReference(typeof(MethodInfo)),
-				new ArgumentReference(typeof(object[])),
-				new ArgumentReference(typeof(IInterceptorSelector)),
-				new ArgumentReference(typeof(IInterceptor[]).MakeByRefType())
+				new ArgumentReference(typeof (object)),
+				new ArgumentReference(typeof (IInterceptor[])),
+				new ArgumentReference(typeof (MethodInfo)),
+				new ArgumentReference(typeof (object[])),
+				new ArgumentReference(typeof (IInterceptorSelector)),
+				new ArgumentReference(typeof (IInterceptor[]).MakeByRefType())
 			};
 		}
 

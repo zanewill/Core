@@ -66,7 +66,6 @@ namespace Castle.DynamicProxy.Contributors
 			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
 			                                                    method,
 			                                                    method.Method,
-			                                                    false,
 			                                                    null)
 				.Generate(emitter, options, namingScope)
 				.BuildType();

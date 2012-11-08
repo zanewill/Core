@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,18 +17,24 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Reflection;
 
+	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator
+	public class ChangeTargetInvocationTypeGenerator : InvocationTypeGenerator
 	{
-		public static readonly Type BaseType = typeof (InheritanceInvocation);
+		public static readonly Type BaseType = typeof (ChangeTargetInvocation);
 
-		public InheritanceInvocationTypeGenerator(Type targetType, MetaMethod method, MethodInfo callback,
-		                                          IInvocationCreationContributor contributor)
-			: base(targetType, method, callback, contributor)
+		public ChangeTargetInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback,
+		                                           IInvocationCreationContributor contributor)
+			: base(target, method, callback, contributor)
 		{
+		}
+
+		protected override Type[] AdditionalInterfaces
+		{
+			get { return new[] { typeof (IChangeProxyTarget) }; }
 		}
 
 		protected override ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,
@@ -37,21 +43,21 @@ namespace Castle.DynamicProxy.Generators
 		{
 			if (proxyGenerationOptions.Selector == null)
 			{
-				baseConstructor = InvocationMethods.InheritanceInvocationConstructorNoSelector;
+				baseConstructor = InvocationMethods.ChangeTargetInvocationConstructorNoSelector;
 				return new[]
 				{
-					new ArgumentReference(typeof (Type)),
+					new ArgumentReference(targetFieldType),
 					new ArgumentReference(typeof (object)),
 					new ArgumentReference(typeof (IInterceptor[])),
 					new ArgumentReference(typeof (MethodInfo)),
-					new ArgumentReference(typeof (object[]))
+					new ArgumentReference(typeof (object[])),
 				};
 			}
 
-			baseConstructor = InvocationMethods.InheritanceInvocationConstructorWithSelector;
+			baseConstructor = InvocationMethods.ChangeTargetInvocationConstructorWithSelector;
 			return new[]
 			{
-				new ArgumentReference(typeof (Type)),
+				new ArgumentReference(targetFieldType),
 				new ArgumentReference(typeof (object)),
 				new ArgumentReference(typeof (IInterceptor[])),
 				new ArgumentReference(typeof (MethodInfo)),
@@ -68,7 +74,16 @@ namespace Castle.DynamicProxy.Generators
 
 		protected override FieldReference GetTargetReference()
 		{
-			return new FieldReference(InvocationMethods.ProxyObject);
+			return new FieldReference(InvocationMethods.Target);
+		}
+
+		protected override void ImplementInvokeMethodOnTarget(AbstractTypeEmitter invocation, ParameterInfo[] parameters,
+		                                                      MethodEmitter invokeMethodOnTarget, Reference targetField)
+		{
+			invokeMethodOnTarget.CodeBuilder.AddStatement(
+				new ExpressionStatement(
+					new MethodInvocationExpression(SelfReference.Self, InvocationMethods.EnsureValidTarget)));
+			base.ImplementInvokeMethodOnTarget(invocation, parameters, invokeMethodOnTarget, targetField);
 		}
 	}
 }
