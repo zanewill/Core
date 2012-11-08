@@ -79,7 +79,14 @@ namespace Castle.DynamicProxy.Contributors
 			                                 typeof(MulticastDelegate),
 			                                 Type.EmptyTypes,
 			                                 DelegateFlags);
-			@delegate.CopyGenericParametersFromType(targetType, method.Method);
+			if(targetType.ContainsGenericParameters)
+			{
+				@delegate.CopyGenericParametersFromType(targetType, method.Method);
+			}
+			else
+			{
+				@delegate.CopyGenericParametersFromMethod(method.Method);
+			}
 			return @delegate;
 		}
 
