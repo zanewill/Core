@@ -16,11 +16,14 @@ namespace CastleTests.OpenGenerics
 {
 	using System;
 	using System.Collections.Generic;
+
 	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.GenClasses;
 	using Castle.DynamicProxy.Tests.GenInterfaces;
 	using Castle.DynamicProxy.Tests.Interfaces;
+
 	using CastleTests.GenInterfaces;
+
 	using NUnit.Framework;
 
 	public class InterfaceProxyWithTargetEmptyInterfaceTestCase : BasePEVerifyTestCase
@@ -130,9 +133,10 @@ namespace CastleTests.OpenGenerics
 		[Test]
 		public void Can_generate_generic_proxy_with_additional_interface()
 		{
-			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new[] {typeof (IEmpty)},
+			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new[] { typeof (IEmpty) },
 			                                                   new Empty<string>());
-			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+
+			one.AssertIsOpenGenericType();
 		}
 
 		[Test]
@@ -140,10 +144,26 @@ namespace CastleTests.OpenGenerics
 		{
 			var options = new ProxyGenerationOptions();
 			options.AddMixinInstance(new Empty());
-			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new[] {typeof (ISimple)},
+			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new[] { typeof (ISimple) },
 			                                                   new Empty<string>(), options);
 
-			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+			one.AssertIsOpenGenericType();
+		}
+
+		[Test]
+		public void Can_generate_generic_two_different_proxy_types_with_additional_interface_and_mixin()
+		{
+			var options = new ProxyGenerationOptions();
+			options.AddMixinInstance(new Empty());
+			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new[] { typeof (ISimple) },
+			                                                   new Empty<string>(), options);
+
+			one.AssertIsOpenGenericType();
+
+			var two = generator.CreateInterfaceProxyWithTarget(typeof (IEmptyClass<string>), new[] { typeof (ISimple) },
+			                                                   new EmptyClass<string>(), options);
+
+			two.AssertIsOpenGenericType();
 		}
 
 		[Test]
@@ -152,24 +172,24 @@ namespace CastleTests.OpenGenerics
 			var options = new ProxyGenerationOptions();
 			options.AddMixinInstance(new Empty());
 			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new Empty<string>(), options);
-			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+			one.AssertIsOpenGenericType();
 		}
 
 		[Test]
 		public void Generic_base_interface_proxy_type_allowed_closed()
 		{
-			var options = new ProxyGenerationOptions {BaseTypeForInterfaceProxy = typeof (ClassWithGenArgs<int>)};
+			var options = new ProxyGenerationOptions { BaseTypeForInterfaceProxy = typeof (ClassWithGenArgs<int>) };
 			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>), new Empty<string>(), options);
-			Assert.True(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be generic", one.GetType()));
+			one.AssertIsOpenGenericType();
 		}
 
 		[Test]
 		public void Proxy_is_non_generic_if_has_generic_additional_interfaces()
 		{
 			var one = generator.CreateInterfaceProxyWithTarget(typeof (IEmpty<string>),
-			                                                   new[] {typeof (IEmpty<string, int>)},
+			                                                   new[] { typeof (IEmpty<string, int>) },
 			                                                   new Empty<string>());
-			Assert.False(one.GetType().IsGenericType, string.Format("Expected proxy type ({0}) to be non-generic", one.GetType()));
+			one.AssertIsOpenGenericType();
 		}
 
 		[Test]
