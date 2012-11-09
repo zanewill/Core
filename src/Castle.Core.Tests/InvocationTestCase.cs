@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 namespace Castle.DynamicProxy.Tests
 {
 	using Castle.DynamicProxy.Tests.Classes;
-	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.InterClasses;
+	using Castle.DynamicProxy.Tests.Interceptors;
 
 	using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace Castle.DynamicProxy.Tests
 
 			var proxy = generator.CreateClassProxy(typeof (ServiceClass), interceptor);
 
-			var instance = (ServiceClass) proxy;
+			var instance = (ServiceClass)proxy;
 
 			instance.Sum(20, 25);
 			var invocation = interceptor.Invocation;
@@ -68,7 +68,7 @@ namespace Castle.DynamicProxy.Tests
 			var proxy = generator.CreateInterfaceProxyWithTarget(
 				typeof (IService), new ServiceImpl(), interceptor);
 
-			var instance = (IService) proxy;
+			var instance = (IService)proxy;
 
 			instance.Sum(20, 25);
 
@@ -86,12 +86,12 @@ namespace Castle.DynamicProxy.Tests
 			Assert.IsEmpty(invocation.GenericArguments);
 
 			Assert.IsNotNull(invocation.Proxy);
-			Assert.IsNotInstanceOf(typeof(ServiceImpl), invocation.Proxy);
+			Assert.IsNotInstanceOf(typeof (ServiceImpl), invocation.Proxy);
 
 			Assert.IsNotNull(invocation.InvocationTarget);
-			Assert.IsInstanceOf(typeof(ServiceImpl), invocation.InvocationTarget);
+			Assert.IsInstanceOf(typeof (ServiceImpl), invocation.InvocationTarget);
 			Assert.IsNotNull(invocation.TargetType);
-			Assert.AreSame(typeof(ServiceImpl), invocation.TargetType);
+			Assert.AreSame(typeof (ServiceImpl), invocation.TargetType);
 
 			Assert.IsNotNull(invocation.Method);
 			Assert.IsNotNull(invocation.MethodInvocationTarget);
