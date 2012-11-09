@@ -71,7 +71,7 @@ namespace CastleTests.OpenGenerics
 		[Test]
 		public void TargetType_is_closed()
 		{
-			Assert.IsFalse(invocation.TargetType.ContainsGenericParameters);
+			Assert.AreEqual(typeof (SimpleGeneric<object>), invocation.TargetType);
 		}
 
 		protected override void AfterInit()
