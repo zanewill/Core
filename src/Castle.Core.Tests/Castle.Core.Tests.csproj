@@ -365,6 +365,17 @@
     <Compile Include="Interfaces\ISimple.cs" />
     <Compile Include="Internal\FakeInvocation.cs" />
     <Compile Include="Internal\InvocationAssertExtensions.cs" />
+    <Compile Include="Invocation\AbstractInvocationTestCase.cs" />
+    <Compile Include="Invocation\Class_proxy_generic_method.cs" />
+    <Compile Include="Invocation\Class_proxy_non_generic.cs" />
+    <Compile Include="Invocation\Class_proxy_with_target_generic_method.cs" />
+    <Compile Include="Invocation\Class_proxy_with_target_non_generic.cs" />
+    <Compile Include="Invocation\Interface_proxy_without_target_generic_method.cs" />
+    <Compile Include="Invocation\Interface_proxy_without_target_non_generic.cs" />
+    <Compile Include="Invocation\Interface_proxy_with_target_generic_method.cs" />
+    <Compile Include="Invocation\Interface_proxy_with_target_interface_generic_method.cs" />
+    <Compile Include="Invocation\Interface_proxy_with_target_interface_non_generic.cs" />
+    <Compile Include="Invocation\Interface_proxy_with_target_non_generic.cs" />
     <Compile Include="MethodsWithAttributesOnParametersTestCase.cs" />
     <Compile Include="MixinTestCase.cs" />
     <Compile Include="NLogIntegration\NLogTests.cs" />
@@ -533,7 +544,6 @@
     <Compile Include="InterClasses\IMyInterface2.cs" />
     <Compile Include="InterClasses\InterfaceWithIndexer.cs" />
     <Compile Include="InterClasses\IService2.cs" />
-    <Compile Include="InvocationTestCase.cs" />
     <Compile Include="MethodFinderTestCase.cs" />
     <Compile Include="Mixins\ClassImplementingIDerivedSImpleMixin.cs" />
     <Compile Include="Mixins\ClassImplementingISimpleMixin.cs" />
