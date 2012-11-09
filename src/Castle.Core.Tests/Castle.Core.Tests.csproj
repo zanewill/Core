@@ -399,11 +399,6 @@
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetInterfaceWithInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetNoInvocationTestCase.cs" />
     <Compile Include="OpenGenerics\InterfaceProxyWithTargetWithInvocationTestCase.cs" />
-    <Compile Include="OpenGenerics\InvocationForClassProxySimpleMethodTestCase.cs" />
-    <Compile Include="OpenGenerics\InvocationForClassProxyWithTargetSimpleMethodTestCase.cs" />
-    <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithoutTargetSimpleMethodTestCase.cs" />
-    <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithTargetInterfaceSimpleMethodTestCase.cs" />
-    <Compile Include="OpenGenerics\InvocationForInterfaceProxyWithTargetSimpleMethodTestCase.cs" />
     <Compile Include="OpenGenerics\OpenGenericAssertionExtensions.cs" />
     <Compile Include="Scratchpad.cs" />
     <Compile Include="ThrowingInterceptorException.cs" />
