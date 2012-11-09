@@ -52,7 +52,7 @@ namespace Castle.DynamicProxy.Internal
 
 		public override MethodInfo MethodInvocationTarget
 		{
-			get { return InvocationHelper.GetMethodOnObject(target, GetConcreteMethod()); }
+			get { return InvocationHelper.GetMethodOnObject(target, Method); }
 		}
 
 		public override Type TargetType

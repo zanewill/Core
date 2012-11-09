@@ -111,7 +111,8 @@ namespace Castle.DynamicProxy
 			var method = MethodInvocationTarget;
 			Debug.Assert(method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0,
 			             "method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0");
-			if(GenericArguments.Length == 0)
+
+			if(method == null || GenericArguments.Length == 0)
 			{
 				return method;
 			}

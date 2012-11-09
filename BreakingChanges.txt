@@ -1,3 +1,20 @@
+=== version 4.0
+================================================================================================
+change - Change to values of Invocation.GenericArguments, Invocation.Method
+	and Invocation.MethodInvocationTarget.
+
+description - This changes the results to more reasonable and more expected values.
+	Invocation.GenericArguments used to be null for non-generic methods, now will be empty array
+	Invocation.Method and Invocation.MethodInvocationTarget used to refer to closed generic
+	version of the methods. Now for generic method will refer to open generic version.
+
+
+fix - For Invocation.GenericArguments adjust the usage to expect empty array and never null.
+	if you want guaranteed closed version of Method use GetConcreteMethod() instead
+	if you want guaranteed closed version of MethodInvocationTarget
+	use GetConcreteMethodInvocationTarget() instead
+
+
 === version 3.0
 ================================================================================================
 change - All proxy generator types have now different constructors and common proxy type 
