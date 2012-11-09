@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ namespace Castle.DynamicProxy.Contributors
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+	using Castle.DynamicProxy.Internal;
 
 	public class DelegateTypeGenerator : IGenerator<AbstractTypeEmitter>
 	{
@@ -79,7 +80,7 @@ namespace Castle.DynamicProxy.Contributors
 			                                 typeof(MulticastDelegate),
 			                                 Type.EmptyTypes,
 			                                 DelegateFlags);
-			if(targetType.ContainsGenericParameters)
+			if (targetType.ContainsGenericParameters)
 			{
 				@delegate.CopyGenericParametersFromType(targetType, method.Method);
 			}

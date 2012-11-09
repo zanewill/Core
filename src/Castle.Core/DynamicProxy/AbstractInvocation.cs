@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,17 +18,15 @@ namespace Castle.DynamicProxy
 	using System.Diagnostics;
 	using System.Reflection;
 	using System.Runtime.Serialization;
-	using Castle.DynamicProxy.Serialization;
-
 #if DOTNET40
 	using System.Security;
 #endif
 
-#if SILVERLIGHT
+	using Castle.DynamicProxy.Serialization;
+
 	public abstract class AbstractInvocation : IInvocation
-#else
-	[Serializable]
-	public abstract class AbstractInvocation : IInvocation, ISerializable
+#if !SILVERLIGHT
+	                                           , ISerializable
 #endif
 	{
 		private readonly IInterceptor[] interceptors;
@@ -49,29 +47,6 @@ namespace Castle.DynamicProxy
 			this.interceptors = interceptors;
 			this.proxiedMethod = proxiedMethod;
 			this.arguments = arguments;
-		}
-
-		protected AbstractInvocation(
-			object proxy,
-			Type targetType,
-			IInterceptor[] interceptors,
-			MethodInfo proxiedMethod,
-			object[] arguments,
-			IInterceptorSelector selector,
-			ref IInterceptor[] methodInterceptors)
-			: this(proxy, interceptors, proxiedMethod, arguments)
-		{
-			methodInterceptors = SelectMethodInterceptors(selector, methodInterceptors, targetType);
-			this.interceptors = methodInterceptors;
-		}
-
-		private IInterceptor[] SelectMethodInterceptors(IInterceptorSelector selector,
-		                                                IInterceptor[] methodInterceptors,
-		                                                Type targetType)
-		{
-			return methodInterceptors ??
-			       selector.SelectInterceptors(targetType, Method, interceptors) ??
-			       new IInterceptor[0];
 		}
 
 		public void SetGenericMethodArguments(Type[] arguments)
@@ -112,7 +87,7 @@ namespace Castle.DynamicProxy
 			Debug.Assert(method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0,
 			             "method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0");
 
-			if(method == null || GenericArguments.Length == 0)
+			if (method == null || GenericArguments.Length == 0)
 			{
 				return method;
 			}

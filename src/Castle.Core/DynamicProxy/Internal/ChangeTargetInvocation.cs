@@ -18,15 +18,8 @@ namespace Castle.DynamicProxy.Internal
 
 	public abstract class ChangeTargetInvocation : CompositionInvocation, IChangeProxyTarget
 	{
-		protected ChangeTargetInvocation(object target, object proxy, IInterceptor[] interceptors, MethodInfo proxiedMethod,
-		                                 object[] arguments) : base(target, proxy, interceptors, proxiedMethod, arguments)
-		{
-		}
-
-		protected ChangeTargetInvocation(object target, object proxy, IInterceptor[] interceptors, MethodInfo proxiedMethod,
-		                                 object[] arguments, IInterceptorSelector selector,
-		                                 ref IInterceptor[] methodInterceptors)
-			: base(target, proxy, interceptors, proxiedMethod, arguments, selector, ref methodInterceptors)
+		protected ChangeTargetInvocation(object target, object proxy, IInterceptor[] interceptors, MethodInfo proxiedMethod, object[] arguments)
+			: base(target, proxy, interceptors, proxiedMethod, arguments)
 		{
 		}
 

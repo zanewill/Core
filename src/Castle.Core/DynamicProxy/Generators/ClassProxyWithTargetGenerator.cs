@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Serialization;
 
 	public class ClassProxyWithTargetGenerator : BaseProxyGenerator
@@ -39,7 +40,7 @@ namespace Castle.DynamicProxy.Generators
 		{
 			EnsureDoesNotImplementIProxyTargetAccessor(targetType, "targetType");
 			CheckNotGenericTypeDefinitions(additionalInterfacesToProxy, "additionalInterfacesToProxy");
-			
+
 			this.additionalInterfacesToProxy = TypeUtil.GetAllInterfaces(additionalInterfacesToProxy).ToArray();
 			var newTargetType = GetTargetType(targetType, additionalInterfacesToProxy, ProxyGenerationOptions);
 			if (newTargetType.IsGenericTypeDefinition)
@@ -47,6 +48,12 @@ namespace Castle.DynamicProxy.Generators
 				genericArguments = targetType.GetGenericArguments();
 				targetType = newTargetType;
 			}
+		}
+
+		public override Type GetProxyType()
+		{
+			var cacheKey = new CacheKey(targetType, targetType, additionalInterfacesToProxy, ProxyGenerationOptions);
+			return ObtainProxyType(cacheKey, GenerateType);
 		}
 
 		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
@@ -58,36 +65,6 @@ namespace Castle.DynamicProxy.Generators
 			}
 
 			return emitter;
-		}
-
-		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
-		{
-			var type = base.ObtainProxyType(cacheKey, factory);
-			Debug.Assert(type.IsGenericType == (genericArguments != null));
-			if (genericArguments != null)
-			{
-				var proxyType = type.MakeGenericType(genericArguments);
-				InitializeStaticFields(proxyType);
-				return proxyType;
-			}
-			return type;
-		}
-
-		protected static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
-		{
-			options.Initialize();
-			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
-				options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
-			{
-				return @interface.GetGenericTypeDefinition();
-			}
-			return @interface;
-		}
-
-		public override Type GetProxyType()
-		{
-			var cacheKey = new CacheKey(targetType, targetType, additionalInterfacesToProxy, ProxyGenerationOptions);
-			return ObtainProxyType(cacheKey, GenerateType);
 		}
 
 		protected virtual Type[] GetTypeImplementerMapping(out IEnumerable<ITypeContributor> contributors, INamingScope namingScope)
@@ -182,6 +159,19 @@ namespace Castle.DynamicProxy.Generators
 			return typeImplementerMapping.Keys.ToArray();
 		}
 
+		protected override Type ObtainProxyType(CacheKey cacheKey, Func<string, INamingScope, Type> factory)
+		{
+			var type = base.ObtainProxyType(cacheKey, factory);
+			Debug.Assert(type.IsGenericType == (genericArguments != null));
+			if (genericArguments != null)
+			{
+				var proxyType = type.MakeGenericType(genericArguments);
+				InitializeStaticFields(proxyType);
+				return proxyType;
+			}
+			return type;
+		}
+
 		private FieldReference CreateTargetField(ClassEmitter emitter)
 		{
 			var targetField = emitter.CreateField("__target", targetType);
@@ -259,6 +249,17 @@ namespace Castle.DynamicProxy.Generators
 			var proxyType = emitter.BuildType();
 			InitializeStaticFields(proxyType);
 			return proxyType;
+		}
+
+		protected static Type GetTargetType(Type @interface, Type[] additionalInterfaces, ProxyGenerationOptions options)
+		{
+			options.Initialize();
+			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
+			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
+			{
+				return @interface.GetGenericTypeDefinition();
+			}
+			return @interface;
 		}
 	}
 }

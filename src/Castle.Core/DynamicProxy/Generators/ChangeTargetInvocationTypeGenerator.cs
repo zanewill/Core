@@ -24,7 +24,7 @@ namespace Castle.DynamicProxy.Generators
 
 	public class ChangeTargetInvocationTypeGenerator : InvocationTypeGenerator
 	{
-		public static readonly Type BaseType = typeof (ChangeTargetInvocation);
+		public static readonly Type BaseType = typeof(ChangeTargetInvocation);
 
 		public ChangeTargetInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback,
 		                                           IInvocationCreationContributor contributor)
@@ -34,36 +34,21 @@ namespace Castle.DynamicProxy.Generators
 
 		protected override Type[] AdditionalInterfaces
 		{
-			get { return new[] { typeof (IChangeProxyTarget) }; }
+			get { return new[] { typeof(IChangeProxyTarget) }; }
 		}
 
 		protected override ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,
 		                                                            ProxyGenerationOptions proxyGenerationOptions,
 		                                                            out ConstructorInfo baseConstructor)
 		{
-			if (proxyGenerationOptions.Selector == null)
-			{
-				baseConstructor = InvocationMethods.ChangeTargetInvocationConstructorNoSelector;
-				return new[]
-				{
-					new ArgumentReference(targetFieldType),
-					new ArgumentReference(typeof (object)),
-					new ArgumentReference(typeof (IInterceptor[])),
-					new ArgumentReference(typeof (MethodInfo)),
-					new ArgumentReference(typeof (object[])),
-				};
-			}
-
-			baseConstructor = InvocationMethods.ChangeTargetInvocationConstructorWithSelector;
+			baseConstructor = InvocationMethods.ChangeTargetInvocationConstructor;
 			return new[]
 			{
 				new ArgumentReference(targetFieldType),
-				new ArgumentReference(typeof (object)),
-				new ArgumentReference(typeof (IInterceptor[])),
-				new ArgumentReference(typeof (MethodInfo)),
-				new ArgumentReference(typeof (object[])),
-				new ArgumentReference(typeof (IInterceptorSelector)),
-				new ArgumentReference(typeof (IInterceptor[]).MakeByRefType())
+				new ArgumentReference(typeof(object)),
+				new ArgumentReference(typeof(IInterceptor[])),
+				new ArgumentReference(typeof(MethodInfo)),
+				new ArgumentReference(typeof(object[])),
 			};
 		}
 

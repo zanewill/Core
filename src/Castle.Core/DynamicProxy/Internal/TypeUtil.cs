@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Generators.Emitters
+namespace Castle.DynamicProxy.Internal
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Linq;
 	using System.Reflection;
+
+	using Castle.DynamicProxy.Generators.Emitters;
 
 	public static class TypeUtil
 	{
@@ -50,20 +51,19 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		/// <summary>
 		///   Returns list of all unique interfaces implemented given types, including their base interfaces.
 		/// </summary>
-		/// <param name = "types"></param>
-		/// <returns></returns>
-		public static ICollection<Type> GetAllInterfaces(params Type[] types)
+		/// <param name="types"> </param>
+		/// <returns> </returns>
+		public static Type[] GetAllInterfaces(params Type[] types)
 		{
 			if (types == null)
 			{
 				return Type.EmptyTypes;
 			}
 
-			var dummy = new object();
-			// we should move this to HashSet once we no longer support .NET 2.0
-			IDictionary<Type, object> interfaces = new Dictionary<Type, object>();
-			foreach (var type in types)
+			var interfaces = new HashSet<Type>();
+			for (var index = 0; index < types.Length; index++)
 			{
+				var type = types[index];
 				if (type == null)
 				{
 					continue;
@@ -71,19 +71,24 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 				if (type.IsInterface)
 				{
-					interfaces[type] = dummy;
+					if (interfaces.Add(type) == false)
+					{
+						continue;
+					}
 				}
 
-				foreach (var @interface in type.GetInterfaces())
+				var innerInterfaces = type.GetInterfaces();
+				for (var i = 0; i < innerInterfaces.Length; i++)
 				{
-					interfaces[@interface] = dummy;
+					var @interface = innerInterfaces[i];
+					interfaces.Add(@interface);
 				}
 			}
 
-			return Sort(interfaces.Keys);
+			return Sort(interfaces);
 		}
 
-		public static ICollection<Type> GetAllInterfaces(this Type type)
+		public static Type[] GetAllInterfaces(this Type type)
 		{
 			return GetAllInterfaces(new[] { type });
 		}
@@ -122,6 +127,15 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 
 			return parameter;
+		}
+
+		public static Type GetTypeOrNull(object target)
+		{
+			if (target == null)
+			{
+				return null;
+			}
+			return target.GetType();
 		}
 
 		public static bool IsFinalizer(this MethodInfo methodInfo)
@@ -199,9 +213,10 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return hasAnyGenericParameters;
 		}
 
-		private static Type[] Sort(IEnumerable<Type> types)
+		private static Type[] Sort(ICollection<Type> types)
 		{
-			var array = types.ToArray();
+			var array = new Type[types.Count];
+			types.CopyTo(array, 0);
 			//NOTE: is there a better, stable way to sort Types. We will need to revise this once we allow open generics
 			Array.Sort(array, (l, r) => string.Compare(l.AssemblyQualifiedName, r.AssemblyQualifiedName, StringComparison.OrdinalIgnoreCase));
 			return array;

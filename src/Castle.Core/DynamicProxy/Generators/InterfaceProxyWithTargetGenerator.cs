@@ -27,6 +27,7 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Contributors;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Serialization;
 
 	public class InterfaceProxyWithTargetGenerator : BaseProxyGenerator
@@ -42,7 +43,6 @@ namespace Castle.DynamicProxy.Generators
 		                                         ProxyGenerationOptions proxyGenerationOptions)
 			: base(scope, @interface, proxyGenerationOptions)
 		{
-
 			this.proxyTargetType = proxyTargetType;
 			this.additionalInterfacesToProxy = additionalInterfacesToProxy;
 			// TODO: this should be refactored 
@@ -57,7 +57,7 @@ namespace Castle.DynamicProxy.Generators
 		protected virtual void AdjustTargetTypes(ref Type proxyTargetInterface, ref Type targetFieldType)
 		{
 			proxyTargetInterface = GetTargetType(proxyTargetInterface, additionalInterfacesToProxy ?? Type.EmptyTypes,
-												 ProxyGenerationOptions);
+			                                     ProxyGenerationOptions);
 			targetFieldType = proxyTargetInterface;
 		}
 
@@ -83,7 +83,7 @@ namespace Castle.DynamicProxy.Generators
 			CheckNotGenericTypeDefinitions(interfaces, "interfaces");
 			EnsureValidBaseType(options.BaseTypeForInterfaceProxy);
 
-			interfaces = TypeUtil.GetAllInterfaces(interfaces).ToArray();
+			interfaces = TypeUtil.GetAllInterfaces(interfaces);
 			var cacheKey = new CacheKey(proxyTargetType, targetType, interfaces, options, AllowChangeTarget);
 
 			return ObtainProxyType(cacheKey, (n, s) => GenerateType(n, proxyTargetType, interfaces, s));
@@ -91,7 +91,6 @@ namespace Castle.DynamicProxy.Generators
 
 		protected override ClassEmitter BuildClassEmitter(string typeName, Type baseType, Type[] interfaces)
 		{
-
 			var emitter = new ClassEmitterSupportingGenericsTEMP(Scope, typeName, baseType, interfaces);
 			if (targetType.IsGenericTypeDefinition)
 			{
@@ -120,7 +119,7 @@ namespace Castle.DynamicProxy.Generators
 		                                                           INamingScope namingScope)
 		{
 			var contributor = new InterfaceProxyWithTargetInterfaceTargetContributor(proxyTargetType, AllowChangeTarget, namingScope)
-				                  {Logger = Logger};
+			{ Logger = Logger };
 			var proxiedInterfaces = targetType.GetAllInterfaces();
 			foreach (var @interface in proxiedInterfaces)
 			{
@@ -228,7 +227,7 @@ namespace Castle.DynamicProxy.Generators
 		                                                   out ITypeContributor[] contributors, INamingScope namingScope)
 		{
 			IDictionary<Type, ITypeContributor> typeImplementerMapping = new Dictionary<Type, ITypeContributor>();
-			var mixins = new MixinContributor(namingScope, AllowChangeTarget) {Logger = Logger};
+			var mixins = new MixinContributor(namingScope, AllowChangeTarget) { Logger = Logger };
 			// Order of interface precedence:
 			// 1. first target
 			var targetInterfaces = proxyTargetType.GetAllInterfaces();
@@ -285,7 +284,7 @@ namespace Castle.DynamicProxy.Generators
 			AddMappingForISerializable(typeImplementerMapping, instance);
 			try
 			{
-				AddMappingNoCheck(typeof (IProxyTargetAccessor), instance, typeImplementerMapping);
+				AddMappingNoCheck(typeof(IProxyTargetAccessor), instance, typeImplementerMapping);
 			}
 			catch (ArgumentException)
 			{
@@ -293,12 +292,12 @@ namespace Castle.DynamicProxy.Generators
 			}
 
 			contributors = new[]
-				               {
-					               target,
-					               additionalInterfacesContributor,
-					               mixins,
-					               instance
-				               };
+			{
+				target,
+				additionalInterfacesContributor,
+				mixins,
+				instance
+			};
 			return typeImplementerMapping.Keys.ToArray();
 		}
 
@@ -373,7 +372,7 @@ namespace Castle.DynamicProxy.Generators
 		{
 			options.Initialize();
 			if (@interface.IsGenericType && additionalInterfaces.None(i => i.IsGenericType) &&
-				options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
+			    options.MixinData.MixinInterfaces.None(m => m.IsGenericType))
 			{
 				return @interface.GetGenericTypeDefinition();
 			}

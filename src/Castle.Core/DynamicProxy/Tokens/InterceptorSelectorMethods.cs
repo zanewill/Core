@@ -12,28 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Generators.Emitters.SimpleAST
+namespace Castle.DynamicProxy.Tokens
 {
-	using System.Collections.Generic;
-	using System.Reflection.Emit;
+	using System.Reflection;
 
-	public class MultiStatementExpression : Expression
+	public static class InterceptorSelectorMethods
 	{
-		private readonly List<Statement> statements = new List<Statement>();
-
-		public void AddExpression(Expression expression)
-		{
-			AddStatement(new ExpressionStatement(expression));
-		}
-
-		public void AddStatement(Statement statement)
-		{
-			statements.Add(statement);
-		}
-
-		public override void Emit(IMemberEmitter member, ILGenerator gen)
-		{
-			statements.ForEach(s => s.Emit(member, gen));
-		}
+		public static readonly MethodInfo SelectInterceptors = typeof(IInterceptorSelector).GetMethod("SelectInterceptors", BindingFlags.Instance | BindingFlags.Public);
 	}
 }

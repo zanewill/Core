@@ -24,7 +24,7 @@ namespace Castle.DynamicProxy.Generators
 
 	public class CompositionInvocationTypeGenerator : InvocationTypeGenerator
 	{
-		public static readonly Type BaseType = typeof (CompositionInvocation);
+		public static readonly Type BaseType = typeof(CompositionInvocation);
 
 		public CompositionInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback,
 		                                          IInvocationCreationContributor contributor)
@@ -36,29 +36,14 @@ namespace Castle.DynamicProxy.Generators
 		                                                            ProxyGenerationOptions proxyGenerationOptions,
 		                                                            out ConstructorInfo baseConstructor)
 		{
-			if (proxyGenerationOptions.Selector == null)
-			{
-				baseConstructor = InvocationMethods.CompositionInvocationConstructorNoSelector;
-				return new[]
-				{
-					new ArgumentReference(targetFieldType),
-					new ArgumentReference(typeof (object)),
-					new ArgumentReference(typeof (IInterceptor[])),
-					new ArgumentReference(typeof (MethodInfo)),
-					new ArgumentReference(typeof (object[])),
-				};
-			}
-
-			baseConstructor = InvocationMethods.CompositionInvocationConstructorWithSelector;
+			baseConstructor = InvocationMethods.CompositionInvocationConstructor;
 			return new[]
 			{
 				new ArgumentReference(targetFieldType),
-				new ArgumentReference(typeof (object)),
-				new ArgumentReference(typeof (IInterceptor[])),
-				new ArgumentReference(typeof (MethodInfo)),
-				new ArgumentReference(typeof (object[])),
-				new ArgumentReference(typeof (IInterceptorSelector)),
-				new ArgumentReference(typeof (IInterceptor[]).MakeByRefType())
+				new ArgumentReference(typeof(object)),
+				new ArgumentReference(typeof(IInterceptor[])),
+				new ArgumentReference(typeof(MethodInfo)),
+				new ArgumentReference(typeof(object[])),
 			};
 		}
 
