@@ -67,7 +67,7 @@ namespace Castle.DynamicProxy.Generators
 
 			if (@class.TypeBuilder.IsGenericTypeDefinition)
 			{
-				invocation.CopyGenericParametersFromType(targetType, methodInfo);
+				invocation.CopyGenericParametersFromType(@class.GenericParametersSource, methodInfo);
 			}
 			else
 			{

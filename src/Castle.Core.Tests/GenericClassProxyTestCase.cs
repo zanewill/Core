@@ -87,6 +87,21 @@ namespace Castle.DynamicProxy.Tests
 		}
 
 		[Test]
+		public void ProxyWithGenericArgumentsWithBaseGenericClass_and_for_base()
+		{
+			var inheritedProxy = generator.CreateClassProxy<SubClassWithGenArgs<int, string, int>>(logger);
+			var baseProxy = generator.CreateClassProxy<ClassWithGenArgs<int, string>>(logger);
+
+			inheritedProxy.AProperty = true;
+			Assert.IsTrue(inheritedProxy.AProperty);
+
+			baseProxy.AProperty = true;
+			Assert.IsTrue(baseProxy.AProperty);
+
+			Assert.AreEqual("set_AProperty get_AProperty set_AProperty get_AProperty ", logger.LogContents);
+		}
+
+		[Test]
 		public void ProxyWithGenericArgumentsAndArgumentConstraints()
 		{
 			GenClassWithConstraints<int> proxy = generator.CreateClassProxy<GenClassWithConstraints<int>>(logger);

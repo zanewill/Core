@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ namespace Castle.DynamicProxy.Generators.Emitters
 	[DebuggerDisplay("{typeBuilder.Name}")]
 	public abstract class AbstractTypeEmitter
 	{
-		private const MethodAttributes defaultAttributes = MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public;
+		private const MethodAttributes defaultAttributes =
+			MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public;
+
 		protected internal readonly GenericMap name2GenericType = new GenericMap();
 
 		private readonly List<ConstructorEmitter> constructors = new List<ConstructorEmitter>();
@@ -61,6 +63,8 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		{
 			get { return constructors; }
 		}
+
+		public Type GenericParametersSource { get; set; }
 
 		public GenericTypeParameterBuilder[] GenericTypeParams
 		{
@@ -144,8 +148,11 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				throw new ProxyGenerationException("CopyGenericParametersFromMethod: cannot invoke me twice");
 			}
 
-			var arguments = GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, methodToCopyGenericsFrom, typeBuilder, name2GenericType);
+			var arguments = GenericUtil.CopyGenericArguments(typeToCopyGenericsFrom, methodToCopyGenericsFrom, typeBuilder,
+			                                                 name2GenericType);
 			SetGenericTypeParameters(arguments);
+
+			GenericParametersSource = typeToCopyGenericsFrom;
 		}
 
 		public ConstructorEmitter CreateConstructor(params ArgumentReference[] arguments)
@@ -259,7 +266,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 		public void DefineCustomAttribute<TAttribute>(object[] constructorArguments) where TAttribute : Attribute
 		{
-			var customAttributeBuilder = AttributeUtil.CreateBuilder(typeof(TAttribute), constructorArguments);
+			var customAttributeBuilder = AttributeUtil.CreateBuilder(typeof (TAttribute), constructorArguments);
 			typeBuilder.SetCustomAttribute(customAttributeBuilder);
 		}
 
