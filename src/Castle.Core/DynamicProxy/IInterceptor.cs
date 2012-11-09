@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 namespace Castle.DynamicProxy
 {
 	/// <summary>
-	///   New interface that is going to be used by DynamicProxy 2
+	///   Intercepts calls to proxied methods
 	/// </summary>
 	public interface IInterceptor
 	{

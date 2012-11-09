@@ -26,21 +26,27 @@ namespace CastleTests.OpenGenerics
 		private IInvocation invocation;
 
 		[Test]
+		public void Arguments_is_empty()
+		{
+			CollectionAssert.IsEmpty(invocation.Arguments);
+		}
+
+		[Test]
 		public void Concrete_method_invocation_target_is_on_closed_type()
 		{
 			invocation.GetConcreteMethodInvocationTarget().MustBe<SimpleGeneric<object>>(g => g.Method<int>());
 		}
 
 		[Test]
-		public void Concrete_method_is_on_closed_Type()
+		public void Concrete_method_is_closed_and_on_closed_Type()
 		{
 			invocation.GetConcreteMethod().MustBe<SimpleGeneric<object>>(g => g.Method<int>());
 		}
 
 		[Test]
-		public void GenericArguments_has_arguments_of_the_method()
+		public void GenericArguments_has_arguments_for_the_method_only()
 		{
-			CollectionAssert.AreEqual(new[] { typeof (int) }, invocation.GenericArguments);
+			CollectionAssert.AreEquivalent(invocation.GenericArguments, new[] { typeof (int) });
 		}
 
 		[Test]
@@ -63,9 +69,9 @@ namespace CastleTests.OpenGenerics
 		}
 
 		[Test]
-		public void Method_is_open_generic()
+		public void Method_is_closed_generic()
 		{
-			invocation.Method.MustBeOpen<SimpleGeneric<object>>(g => g.Method<int>());
+			invocation.Method.MustBe<SimpleGeneric<object>>(g => g.Method<int>());
 		}
 
 		[Test]

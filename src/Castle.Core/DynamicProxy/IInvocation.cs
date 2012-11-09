@@ -23,7 +23,7 @@ namespace Castle.DynamicProxy
 	public interface IInvocation
 	{
 		/// <summary>
-		///   Gets the arguments that the <see cref = "Method" /> has been invoked with.
+		///   Gets the arguments that the <see cref = "Method" /> has been invoked with. Empty array for methods with no arguments.
 		/// </summary>
 		/// <value>The arguments the method was invoked with.</value>
 		object[] Arguments { get; }
@@ -31,7 +31,7 @@ namespace Castle.DynamicProxy
 		/// <summary>
 		///   Gets the generic arguments of the method.
 		/// </summary>
-		/// <value>The generic arguments, or null if not a generic method.</value>
+		/// <value>The generic arguments, or empty array if not a generic method.</value>
 		Type[] GenericArguments { get; }
 
 		/// <summary>
