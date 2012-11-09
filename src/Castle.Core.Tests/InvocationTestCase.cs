@@ -18,8 +18,6 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.InterClasses;
 
-	using CastleTests;
-
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -28,70 +26,76 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void InvocationForConcreteClassProxy()
 		{
-			KeepDataInterceptor interceptor = new KeepDataInterceptor();
+			var interceptor = new KeepDataInterceptor();
 
-			object proxy = generator.CreateClassProxy(typeof (ServiceClass), interceptor);
+			var proxy = generator.CreateClassProxy(typeof (ServiceClass), interceptor);
 
-			ServiceClass instance = (ServiceClass) proxy;
+			var instance = (ServiceClass) proxy;
 
 			instance.Sum(20, 25);
+			var invocation = interceptor.Invocation;
 
-			Assert.IsNotNull(interceptor.Invocation);
+			Assert.IsNotNull(invocation);
 
-			Assert.IsNotNull(interceptor.Invocation.Arguments);
-			Assert.AreEqual(2, interceptor.Invocation.Arguments.Length);
-			Assert.AreEqual(20, interceptor.Invocation.Arguments[0]);
-			Assert.AreEqual(25, interceptor.Invocation.Arguments[1]);
-			Assert.AreEqual(20, interceptor.Invocation.GetArgumentValue(0));
-			Assert.AreEqual(25, interceptor.Invocation.GetArgumentValue(1));
-			Assert.AreEqual(45, interceptor.Invocation.ReturnValue);
+			Assert.IsNotNull(invocation.Arguments);
+			Assert.AreEqual(2, invocation.Arguments.Length);
+			Assert.AreEqual(20, invocation.Arguments[0]);
+			Assert.AreEqual(25, invocation.Arguments[1]);
+			Assert.AreEqual(20, invocation.GetArgumentValue(0));
+			Assert.AreEqual(25, invocation.GetArgumentValue(1));
+			Assert.AreEqual(45, invocation.ReturnValue);
 
-			Assert.IsNotNull(interceptor.Invocation.Proxy);
-			Assert.IsInstanceOf(typeof (ServiceClass), interceptor.Invocation.Proxy);
+			Assert.IsEmpty(invocation.GenericArguments);
 
-			Assert.IsNotNull(interceptor.Invocation.InvocationTarget);
-			Assert.IsInstanceOf(typeof (ServiceClass), interceptor.Invocation.InvocationTarget);
-			Assert.IsNotNull(interceptor.Invocation.TargetType);
-			Assert.AreSame(typeof (ServiceClass), interceptor.Invocation.TargetType);
+			Assert.IsNotNull(invocation.Proxy);
+			Assert.IsInstanceOf(typeof (ServiceClass), invocation.Proxy);
 
-			Assert.IsNotNull(interceptor.Invocation.Method);
-			Assert.IsNotNull(interceptor.Invocation.MethodInvocationTarget);
-			Assert.AreSame(interceptor.Invocation.Method, interceptor.Invocation.MethodInvocationTarget.GetBaseDefinition());
+			Assert.IsNotNull(invocation.InvocationTarget);
+			Assert.IsInstanceOf(typeof (ServiceClass), invocation.InvocationTarget);
+			Assert.IsNotNull(invocation.TargetType);
+			Assert.AreSame(typeof (ServiceClass), invocation.TargetType);
+
+			Assert.IsNotNull(invocation.Method);
+			Assert.IsNotNull(invocation.MethodInvocationTarget);
+			Assert.AreSame(invocation.Method, invocation.MethodInvocationTarget.GetBaseDefinition());
 		}
 
 		[Test]
 		public void InvocationForInterfaceProxyWithTarget()
 		{
-			KeepDataInterceptor interceptor = new KeepDataInterceptor();
+			var interceptor = new KeepDataInterceptor();
 
-			object proxy = generator.CreateInterfaceProxyWithTarget(
+			var proxy = generator.CreateInterfaceProxyWithTarget(
 				typeof (IService), new ServiceImpl(), interceptor);
 
-			IService instance = (IService) proxy;
+			var instance = (IService) proxy;
 
 			instance.Sum(20, 25);
 
-			Assert.IsNotNull(interceptor.Invocation);
+			var invocation = interceptor.Invocation;
+			Assert.IsNotNull(invocation);
 
-			Assert.IsNotNull(interceptor.Invocation.Arguments);
-			Assert.AreEqual(2, interceptor.Invocation.Arguments.Length);
-			Assert.AreEqual(20, interceptor.Invocation.Arguments[0]);
-			Assert.AreEqual(25, interceptor.Invocation.Arguments[1]);
-			Assert.AreEqual(20, interceptor.Invocation.GetArgumentValue(0));
-			Assert.AreEqual(25, interceptor.Invocation.GetArgumentValue(1));
-			Assert.AreEqual(45, interceptor.Invocation.ReturnValue);
+			Assert.IsNotNull(invocation.Arguments);
+			Assert.AreEqual(2, invocation.Arguments.Length);
+			Assert.AreEqual(20, invocation.Arguments[0]);
+			Assert.AreEqual(25, invocation.Arguments[1]);
+			Assert.AreEqual(20, invocation.GetArgumentValue(0));
+			Assert.AreEqual(25, invocation.GetArgumentValue(1));
+			Assert.AreEqual(45, invocation.ReturnValue);
 
-			Assert.IsNotNull(interceptor.Invocation.Proxy);
-			Assert.IsNotInstanceOf(typeof(ServiceImpl), interceptor.Invocation.Proxy);
+			Assert.IsEmpty(invocation.GenericArguments);
 
-			Assert.IsNotNull(interceptor.Invocation.InvocationTarget);
-			Assert.IsInstanceOf(typeof(ServiceImpl), interceptor.Invocation.InvocationTarget);
-			Assert.IsNotNull(interceptor.Invocation.TargetType);
-			Assert.AreSame(typeof(ServiceImpl), interceptor.Invocation.TargetType);
+			Assert.IsNotNull(invocation.Proxy);
+			Assert.IsNotInstanceOf(typeof(ServiceImpl), invocation.Proxy);
 
-			Assert.IsNotNull(interceptor.Invocation.Method);
-			Assert.IsNotNull(interceptor.Invocation.MethodInvocationTarget);
-			Assert.AreNotSame(interceptor.Invocation.Method, interceptor.Invocation.MethodInvocationTarget);
+			Assert.IsNotNull(invocation.InvocationTarget);
+			Assert.IsInstanceOf(typeof(ServiceImpl), invocation.InvocationTarget);
+			Assert.IsNotNull(invocation.TargetType);
+			Assert.AreSame(typeof(ServiceImpl), invocation.TargetType);
+
+			Assert.IsNotNull(invocation.Method);
+			Assert.IsNotNull(invocation.MethodInvocationTarget);
+			Assert.AreNotSame(invocation.Method, invocation.MethodInvocationTarget);
 		}
 	}
 }
