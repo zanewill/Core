@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -88,10 +88,9 @@ namespace Castle.DynamicProxy.Contributors
 				                                     (c, i) => fields[i.DeclaringType]);
 			}
 
-			var invocation = GetInvocationType(method, @class, options);
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => GetInvocationType(method, @class, options),
 			                                         getTargetExpression,
 			                                         overrideMethod,
 			                                         null);
@@ -105,8 +104,8 @@ namespace Castle.DynamicProxy.Contributors
 			}
 
 			return (c, m) => new NullCoalescingOperatorExpression(
-			                 	new AsTypeReference(c.GetField("__target"), m.DeclaringType).ToExpression(),
-			                 	fields[m.DeclaringType].ToExpression());
+				                 new AsTypeReference(c.GetField("__target"), m.DeclaringType).ToExpression(),
+				                 fields[m.DeclaringType].ToExpression());
 		}
 
 		private FieldReference BuildTargetField(ClassEmitter @class, Type type)
@@ -123,12 +122,12 @@ namespace Castle.DynamicProxy.Contributors
 			var baseType = default(Type);
 			if (canChangeTarget)
 			{
-				invocationInterfaces = new[] { typeof(IInvocation), typeof(IChangeProxyTarget) };
+				invocationInterfaces = new[] { typeof (IInvocation), typeof (IChangeProxyTarget) };
 				baseType = ChangeTargetInvocationTypeGenerator.BaseType;
 			}
 			else
 			{
-				invocationInterfaces = new[] { typeof(IInvocation) };
+				invocationInterfaces = new[] { typeof (IInvocation) };
 				baseType = CompositionInvocationTypeGenerator.BaseType;
 			}
 
@@ -145,17 +144,17 @@ namespace Castle.DynamicProxy.Contributors
 			if (canChangeTarget)
 			{
 				invocation = new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
-																	 method,
-																	 method.Method,
-																	 null)
+				                                                     method,
+				                                                     method.Method,
+				                                                     null)
 					.Generate(@class, options, namingScope).BuildType();
 			}
 			else
 			{
 				invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-																	method,
-																	method.Method,
-																	null)
+				                                                    method,
+				                                                    method.Method,
+				                                                    null)
 					.Generate(@class, options, namingScope).BuildType();
 			}
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,10 +42,9 @@ namespace Castle.DynamicProxy.Contributors
 		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
-			var invocation = GetInvocationType(method, @class, options);
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => GetInvocationType(method, @class, options),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);

@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,11 +76,9 @@ namespace Castle.DynamicProxy.Contributors
 				return IndirectlyCalledMethodGenerator(method, @class, options, overrideMethod);
 			}
 
-			var invocation = GetInvocationType(method, @class, options);
-
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => GetInvocationType(method, @class, options),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);
@@ -119,7 +117,7 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var scope = @class.ModuleScope;
 			var key = new CacheKey(
-				typeof(Delegate),
+				typeof (Delegate),
 				targetType,
 				new[] { method.MethodOnTarget.ReturnType }
 					.Concat(ArgumentsUtil.GetTypes(method.MethodOnTarget.GetParameters())).
@@ -144,7 +142,7 @@ namespace Castle.DynamicProxy.Contributors
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
 			var scope = @class.ModuleScope;
-			var invocationInterfaces = new[] { typeof(IInvocation) };
+			var invocationInterfaces = new[] { typeof (IInvocation) };
 
 			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, invocationInterfaces, null);
 
@@ -168,12 +166,14 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var @delegate = GetDelegateType(method, proxy, options);
 			var contributor = GetContributor(@delegate, method);
-			var invocation = new CompositionInvocationTypeGenerator(targetType, method, null, contributor)
-				.Generate(proxy, options, namingScope)
-				.BuildType();
 			return new MethodWithInvocationGenerator(method,
 			                                         proxy.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => new CompositionInvocationTypeGenerator(targetType,
+			                                                                                      method,
+			                                                                                      null,
+			                                                                                      contributor)
+				                                               .Generate(proxy, options, namingScope)
+				                                               .BuildType(),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         contributor);

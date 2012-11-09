@@ -33,14 +33,14 @@ namespace Castle.DynamicProxy.Generators
 		private readonly IInvocationCreationContributor contributor;
 		private readonly GetTargetExpressionDelegate getTargetExpression;
 		private readonly Reference interceptors;
-		private readonly Type invocation;
+		private readonly Func<Type> invocationFactory;
 
-		public MethodWithInvocationGenerator(MetaMethod method, Reference interceptors, Type invocation,
+		public MethodWithInvocationGenerator(MetaMethod method, Reference interceptors, Func<Type> invocationFactory,
 		                                     GetTargetExpressionDelegate getTargetExpression,
 		                                     OverrideMethodDelegate createMethod, IInvocationCreationContributor contributor)
 			: base(method, createMethod)
 		{
-			this.invocation = invocation;
+			this.invocationFactory = invocationFactory;
 			this.getTargetExpression = getTargetExpression;
 			this.interceptors = interceptors;
 			this.contributor = contributor;
@@ -60,11 +60,11 @@ namespace Castle.DynamicProxy.Generators
 
 		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, ProxyGenerationOptions options, INamingScope namingScope)
 		{
-			var invocationType = invocation;
+			var invocationType = invocationFactory();
 
 			var genericArguments = Type.EmptyTypes;
 
-			var constructor = invocation.GetConstructors()[0];
+			var constructor = invocationType.GetConstructors()[0];
 			var proxiedMethodToken = proxy.CreateStaticField(namingScope.GetUniqueName("token_" + MethodToOverride.Name), typeof(MethodInfo));
 
 			if (MethodToOverride.IsGenericMethod)

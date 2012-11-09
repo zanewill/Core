@@ -53,7 +53,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			return CopyGenericArguments(name2GenericType, builder.DefineGenericParameters, methodToCopyGenericsFrom.GetGenericArguments(), methodToCopyGenericsFrom.DeclaringType);
 		}
 
-		public static void CopyGenericConstraintsAndAttributes(GenericMap map, string[] argumentNames, Type[] originalGenericArguments,
+		public static void CopyGenericConstraintsAndAttributes(GenericMap map, Type[] originalGenericArguments,
 		                                                       GenericTypeParameterBuilder[] newGenericParameters, Type declaringType)
 		{
 			for (var i = 0; i < newGenericParameters.Length; i++)
@@ -61,7 +61,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 				var newGenericParameter = newGenericParameters[i];
 				var originalGenericArgument = originalGenericArguments[i];
 				CopyGenericConstraintsAndAttributes(originalGenericArguments, newGenericParameters, declaringType, newGenericParameter, originalGenericArgument, map);
-				map.SetBuilder(argumentNames[i], newGenericParameter);
+				map.SetBuilder(originalGenericArgument, newGenericParameter);
 			}
 		}
 
@@ -75,11 +75,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 				if (underlyingType.IsGenericParameter)
 				{
-					GenericTypeParameterBuilder genericType = name2GenericType.GetBuilder(underlyingType.Name);
-					if (genericType == null)
-					{
-						return paramType;
-					}
+					var genericType = name2GenericType.GetBuilder(underlyingType);
 
 					if (rank == 1)
 					{
@@ -96,11 +92,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 			if (paramType.IsGenericParameter)
 			{
-				var value = name2GenericType.GetBuilder(paramType.Name);
-				if (value != null)
-				{
-					return value;
-				}
+				return name2GenericType.GetBuilder(paramType);
 			}
 
 			return paramType;
@@ -119,12 +111,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			}
 
 			return newParameters;
-		}
-
-		public static GenericMap GetGenericArgumentsMap(AbstractTypeEmitter parentEmitter)
-		{
-
-			return new GenericMap(parentEmitter.GenericTypeParams ?? new GenericTypeParameterBuilder[0]);
 		}
 
 		private static Type AdjustConstraintToNewGenericParameters(Type constraint, Type[] originalGenericParameters, GenericTypeParameterBuilder[] newGenericParameters, Type declaringType, GenericMap map)
@@ -184,7 +170,7 @@ namespace Castle.DynamicProxy.Generators.Emitters
 
 			var argumentNames = genericArguments.ConvertAll(t => t.Name);
 			var newGenericParameters = genericParameterGenerator(argumentNames);
-			CopyGenericConstraintsAndAttributes(name2GenericType, argumentNames, genericArguments, newGenericParameters, declaringType);
+			CopyGenericConstraintsAndAttributes(name2GenericType, genericArguments, newGenericParameters, declaringType);
 
 			return newGenericParameters;
 		}

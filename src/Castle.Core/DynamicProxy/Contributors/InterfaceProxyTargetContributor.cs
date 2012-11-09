@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,11 +62,9 @@ namespace Castle.DynamicProxy.Contributors
 				                                     (c, m) => c.GetField("__target"));
 			}
 
-			var invocation = GetInvocationType(method, @class, options);
-
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => GetInvocationType(method, @class, options),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);
@@ -80,12 +78,12 @@ namespace Castle.DynamicProxy.Contributors
 			var baseType = default(Type);
 			if (canChangeTarget)
 			{
-				invocationInterfaces = new[] { typeof(IInvocation), typeof(IChangeProxyTarget) };
+				invocationInterfaces = new[] { typeof (IInvocation), typeof (IChangeProxyTarget) };
 				baseType = ChangeTargetInvocationTypeGenerator.BaseType;
 			}
 			else
 			{
-				invocationInterfaces = new[] { typeof(IInvocation) };
+				invocationInterfaces = new[] { typeof (IInvocation) };
 				baseType = CompositionInvocationTypeGenerator.BaseType;
 			}
 
@@ -99,7 +97,7 @@ namespace Castle.DynamicProxy.Contributors
 				return invocation;
 			}
 
-			if(canChangeTarget)
+			if (canChangeTarget)
 			{
 				invocation = new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
 				                                                     method,

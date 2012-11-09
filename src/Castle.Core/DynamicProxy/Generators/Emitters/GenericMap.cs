@@ -14,34 +14,54 @@
 
 namespace Castle.DynamicProxy.Generators.Emitters
 {
+	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using System.Reflection.Emit;
 
 	public class GenericMap
 	{
-		private readonly Dictionary<string, GenericTypeParameterBuilder> name2GenericType;
+		private readonly Dictionary<Type, GenericTypeParameterBuilder> originalToBuilder =
+			new Dictionary<Type, GenericTypeParameterBuilder>();
 
 		public GenericMap()
 		{
-			name2GenericType = new Dictionary<string, GenericTypeParameterBuilder>();
 		}
 
-		public GenericMap(GenericTypeParameterBuilder[] genericTypeParameterBuilders)
+		internal GenericMap(GenericMap genericMap)
 		{
-			name2GenericType = genericTypeParameterBuilders.ToDictionary(p => p.Name);
+			originalToBuilder = new Dictionary<Type, GenericTypeParameterBuilder>(genericMap.originalToBuilder);
 		}
 
-		public GenericTypeParameterBuilder GetBuilder(string name)
+		public GenericTypeParameterBuilder GetBuilder(Type originalGenericArgument)
+		{
+			try
+			{
+				return originalToBuilder[originalGenericArgument];
+			}
+			catch (KeyNotFoundException)
+			{
+				throw new ArgumentException("There's no generic argument mapped from " + originalGenericArgument);
+			}
+		}
+
+		public void SetBuilder(Type originalGenericArgument, GenericTypeParameterBuilder builder)
+		{
+			try
+			{
+				originalToBuilder[originalGenericArgument] = builder;
+				//originalToBuilder.Add(originalGenericArgument, builder);
+			}
+			catch (ArgumentException)
+			{
+				throw new ArgumentException("Generic argument " + originalGenericArgument + " was already mapped");
+			}
+		}
+
+		public Type TryGetBuilder(Type originalGenericArgument)
 		{
 			GenericTypeParameterBuilder value;
-			name2GenericType.TryGetValue(name, out value);
+			originalToBuilder.TryGetValue(originalGenericArgument, out value);
 			return value;
-		}
-
-		public void SetBuilder(string name, GenericTypeParameterBuilder builder)
-		{
-			name2GenericType[name] = builder;
 		}
 	}
 }

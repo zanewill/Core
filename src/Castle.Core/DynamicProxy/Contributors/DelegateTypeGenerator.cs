@@ -61,7 +61,7 @@ namespace Castle.DynamicProxy.Contributors
 			                                    MethodAttributes.HideBySig |
 			                                    MethodAttributes.NewSlot |
 			                                    MethodAttributes.Virtual,
-			                                    @delegate.GetClosedParameterType(method.MethodOnTarget.ReturnType),
+			                                    @delegate.GetClosedParameterType(method.Method.ReturnType),
 			                                    paramTypes);
 			invoke.MethodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 		}

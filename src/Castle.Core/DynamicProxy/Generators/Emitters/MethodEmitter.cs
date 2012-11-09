@@ -57,12 +57,12 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		                       MethodAttributes attributes, MethodInfo methodToUseAsATemplate)
 			: this(owner, name, attributes)
 		{
-			var name2GenericType = GenericUtil.GetGenericArgumentsMap(owner);
+			var name2GenericType = owner.name2GenericType;
+			genericTypeParams = GenericUtil.CopyGenericArguments(methodToUseAsATemplate, builder, name2GenericType);
 
 			var returnType = GenericUtil.ExtractCorrectType(methodToUseAsATemplate.ReturnType, name2GenericType);
 			var baseMethodParameters = methodToUseAsATemplate.GetParameters();
 			var parameters = GenericUtil.ExtractParametersTypes(baseMethodParameters, name2GenericType);
-			genericTypeParams = GenericUtil.CopyGenericArguments(methodToUseAsATemplate, builder, name2GenericType);
 			SetParameters(parameters);
 			SetReturnType(returnType);
 			SetSignature(returnType, methodToUseAsATemplate.ReturnParameter, parameters, baseMethodParameters);

@@ -102,8 +102,7 @@ namespace Castle.DynamicProxy.Generators
 		}
 
 		protected virtual void ImplementInvokeMethodOnTarget(AbstractTypeEmitter invocation, ParameterInfo[] parameters,
-		                                                     MethodEmitter invokeMethodOnTarget,
-		                                                     Reference targetField)
+		                                                     MethodEmitter invokeMethodOnTarget, Reference targetField)
 		{
 			var callbackMethod = GetCallbackMethod(invocation);
 			if (callbackMethod == null)
@@ -157,7 +156,7 @@ namespace Castle.DynamicProxy.Generators
 			LocalReference returnValue = null;
 			if (callbackMethod.ReturnType != typeof (void))
 			{
-				var returnType = invocation.GetClosedParameterType(callbackMethod.ReturnType);
+				var returnType = invocation.GetClosedParameterType(method.Method.ReturnType);
 				returnValue = invokeMethodOnTarget.CodeBuilder.DeclareLocal(returnType);
 				invokeMethodOnTarget.CodeBuilder.AddStatement(new AssignStatement(returnValue, methodOnTargetInvocationExpression));
 			}
@@ -260,7 +259,7 @@ namespace Castle.DynamicProxy.Generators
 				return callbackMethod;
 			}
 
-			return callbackMethod.MakeGenericMethod(invocation.GetGenericArgumentsFor(callbackMethod));
+			return callbackMethod.MakeGenericMethod(invocation.GetGenericArgumentsFor(method.Method));
 		}
 
 		private AbstractTypeEmitter GetEmitter(ClassEmitter @class, Type[] interfaces, INamingScope namingScope,

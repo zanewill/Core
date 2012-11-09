@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,12 +80,10 @@ namespace Castle.DynamicProxy.Contributors
 #endif
 			}
 
-			var invocation = GetInvocationType(method, @class, options);
-
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => GetInvocationType(method, @class, options),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         null);
@@ -150,13 +148,13 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var @delegate = GetDelegateType(method, @class, options);
 			var contributor = GetContributor(@delegate, method);
-			var invocation = new InheritanceInvocationTypeGenerator(method.Method.DeclaringType, method, null, contributor)
-				.Generate(@class, options, namingScope)
-				.BuildType();
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         invocation,
+			                                         () => new InheritanceInvocationTypeGenerator(
+				                                               method.Method.DeclaringType, method, null, contributor)
+				                                               .Generate(@class, options, namingScope)
+				                                               .BuildType(),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         contributor);
@@ -177,7 +175,7 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var scope = @class.ModuleScope;
 			var key = new CacheKey(
-				typeof(Delegate),
+				typeof (Delegate),
 				targetType,
 				new[] { method.MethodOnTarget.ReturnType }
 					.Concat(ArgumentsUtil.GetTypes(method.MethodOnTarget.GetParameters())).
