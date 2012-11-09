@@ -321,11 +321,13 @@
     <Compile Include="GenericClassProxyTestCase.cs" />
     <Compile Include="GenericConstraintsTestCase.cs" />
     <Compile Include="GenericInterfaceProxyTestCase.cs" />
+    <Compile Include="GenInterfaces\Generic.cs" />
     <Compile Include="GenInterfaces\GenInterface.cs" />
     <Compile Include="GenInterfaces\GenInterfaceWithGenericTypes.cs" />
     <Compile Include="GenInterfaces\GenInterfaceWithGenMethods.cs" />
     <Compile Include="GenInterfaces\GenInterfaceWithGenMethodsAndGenReturn.cs" />
     <Compile Include="GenInterfaces\IConstraint_Method1IsTypeStructAndMethod2.cs" />
+    <Compile Include="GenInterfaces\IGeneric.cs" />
     <Compile Include="GenInterfaces\IHaveGenericMethodWithNewClassStructConstraints.cs" />
     <Compile Include="GenInterfaces\IConstraint_MethodIsClassNew_Type_is_contravariant.cs" />
     <Compile Include="GenInterfaces\IConstraint_MethodIsType.cs" />

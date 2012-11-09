@@ -21,6 +21,7 @@ namespace CastleTests
 	using Castle.DynamicProxy.Tests.InterClasses;
 	using Castle.DynamicProxy.Tests.Interceptors;
 
+	using CastleTests.GenInterfaces;
 	using CastleTests.Internal;
 
 	using NUnit.Framework;
@@ -60,6 +61,25 @@ namespace CastleTests
 		}
 
 		[Test]
+		public void Invocation_for_class_proxy_public_method_generic()
+		{
+			var proxy = generator.CreateClassProxy<Generic<string>>(interceptor);
+
+			proxy.Method(45);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethodInvocationTarget: Method<Generic<string>>(s => s.Method(0)),
+				                         method: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethod: Method<Generic<string>>(s => s.Method(0)),
+				                         arguments: new object[] { 45 },
+				                         genericArguments: new[] { typeof (int) },
+				                         invocationTarget: proxy,
+				                         proxy: proxy,
+				                         returnValue: default(string),
+				                         targetType: typeof (Generic<string>)));
+		}
+
+		[Test]
 		public void Invocation_for_class_proxy_with_taget_public_method()
 		{
 			var target = new ServiceClass();
@@ -77,6 +97,26 @@ namespace CastleTests
 				                         proxy: proxy,
 				                         returnValue: 45,
 				                         targetType: typeof (ServiceClass)));
+		}
+
+		[Test]
+		public void Invocation_for_class_proxy_with_taget_public_method_generic()
+		{
+			var target = new Generic<string>("foo");
+			var proxy = generator.CreateClassProxyWithTarget(target, interceptor);
+
+			proxy.Method(45);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethodInvocationTarget: Method<Generic<string>>(s => s.Method(0)),
+				                         method: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethod: Method<Generic<string>>(s => s.Method(0)),
+				                         arguments: new object[] { 45 },
+				                         genericArguments: new[] { typeof (int) },
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: "foo",
+				                         targetType: typeof (Generic<string>)));
 		}
 
 		[Test]
@@ -100,6 +140,26 @@ namespace CastleTests
 		}
 
 		[Test]
+		public void Invocation_for_interface_proxy_with_target_generic()
+		{
+			var target = new Generic<string>("foo");
+			var proxy = generator.CreateInterfaceProxyWithTarget<IGeneric<string>>(target, interceptor);
+
+			proxy.Method(45);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethodInvocationTarget: Method<Generic<string>>(s => s.Method(0)),
+				                         method: MethodOpen<IGeneric<string>>(s => s.Method(0)),
+				                         concreteMethod: Method<IGeneric<string>>(s => s.Method(0)),
+				                         arguments: new object[] { 45 },
+				                         genericArguments: new[] { typeof (int) },
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: "foo",
+				                         targetType: typeof (Generic<string>)));
+		}
+
+		[Test]
 		public void Invocation_for_interface_proxy_with_target_interface()
 		{
 			var target = new ServiceImpl();
@@ -120,6 +180,26 @@ namespace CastleTests
 		}
 
 		[Test]
+		public void Invocation_for_interface_proxy_with_target_interface_generic()
+		{
+			var target = new Generic<string>("foo");
+			var proxy = generator.CreateInterfaceProxyWithTargetInterface<IGeneric<string>>(target, interceptor);
+
+			proxy.Method(45);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: MethodOpen<Generic<string>>(s => s.Method(0)),
+				                         concreteMethodInvocationTarget: Method<Generic<string>>(s => s.Method(0)),
+				                         method: MethodOpen<IGeneric<string>>(s => s.Method(0)),
+				                         concreteMethod: Method<IGeneric<string>>(s => s.Method(0)),
+				                         arguments: new object[] { 45 },
+				                         genericArguments: new[] { typeof (int) },
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: "foo",
+				                         targetType: typeof (Generic<string>)));
+		}
+
+		[Test]
 		public void Invocation_for_interface_proxy_without_target()
 		{
 			var proxy = generator.CreateInterfaceProxyWithoutTarget<IService>(interceptor);
@@ -135,6 +215,25 @@ namespace CastleTests
 				                         invocationTarget: null,
 				                         proxy: proxy,
 				                         returnValue: 0,
+				                         targetType: null));
+		}
+
+		[Test]
+		public void Invocation_for_interface_proxy_without_target_generic()
+		{
+			var proxy = generator.CreateInterfaceProxyWithoutTarget<IGeneric<string>>(interceptor);
+
+			proxy.Method(45);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: null,
+				                         concreteMethodInvocationTarget: null,
+				                         method: MethodOpen<IGeneric<string>>(s => s.Method(0)),
+				                         concreteMethod: Method<IGeneric<string>>(s => s.Method(0)),
+				                         arguments: new object[] { 45 },
+				                         genericArguments: new[] { typeof (int) },
+				                         invocationTarget: null,
+				                         proxy: proxy,
+				                         returnValue: default(string),
 				                         targetType: null));
 		}
 	}

@@ -76,6 +76,11 @@ namespace CastleTests
 			return ((MethodCallExpression)methodCall.Body).Method;
 		}
 
+		protected MethodInfo MethodOpen<TType>(Expression<Action<TType>> methodCall)
+		{
+			return ((MethodCallExpression)methodCall.Body).Method.GetGenericMethodDefinition();
+		}
+
 		public void ResetGeneratorAndBuilder()
 		{
 #if SILVERLIGHT // no PersistentProxyBuilder in Silverlight
