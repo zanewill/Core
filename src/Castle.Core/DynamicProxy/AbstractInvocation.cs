@@ -109,9 +109,13 @@ namespace Castle.DynamicProxy
 		{
 			// it is ensured by the InvocationHelper that method will be closed
 			var method = MethodInvocationTarget;
-			Debug.Assert(method == null || method.IsGenericMethodDefinition == false,
-			             "method == null || method.IsGenericMethodDefinition == false");
-			return method;
+			Debug.Assert(method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0,
+			             "method == null || method.IsGenericMethodDefinition == GenericArguments.Length > 0");
+			if(GenericArguments.Length == 0)
+			{
+				return method;
+			}
+			return method.MakeGenericMethod(GenericArguments);
 		}
 
 		public object ReturnValue { get; set; }

@@ -79,7 +79,7 @@ namespace Castle.DynamicProxy.Internal
 		private static MethodInfo ObtainMethod(MethodInfo proxiedMethod, Type type)
 		{
 			Type[] genericArguments = null;
-			if (proxiedMethod.IsGenericMethod)
+			if (proxiedMethod.IsGenericMethod && proxiedMethod.IsGenericMethodDefinition == false)
 			{
 				genericArguments = proxiedMethod.GetGenericArguments();
 				proxiedMethod = proxiedMethod.GetGenericMethodDefinition();
