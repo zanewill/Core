@@ -181,6 +181,14 @@ namespace Castle.DynamicProxy.Tests
 				new DoNothingInterceptor());
 		}
 
+		[Test]
+		public void GenericMethodReturningGenericArrayOfArrays()
+		{
+			generator.CreateInterfaceProxyWithoutTarget(
+				typeof(IStore2),
+				new DoNothingInterceptor());
+		}
+
 #if !SILVERLIGHT
 		[Test]
 		public void InternalClassWithInternalMethodAndProperty()
@@ -415,5 +423,10 @@ namespace Castle.DynamicProxy.Tests
 	public interface IStore1
 	{
 		R[] TestMethod<R>();
+	}
+
+	public interface IStore2
+	{
+		R[][] TestMethod<R>();
 	}
 }
