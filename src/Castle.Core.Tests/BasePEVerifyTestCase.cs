@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ namespace CastleTests
 	using System;
 	using System.Diagnostics;
 	using System.IO;
+	using System.Linq.Expressions;
+	using System.Reflection;
 
 	using Castle.DynamicProxy;
 
@@ -67,7 +69,11 @@ namespace CastleTests
 
 		protected virtual void AfterInit()
 		{
-			
+		}
+
+		protected MethodInfo Method<TType>(Expression<Action<TType>> methodCall)
+		{
+			return ((MethodCallExpression)methodCall.Body).Method;
 		}
 
 		public void ResetGeneratorAndBuilder()
@@ -111,14 +117,14 @@ namespace CastleTests
 			var process = new Process
 			{
 				StartInfo =
-					{
-						FileName = FindPeVerify.PeVerifyPath,
-						RedirectStandardOutput = true,
-						UseShellExecute = false,
-						WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
-						Arguments = "\"" + assemblyPath + "\" /VERBOSE",
-						CreateNoWindow = true
-					}
+				{
+					FileName = FindPeVerify.PeVerifyPath,
+					RedirectStandardOutput = true,
+					UseShellExecute = false,
+					WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+					Arguments = "\"" + assemblyPath + "\" /VERBOSE",
+					CreateNoWindow = true
+				}
 			};
 			process.Start();
 			var processOutput = process.StandardOutput.ReadToEnd();
@@ -144,14 +150,14 @@ namespace CastleTests
 #endif
 	}
 }
+
 // NOTE: temporary solution until we can move everything to a single namespace
+
 namespace Castle.DynamicProxy.Tests
 {
 	using System;
 	using System.Diagnostics;
 	using System.IO;
-
-	using Castle.DynamicProxy;
 
 	using CastleTests.Properties;
 
@@ -195,6 +201,11 @@ namespace Castle.DynamicProxy.Tests
 		{
 			ResetGeneratorAndBuilder();
 			verificationDisabled = false;
+			AfterInit();
+		}
+
+		protected virtual void AfterInit()
+		{
 		}
 
 		public void ResetGeneratorAndBuilder()

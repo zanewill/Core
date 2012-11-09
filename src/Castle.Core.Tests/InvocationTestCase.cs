@@ -12,90 +12,130 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests
+namespace CastleTests
 {
+	using System;
+
+	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.Classes;
 	using Castle.DynamicProxy.Tests.InterClasses;
 	using Castle.DynamicProxy.Tests.Interceptors;
+
+	using CastleTests.Internal;
 
 	using NUnit.Framework;
 
 	[TestFixture]
 	public class InvocationTestCase : BasePEVerifyTestCase
 	{
-		[Test]
-		public void InvocationForConcreteClassProxy()
+		private KeepDataInterceptor interceptor;
+
+		protected override void AfterInit()
 		{
-			var interceptor = new KeepDataInterceptor();
+			interceptor = new KeepDataInterceptor();
+		}
 
-			var proxy = generator.CreateClassProxy(typeof (ServiceClass), interceptor);
-
-			var instance = (ServiceClass)proxy;
-
-			instance.Sum(20, 25);
-			var invocation = interceptor.Invocation;
-
-			Assert.IsNotNull(invocation);
-
-			Assert.IsNotNull(invocation.Arguments);
-			Assert.AreEqual(2, invocation.Arguments.Length);
-			Assert.AreEqual(20, invocation.Arguments[0]);
-			Assert.AreEqual(25, invocation.Arguments[1]);
-			Assert.AreEqual(20, invocation.GetArgumentValue(0));
-			Assert.AreEqual(25, invocation.GetArgumentValue(1));
-			Assert.AreEqual(45, invocation.ReturnValue);
-
-			Assert.IsEmpty(invocation.GenericArguments);
-
-			Assert.IsNotNull(invocation.Proxy);
-			Assert.IsInstanceOf(typeof (ServiceClass), invocation.Proxy);
-
-			Assert.IsNotNull(invocation.InvocationTarget);
-			Assert.IsInstanceOf(typeof (ServiceClass), invocation.InvocationTarget);
-			Assert.IsNotNull(invocation.TargetType);
-			Assert.AreSame(typeof (ServiceClass), invocation.TargetType);
-
-			Assert.IsNotNull(invocation.Method);
-			Assert.IsNotNull(invocation.MethodInvocationTarget);
-			Assert.AreSame(invocation.Method, invocation.MethodInvocationTarget.GetBaseDefinition());
+		private IInvocation Invocation
+		{
+			get { return interceptor.Invocation; }
 		}
 
 		[Test]
-		public void InvocationForInterfaceProxyWithTarget()
+		public void Invocation_for_class_proxy_public_method()
 		{
-			var interceptor = new KeepDataInterceptor();
+			var proxy = generator.CreateClassProxy<ServiceClass>(interceptor);
 
-			var proxy = generator.CreateInterfaceProxyWithTarget(
-				typeof (IService), new ServiceImpl(), interceptor);
+			proxy.Sum(20, 25);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         concreteMethodInvocationTarget: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         method: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         concreteMethod: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         arguments: new object[] { 20, 25 },
+				                         genericArguments: Type.EmptyTypes,
+				                         invocationTarget: proxy,
+				                         proxy: proxy,
+				                         returnValue: 45,
+				                         targetType: typeof (ServiceClass)));
+		}
 
-			var instance = (IService)proxy;
+		[Test]
+		public void Invocation_for_class_proxy_with_taget_public_method()
+		{
+			var target = new ServiceClass();
+			var proxy = generator.CreateClassProxyWithTarget(target, interceptor);
 
-			instance.Sum(20, 25);
+			proxy.Sum(20, 25);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         concreteMethodInvocationTarget: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         method: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         concreteMethod: Method<ServiceClass>(s => s.Sum(0, 0)),
+				                         arguments: new object[] { 20, 25 },
+				                         genericArguments: Type.EmptyTypes,
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: 45,
+				                         targetType: typeof (ServiceClass)));
+		}
 
-			var invocation = interceptor.Invocation;
-			Assert.IsNotNull(invocation);
+		[Test]
+		public void Invocation_for_interface_proxy_with_target()
+		{
+			var target = new ServiceImpl();
+			var proxy = generator.CreateInterfaceProxyWithTarget<IService>(target, interceptor);
 
-			Assert.IsNotNull(invocation.Arguments);
-			Assert.AreEqual(2, invocation.Arguments.Length);
-			Assert.AreEqual(20, invocation.Arguments[0]);
-			Assert.AreEqual(25, invocation.Arguments[1]);
-			Assert.AreEqual(20, invocation.GetArgumentValue(0));
-			Assert.AreEqual(25, invocation.GetArgumentValue(1));
-			Assert.AreEqual(45, invocation.ReturnValue);
+			proxy.Sum(20, 25);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: Method<ServiceImpl>(s => s.Sum(0, 0)),
+				                         concreteMethodInvocationTarget: Method<ServiceImpl>(s => s.Sum(0, 0)),
+				                         method: Method<IService>(s => s.Sum(0, 0)),
+				                         concreteMethod: Method<IService>(s => s.Sum(0, 0)),
+				                         arguments: new object[] { 20, 25 },
+				                         genericArguments: Type.EmptyTypes,
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: 45,
+				                         targetType: typeof (ServiceImpl)));
+		}
 
-			Assert.IsEmpty(invocation.GenericArguments);
+		[Test]
+		public void Invocation_for_interface_proxy_with_target_interface()
+		{
+			var target = new ServiceImpl();
+			var proxy = generator.CreateInterfaceProxyWithTargetInterface<IService>(target, interceptor);
 
-			Assert.IsNotNull(invocation.Proxy);
-			Assert.IsNotInstanceOf(typeof (ServiceImpl), invocation.Proxy);
+			proxy.Sum(20, 25);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: Method<ServiceImpl>(s => s.Sum(0, 0)),
+				                         concreteMethodInvocationTarget: Method<ServiceImpl>(s => s.Sum(0, 0)),
+				                         method: Method<IService>(s => s.Sum(0, 0)),
+				                         concreteMethod: Method<IService>(s => s.Sum(0, 0)),
+				                         arguments: new object[] { 20, 25 },
+				                         genericArguments: Type.EmptyTypes,
+				                         invocationTarget: target,
+				                         proxy: proxy,
+				                         returnValue: 45,
+				                         targetType: typeof (ServiceImpl)));
+		}
 
-			Assert.IsNotNull(invocation.InvocationTarget);
-			Assert.IsInstanceOf(typeof (ServiceImpl), invocation.InvocationTarget);
-			Assert.IsNotNull(invocation.TargetType);
-			Assert.AreSame(typeof (ServiceImpl), invocation.TargetType);
+		[Test]
+		public void Invocation_for_interface_proxy_without_target()
+		{
+			var proxy = generator.CreateInterfaceProxyWithoutTarget<IService>(interceptor);
 
-			Assert.IsNotNull(invocation.Method);
-			Assert.IsNotNull(invocation.MethodInvocationTarget);
-			Assert.AreNotSame(invocation.Method, invocation.MethodInvocationTarget);
+			proxy.Sum(20, 25);
+			Invocation.AssertIsEqual(new FakeInvocation(
+				                         methodInvocationTarget: null,
+				                         concreteMethodInvocationTarget: null,
+				                         method: Method<IService>(s => s.Sum(0, 0)),
+				                         concreteMethod: Method<IService>(s => s.Sum(0, 0)),
+				                         arguments: new object[] { 20, 25 },
+				                         genericArguments: Type.EmptyTypes,
+				                         invocationTarget: null,
+				                         proxy: proxy,
+				                         returnValue: 0,
+				                         targetType: null));
 		}
 	}
 }
