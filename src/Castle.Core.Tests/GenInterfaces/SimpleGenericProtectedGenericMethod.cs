@@ -16,9 +16,9 @@ namespace CastleTests.GenInterfaces
 {
 	public class SimpleGenericProtectedGenericMethod<T>
 	{
-		public void Method<T2>()
+		public void Method<T3>()
 		{
-			ProtectedMethod<T2>();
+			ProtectedMethod<T3>();
 		}
 
 		protected virtual void ProtectedMethod<T2>()

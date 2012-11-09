@@ -191,8 +191,7 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void GenericMethodArgumentsAndTypeGenericArgumentsWithSameName()
 		{
-			GenClassNameClash<List<object>, List<object>> proxy =
-				generator.CreateClassProxy<GenClassNameClash<List<object>, List<object>>>(logger);
+			var proxy = generator.CreateClassProxy<GenClassNameClash<List<object>, List<object>>>(logger);
 
 			Assert.IsNotNull(proxy);
 
