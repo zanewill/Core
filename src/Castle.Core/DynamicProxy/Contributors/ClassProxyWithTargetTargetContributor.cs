@@ -82,16 +82,6 @@ namespace Castle.DynamicProxy.Contributors
 			                                         null);
 		}
 
-		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
-		{
-			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                              method,
-			                                              method.Method,
-			                                              null)
-				.Generate(@class, options, namingScope)
-				.BuildType();
-		}
-
 		private IInvocationCreationContributor GetContributor(Type @delegate, MetaMethod method)
 		{
 			if (@delegate.IsGenericType == false)
@@ -114,24 +104,17 @@ namespace Castle.DynamicProxy.Contributors
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
 			Debug.Assert(method.HasTarget, "method.HasTarget");
-			var scope = @class.ModuleScope;
-
-			var invocationInterfaces = new[] { typeof(IInvocation) };
-
-			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, invocationInterfaces, null);
-
-			// no locking required as we're already within a lock
-
-			var invocation = scope.GetFromCache(key);
-			if (invocation != null)
+			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+			                                              method,
+			                                              method.Method,
+			                                              null,
+			                                              @class.ModuleScope,
+			                                              @class,
+			                                              options,
+			                                              namingScope)
 			{
-				return invocation;
-			}
-			invocation = BuildInvocationType(method, @class, options);
-
-			scope.RegisterInCache(key, invocation);
-
-			return invocation;
+				Logger = Logger
+			}.GetProxyType();
 		}
 
 		private MethodGenerator IndirectlyCalledMethodGenerator(MetaMethod method, ClassEmitter proxy,
@@ -145,9 +128,14 @@ namespace Castle.DynamicProxy.Contributors
 			                                         () => new CompositionInvocationTypeGenerator(targetType,
 			                                                                                      method,
 			                                                                                      null,
-			                                                                                      contributor)
-				                                               .Generate(proxy, options, namingScope)
-				                                               .BuildType(),
+			                                                                                      contributor,
+			                                                                                      proxy.ModuleScope,
+			                                                                                      proxy,
+			                                                                                      options,
+			                                                                                      namingScope)
+			                                         {
+				                                         Logger = Logger
+			                                         }.GetProxyType(),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         contributor);

@@ -62,8 +62,6 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy, ProxyGenerationOptions options)
 		{
-			var scope = proxy.ModuleScope;
-
 			if (canChangeTarget)
 			{
 				return new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
@@ -77,28 +75,17 @@ namespace Castle.DynamicProxy.Contributors
 					Logger = Logger
 				}.GetProxyType();
 			}
-
-			var invocationInterfaces = new[] { typeof(IInvocation) };
-			var baseType = CompositionInvocationTypeGenerator.BaseType;
-
-			var key = new CacheKey(method.Method, baseType, invocationInterfaces, null);
-
-			// no locking required as we're already within a lock
-
-			var invocation = scope.GetFromCache(key);
-			if (invocation != null)
+			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+			                                              method,
+			                                              method.Method,
+			                                              null,
+			                                              proxy.ModuleScope,
+			                                              proxy,
+			                                              options,
+			                                              namingScope)
 			{
-				return invocation;
-			}
-			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                                    method,
-			                                                    method.Method,
-			                                                    null)
-				.Generate(proxy, options, namingScope).BuildType();
-
-			scope.RegisterInCache(key, invocation);
-
-			return invocation;
+				Logger = Logger
+			}.GetProxyType();
 		}
 	}
 }

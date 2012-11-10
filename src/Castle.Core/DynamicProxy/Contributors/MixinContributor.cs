@@ -116,13 +116,12 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
-			var scope = @class.ModuleScope;
 			if (canChangeTarget)
 			{
 				return new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
 				                                               method,
 				                                               method.Method,
-				                                               scope,
+				                                               @class.ModuleScope,
 				                                               @class,
 				                                               options,
 				                                               namingScope)
@@ -130,27 +129,17 @@ namespace Castle.DynamicProxy.Contributors
 					Logger = Logger
 				}.GetProxyType();
 			}
-			var invocationInterfaces = new[] { typeof(IInvocation) };
-			var baseType = CompositionInvocationTypeGenerator.BaseType;
-
-			var key = new CacheKey(method.Method, baseType, invocationInterfaces, null);
-
-			// no locking required as we're already within a lock
-
-			var invocation = scope.GetFromCache(key);
-			if (invocation != null)
+			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+			                                              method,
+			                                              method.Method,
+			                                              null,
+			                                              @class.ModuleScope,
+			                                              @class,
+			                                              options,
+			                                              namingScope)
 			{
-				return invocation;
-			}
-			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                                    method,
-			                                                    method.Method,
-			                                                    null)
-				.Generate(@class, options, namingScope).BuildType();
-
-			scope.RegisterInCache(key, invocation);
-
-			return invocation;
+				Logger = Logger
+			}.GetProxyType();
 		}
 	}
 }

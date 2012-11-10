@@ -50,28 +50,19 @@ namespace Castle.DynamicProxy.Contributors
 			                                         null);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter emitter, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
-			var scope = emitter.ModuleScope;
-			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, null, null);
-
-			// no locking required as we're already within a lock
-			var invocation = scope.GetFromCache(key);
-			if (invocation != null)
+			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+			                                              method,
+			                                              method.Method,
+			                                              null,
+			                                              @class.ModuleScope,
+			                                              @class,
+			                                              options,
+			                                              namingScope)
 			{
-				return invocation;
-			}
-
-			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                                    method,
-			                                                    method.Method,
-			                                                    null)
-				.Generate(emitter, options, namingScope)
-				.BuildType();
-
-			scope.RegisterInCache(key, invocation);
-
-			return invocation;
+				Logger = Logger
+			}.GetProxyType();
 		}
 	}
 }
