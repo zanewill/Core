@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ namespace Castle.DynamicProxy.Contributors
 
 	public class OptionallyForwardingMethodGenerator : MethodGenerator
 	{
-		// TODO: This class largely duplicates code from Forwarding and Minimalistic generators. Should be refactored to change that
 		private readonly GetTargetReferenceDelegate getTargetReference;
 
 		public OptionallyForwardingMethodGenerator(MetaMethod method, OverrideMethodDelegate overrideMethod,
@@ -33,14 +32,11 @@ namespace Castle.DynamicProxy.Contributors
 			this.getTargetReference = getTargetReference;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy,
-		                                                        ProxyGenerationOptions options, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
 		{
 			var targetReference = getTargetReference(proxy, MethodToOverride);
 
-			emitter.CodeBuilder.AddStatement(
-				new ExpressionStatement(
-					new IfNullExpression(targetReference, IfNull(emitter.ReturnType), IfNotNull(targetReference))));
+			emitter.CodeBuilder.AddExpression(new IfNullExpression(targetReference, IfNull(emitter.ReturnType), IfNotNull(targetReference)));
 			return emitter;
 		}
 
@@ -49,11 +45,11 @@ namespace Castle.DynamicProxy.Contributors
 			var expression = new MultiStatementExpression();
 			var arguments = ArgumentsUtil.ConvertToArgumentReferenceExpression(MethodToOverride.GetParameters());
 
-			expression.AddStatement(new ReturnStatement(
-			                        	new MethodInvocationExpression(
-			                        		targetReference,
-			                        		MethodToOverride,
-			                        		arguments) { VirtualCall = true }));
+			expression.AddStatement(
+				new ReturnStatement(new MethodInvocationExpression(targetReference, MethodToOverride, arguments)
+				{
+					VirtualCall = true
+				}));
 			return expression;
 		}
 

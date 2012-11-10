@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,26 +20,22 @@ namespace Castle.DynamicProxy.Contributors
 
 	public class ForwardingMethodGenerator : MethodGenerator
 	{
-		private readonly GetTargetReferenceDelegate getTargetReference;
+		private readonly FieldReference target;
 
-		public ForwardingMethodGenerator(MetaMethod method, OverrideMethodDelegate overrideMethod,
-		                                 GetTargetReferenceDelegate getTargetReference)
+		public ForwardingMethodGenerator(MetaMethod method, OverrideMethodDelegate overrideMethod, FieldReference target)
 			: base(method, overrideMethod)
 		{
-			this.getTargetReference = getTargetReference;
+			this.target = target;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy,
-		                                                        ProxyGenerationOptions options, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
 		{
-			var targetReference = getTargetReference(proxy, MethodToOverride);
 			var arguments = ArgumentsUtil.ConvertToArgumentReferenceExpression(MethodToOverride.GetParameters());
-
-			emitter.CodeBuilder.AddStatement(new ReturnStatement(
-			                                 	new MethodInvocationExpression(
-			                                 		targetReference,
-			                                 		MethodToOverride,
-			                                 		arguments) { VirtualCall = true }));
+			emitter.CodeBuilder.AddStatement(
+				new ReturnStatement(new MethodInvocationExpression(target, MethodToOverride, arguments)
+				{
+					VirtualCall = true
+				}));
 			return emitter;
 		}
 	}

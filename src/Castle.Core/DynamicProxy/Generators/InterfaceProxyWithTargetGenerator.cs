@@ -203,8 +203,7 @@ namespace Castle.DynamicProxy.Generators
 			return generatedType;
 		}
 
-		protected virtual CompositeTypeContributor GetContributorForAdditionalInterfaces(
-			INamingScope namingScope)
+		protected virtual CompositeTypeContributor GetContributorForAdditionalInterfaces(INamingScope namingScope)
 		{
 			return new InterfaceProxyWithOptionalTargetContributor(namingScope, GetTargetExpression, GetTarget) { Logger = Logger };
 		}

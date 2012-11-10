@@ -51,14 +51,11 @@ namespace Castle.DynamicProxy.Contributors
 			return new InterfaceMembersOnClassCollector(@interface, false, proxyTargetType.GetInterfaceMap(@interface));
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
 		{
 			if (!method.Proxyable)
 			{
-				return new ForwardingMethodGenerator(method,
-				                                     overrideMethod,
-				                                     (c, m) => c.GetField("__target"));
+				return new ForwardingMethodGenerator(method, overrideMethod, @class.GetField("__target"));
 			}
 
 			return new MethodWithInvocationGenerator(method,
