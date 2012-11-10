@@ -104,14 +104,7 @@ namespace Castle.DynamicProxy.Contributors
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
 			Debug.Assert(method.HasTarget, "method.HasTarget");
-			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                              method,
-			                                              method.Method,
-			                                              null,
-			                                              @class.ModuleScope,
-			                                              @class,
-			                                              options,
-			                                              namingScope)
+			return new CompositionInvocationTypeGenerator(method, @class, options, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();
@@ -125,11 +118,8 @@ namespace Castle.DynamicProxy.Contributors
 			var contributor = GetContributor(@delegate, method);
 			return new MethodWithInvocationGenerator(method,
 			                                         proxy.GetField("__interceptors"),
-			                                         () => new CompositionInvocationTypeGenerator(targetType,
-			                                                                                      method,
-			                                                                                      null,
+			                                         () => new CompositionInvocationTypeGenerator(method,
 			                                                                                      contributor,
-			                                                                                      proxy.ModuleScope,
 			                                                                                      proxy,
 			                                                                                      options,
 			                                                                                      namingScope)

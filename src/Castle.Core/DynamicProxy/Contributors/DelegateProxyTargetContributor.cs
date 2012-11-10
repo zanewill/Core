@@ -52,11 +52,7 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
-			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                              method,
-			                                              method.Method,
-			                                              null,
-			                                              @class.ModuleScope,
+			return new CompositionInvocationTypeGenerator(method,
 			                                              @class,
 			                                              options,
 			                                              namingScope)

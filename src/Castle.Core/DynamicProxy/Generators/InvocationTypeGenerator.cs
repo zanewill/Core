@@ -24,17 +24,14 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public abstract class InvocationTypeGenerator : IGenerator<AbstractTypeEmitter>
+	public abstract class InvocationTypeGenerator
 	{
 		protected readonly MetaMethod method;
-		protected readonly Type targetType;
 		private readonly MethodInfo callback;
 		private readonly IInvocationCreationContributor contributor;
 
-		protected InvocationTypeGenerator(Type targetType, MetaMethod method, MethodInfo callback,
-		                                  IInvocationCreationContributor contributor)
+		protected InvocationTypeGenerator(MetaMethod method, MethodInfo callback, IInvocationCreationContributor contributor)
 		{
-			this.targetType = targetType;
 			this.method = method;
 			this.callback = callback;
 			this.contributor = contributor;
@@ -49,22 +46,18 @@ namespace Castle.DynamicProxy.Generators
 		///   Generates the constructor for the class that extends
 		///   <see cref="AbstractInvocation" />
 		/// </summary>
-		/// <param name="targetFieldType"> </param>
-		/// <param name="proxyGenerationOptions"> </param>
 		/// <param name="baseConstructor"> </param>
-		protected abstract ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,
-		                                                            ProxyGenerationOptions proxyGenerationOptions,
-		                                                            out ConstructorInfo baseConstructor);
+		protected abstract ArgumentReference[] GetBaseCtorArguments(out ConstructorInfo baseConstructor);
 
 		protected abstract Type GetBaseType();
 
 		protected abstract FieldReference GetTargetReference();
 
-		public AbstractTypeEmitter Generate(ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
+		protected AbstractTypeEmitter Generate(ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
 		{
 			var methodInfo = method.Method;
 
-			var invocation = GetEmitter(@class, AdditionalInterfaces, namingScope, methodInfo);
+			var invocation = GetEmitter(AdditionalInterfaces, namingScope, methodInfo, @class.ModuleScope);
 
 			if (@class.TypeBuilder.IsGenericTypeDefinition)
 			{
@@ -212,7 +205,7 @@ namespace Castle.DynamicProxy.Generators
 		private void CreateConstructor(AbstractTypeEmitter invocation, ProxyGenerationOptions options)
 		{
 			ConstructorInfo baseConstructor;
-			var baseCtorArguments = GetBaseCtorArguments(targetType, options, out baseConstructor);
+			var baseCtorArguments = GetBaseCtorArguments(out baseConstructor);
 
 			var constructor = CreateConstructor(invocation, baseCtorArguments);
 			constructor.CodeBuilder.InvokeBaseConstructor(baseConstructor, baseCtorArguments);
@@ -263,13 +256,12 @@ namespace Castle.DynamicProxy.Generators
 			return callbackMethod.MakeGenericMethod(invocation.GetGenericArgumentsFor(method.Method));
 		}
 
-		private AbstractTypeEmitter GetEmitter(ClassEmitter @class, Type[] interfaces, INamingScope namingScope,
-		                                       MethodInfo methodInfo)
+		private AbstractTypeEmitter GetEmitter(Type[] interfaces, INamingScope namingScope, MethodInfo methodInfo, ModuleScope moduleScope)
 		{
 			var suggestedName = string.Format("Castle.Proxies.Invocations.{0}_{1}", methodInfo.DeclaringType.Name,
 			                                  methodInfo.Name);
 			var uniqueName = namingScope.ParentScope.GetUniqueName(suggestedName);
-			return new ClassEmitter(@class.ModuleScope, uniqueName, GetBaseType(), interfaces);
+			return new ClassEmitter(moduleScope, uniqueName, GetBaseType(), interfaces);
 		}
 
 		private void ImplementInvokeMethodOnTarget(AbstractTypeEmitter invocation, ParameterInfo[] parameters)

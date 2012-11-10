@@ -90,11 +90,9 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, MethodBuilder callback, IInvocationCreationContributor contributor)
 		{
-			return new InheritanceInvocationTypeGenerator(method.Method.DeclaringType,
-			                                              method,
+			return new InheritanceInvocationTypeGenerator(method,
 			                                              callback,
 			                                              contributor,
-			                                              @class.ModuleScope,
 			                                              @class,
 			                                              options,
 			                                              namingScope)

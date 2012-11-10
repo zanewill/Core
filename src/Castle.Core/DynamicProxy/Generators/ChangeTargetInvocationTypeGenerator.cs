@@ -32,8 +32,8 @@ namespace Castle.DynamicProxy.Generators
 		private readonly INamingScope namingScope;
 		private readonly ProxyGenerationOptions options;
 
-		public ChangeTargetInvocationTypeGenerator(Type target, MetaMethod method, MethodInfo callback, ModuleScope moduleScope, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(target, method, callback, null)
+		public ChangeTargetInvocationTypeGenerator(MetaMethod method, MethodInfo callback, ModuleScope moduleScope, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
+			: base(method, callback, null)
 		{
 			this.moduleScope = moduleScope;
 			this.@class = @class;
@@ -68,14 +68,12 @@ namespace Castle.DynamicProxy.Generators
 			return type;
 		}
 
-		protected override ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,
-		                                                            ProxyGenerationOptions proxyGenerationOptions,
-		                                                            out ConstructorInfo baseConstructor)
+		protected override ArgumentReference[] GetBaseCtorArguments(out ConstructorInfo baseConstructor)
 		{
 			baseConstructor = InvocationMethods.ChangeTargetInvocationConstructor;
 			return new[]
 			{
-				new ArgumentReference(targetFieldType),
+				new ArgumentReference(typeof(object)),
 				new ArgumentReference(typeof(object)),
 				new ArgumentReference(typeof(IInterceptor[])),
 				new ArgumentReference(typeof(MethodInfo)),

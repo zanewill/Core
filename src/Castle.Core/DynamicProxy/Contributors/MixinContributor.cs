@@ -118,8 +118,7 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			if (canChangeTarget)
 			{
-				return new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
-				                                               method,
+				return new ChangeTargetInvocationTypeGenerator(method,
 				                                               method.Method,
 				                                               @class.ModuleScope,
 				                                               @class,
@@ -129,11 +128,8 @@ namespace Castle.DynamicProxy.Contributors
 					Logger = Logger
 				}.GetProxyType();
 			}
-			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-			                                              method,
-			                                              method.Method,
-			                                              null,
-			                                              @class.ModuleScope,
+
+			return new CompositionInvocationTypeGenerator(method,
 			                                              @class,
 			                                              options,
 			                                              namingScope)

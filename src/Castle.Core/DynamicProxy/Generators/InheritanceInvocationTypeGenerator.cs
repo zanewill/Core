@@ -26,16 +26,13 @@ namespace Castle.DynamicProxy.Generators
 	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator, IProxyTypeGenerator
 	{
 		public static readonly Type BaseType = typeof(InheritanceInvocation);
-		private readonly ModuleScope moduleScope;
 		private readonly ClassEmitter @class;
 		private readonly ProxyGenerationOptions options;
 		private readonly INamingScope namingScope;
 
-		public InheritanceInvocationTypeGenerator(Type targetType, MetaMethod method, MethodInfo callback,
-		                                          IInvocationCreationContributor contributor, ModuleScope moduleScope, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(targetType, method, callback, contributor)
+		public InheritanceInvocationTypeGenerator(MetaMethod method, MethodInfo callback, IInvocationCreationContributor contributor, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
+			: base(method, callback, contributor)
 		{
-			this.moduleScope = moduleScope;
 			this.@class = @class;
 			this.options = options;
 			this.namingScope = namingScope;
@@ -50,9 +47,7 @@ namespace Castle.DynamicProxy.Generators
 			return type;
 		}
 
-		protected override ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,
-		                                                            ProxyGenerationOptions proxyGenerationOptions,
-		                                                            out ConstructorInfo baseConstructor)
+		protected override ArgumentReference[] GetBaseCtorArguments(out ConstructorInfo baseConstructor)
 		{
 			baseConstructor = InvocationMethods.InheritanceInvocationConstructor;
 			return new[]
