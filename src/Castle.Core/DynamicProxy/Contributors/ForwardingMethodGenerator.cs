@@ -22,8 +22,8 @@ namespace Castle.DynamicProxy.Contributors
 	{
 		private readonly FieldReference target;
 
-		public ForwardingMethodGenerator(MetaMethod method, OverrideMethodDelegate overrideMethod, FieldReference target)
-			: base(method, overrideMethod)
+		public ForwardingMethodGenerator(MetaMethod method, CreateMethodDelegate createMethod, FieldReference target)
+			: base(method, createMethod)
 		{
 			this.target = target;
 		}

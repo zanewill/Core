@@ -205,21 +205,7 @@ namespace Castle.DynamicProxy.Generators
 
 		protected virtual CompositeTypeContributor GetContributorForAdditionalInterfaces(INamingScope namingScope)
 		{
-			return new InterfaceProxyWithOptionalTargetContributor(namingScope, GetTargetExpression, GetTarget) { Logger = Logger };
-		}
-
-		private Reference GetTarget(ClassEmitter @class, MethodInfo method)
-		{
-			if (method.DeclaringType.IsAssignableFrom(proxyTargetType))
-			{
-				return @class.GetField("target");
-			}
-			return new AsTypeReference(@class.GetField("__target"), method.DeclaringType);
-		}
-
-		private Expression GetTargetExpression(ClassEmitter @class, MethodInfo method)
-		{
-			return GetTarget(@class, method).ToExpression();
+			return new InterfaceProxyWithOptionalTargetContributor(namingScope, proxyTargetType) { Logger = Logger };
 		}
 
 		protected virtual Type[] GetTypeImplementerMapping(Type[] interfaces, Type proxyTargetType,

@@ -110,8 +110,7 @@ namespace Castle.DynamicProxy.Generators
 					}
 				}
 			}
-			var additionalInterfacesContributor = new InterfaceProxyWithoutTargetContributor(namingScope,
-			                                                                                 (c, m) => NullExpression.Instance)
+			var additionalInterfacesContributor = new InterfaceProxyWithoutTargetContributor(namingScope)
 			{ Logger = Logger };
 			// 3. then additional interfaces
 			foreach (var @interface in additionalInterfacesToProxy)

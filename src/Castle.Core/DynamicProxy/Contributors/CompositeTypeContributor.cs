@@ -45,7 +45,7 @@ namespace Castle.DynamicProxy.Contributors
 
 		protected abstract IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook);
 
-		protected abstract MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod);
+		protected abstract MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod);
 
 		public void AddInterfaceToProxy(Type @interface)
 		{
@@ -109,10 +109,10 @@ namespace Castle.DynamicProxy.Contributors
 			ImplementMethod(@event.Remover, emitter, options, @event.Emitter.CreateRemoveMethod);
 		}
 
-		private void ImplementMethod(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, OverrideMethodDelegate overrideMethod)
+		private void ImplementMethod(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, CreateMethodDelegate createMethod)
 		{
 			{
-				var generator = GetMethodGenerator(method, @class, overrideMethod);
+				var generator = GetMethodGenerator(method, @class, createMethod);
 				if (generator == null)
 				{
 					return;

@@ -20,15 +20,13 @@ namespace Castle.DynamicProxy.Contributors
 
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
+	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 	public class InterfaceProxyWithoutTargetContributor : CompositeTypeContributor
 	{
-		private readonly GetTargetExpressionDelegate getTargetExpression;
-
-		public InterfaceProxyWithoutTargetContributor(INamingScope namingScope, GetTargetExpressionDelegate getTarget)
+		public InterfaceProxyWithoutTargetContributor(INamingScope namingScope)
 			: base(namingScope)
 		{
-			getTargetExpression = getTarget;
 		}
 
 		protected override IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook)
@@ -42,18 +40,18 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			if (!method.Proxyable)
 			{
-				return new MinimialisticMethodGenerator(method, overrideMethod);
+				return new MinimialisticMethodGenerator(method, createMethod);
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
-			                                         getTargetExpression,
-			                                         overrideMethod,
+			                                         NullExpression.Instance,
+			                                         createMethod,
 			                                         null);
 		}
 

@@ -17,9 +17,6 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Reflection;
 	using System.Reflection.Emit;
-#if !SILVERLIGHT
-	using System.Xml.Serialization;
-#endif
 
 	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
@@ -31,17 +28,17 @@ namespace Castle.DynamicProxy.Generators
 	public class MethodWithInvocationGenerator : MethodGenerator
 	{
 		private readonly IInvocationCreationContributor contributor;
-		private readonly GetTargetExpressionDelegate getTargetExpression;
 		private readonly Reference interceptors;
 		private readonly Func<Type> invocationFactory;
+		private readonly Expression target;
 
 		public MethodWithInvocationGenerator(MetaMethod method, Reference interceptors, Func<Type> invocationFactory,
-		                                     GetTargetExpressionDelegate getTargetExpression,
-		                                     OverrideMethodDelegate createMethod, IInvocationCreationContributor contributor)
+		                                     Expression target,
+		                                     CreateMethodDelegate createMethod, IInvocationCreationContributor contributor)
 			: base(method, createMethod)
 		{
 			this.invocationFactory = invocationFactory;
-			this.getTargetExpression = getTargetExpression;
+			this.target = target;
 			this.interceptors = interceptors;
 			this.contributor = contributor;
 		}
@@ -53,7 +50,7 @@ namespace Castle.DynamicProxy.Generators
 				typeof(IInterceptor[]),
 				false);
 #if !SILVERLIGHT
-			@class.DefineCustomAttributeFor<XmlIgnoreAttribute>(methodInterceptors);
+			@class.DefineCustomAttributeFor<System.Xml.Serialization.XmlIgnoreAttribute>(methodInterceptors);
 #endif
 			return methodInterceptors;
 		}
@@ -79,10 +76,10 @@ namespace Castle.DynamicProxy.Generators
 				{
 					// NOTE: This works around VerificationException that's thrown if we try to load directly via ldtoken a method with some generic arguments that have constraints on type arguments
 					proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodInvocationExpression(
-					                                                                                         	(Expression) null,
-					                                                                                         	GenericsHelper.GetAdjustedOpenMethodToken,
-					                                                                                         	new TypeTokenExpression(proxy.AdjustMethod(MethodToOverride).DeclaringType),
-					                                                                                         	new ConstReference(MethodToOverride.MetadataToken).ToExpression())));
+						                                                                                        (Expression)null,
+						                                                                                        GenericsHelper.GetAdjustedOpenMethodToken,
+						                                                                                        new TypeTokenExpression(proxy.AdjustMethod(MethodToOverride).DeclaringType),
+						                                                                                        new ConstReference(MethodToOverride.MetadataToken).ToExpression())));
 				}
 				else
 				{
@@ -103,7 +100,7 @@ namespace Castle.DynamicProxy.Generators
 			var dereferencedArguments = IndirectReference.WrapIfByRef(emitter.Arguments);
 			var hasByRefArguments = HasByRefArguments(emitter.Arguments);
 
-			var arguments = GetCtorArguments(proxy, proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors);
+			var arguments = GetCtorArguments(proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors);
 			var ctorArguments = ModifyArguments(proxy, arguments);
 
 			var invocationLocal = emitter.CodeBuilder.DeclareLocal(invocationType);
@@ -148,33 +145,6 @@ namespace Castle.DynamicProxy.Generators
 			return emitter;
 		}
 
-		private Expression SetMethodInterceptors(ClassEmitter @class, INamingScope namingScope, MethodEmitter emitter, Expression proxiedMethodTokenExpression)
-		{
-			var selector = @class.GetField("__selector");
-			if(selector == null)
-			{
-				return null;
-			}
-
-
-			var methodInterceptorsField = BuildMethodInterceptorsField(@class, MethodToOverride, namingScope);
-
-			var emptyInterceptors = new NewArrayExpression(0, typeof(IInterceptor));
-			var selectInterceptors = new MethodInvocationExpression(selector, InterceptorSelectorMethods.SelectInterceptors,
-			                                                        new MethodInvocationExpression(default(Reference),
-				                                                        TypeUtilMethods.GetTypeOrNull,
-				                                                        getTargetExpression(@class, MethodToOverride)),
-			                                                        proxiedMethodTokenExpression, interceptors.ToExpression())
-			{ VirtualCall = true };
-
-			emitter.CodeBuilder.AddExpression(
-				new IfNullExpression(methodInterceptorsField,
-				                     new AssignStatement(methodInterceptorsField,
-				                                         new NullCoalescingOperatorExpression(selectInterceptors, emptyInterceptors))));
-
-			return methodInterceptorsField.ToExpression();
-		}
-
 		private void EmitLoadGenricMethodArguments(MethodEmitter methodEmitter, MethodInfo method, Reference invocationLocal)
 		{
 			var genericParameters = method.GetGenericArguments().FindAll(t => t.IsGenericParameter);
@@ -194,11 +164,11 @@ namespace Castle.DynamicProxy.Generators
 					                               genericParamsArrayLocal)));
 		}
 
-		private Expression[] GetCtorArguments(ClassEmitter @class, Expression proxiedMethodTokenExpression, TypeReference[] dereferencedArguments, Expression methodInterceptors)
+		private Expression[] GetCtorArguments(Expression proxiedMethodTokenExpression, TypeReference[] dereferencedArguments, Expression methodInterceptors)
 		{
 			return new[]
 			{
-				getTargetExpression(@class, MethodToOverride),
+				target,
 				SelfReference.Self.ToExpression(),
 				methodInterceptors ?? interceptors.ToExpression(),
 				proxiedMethodTokenExpression,
@@ -227,6 +197,32 @@ namespace Castle.DynamicProxy.Generators
 			}
 
 			return contributor.GetConstructorInvocationArguments(arguments, @class);
+		}
+
+		private Expression SetMethodInterceptors(ClassEmitter @class, INamingScope namingScope, MethodEmitter emitter, Expression proxiedMethodTokenExpression)
+		{
+			var selector = @class.GetField("__selector");
+			if (selector == null)
+			{
+				return null;
+			}
+
+			var methodInterceptorsField = BuildMethodInterceptorsField(@class, MethodToOverride, namingScope);
+
+			var emptyInterceptors = new NewArrayExpression(0, typeof(IInterceptor));
+			var selectInterceptors = new MethodInvocationExpression(selector, InterceptorSelectorMethods.SelectInterceptors,
+			                                                        new MethodInvocationExpression(default(Reference),
+			                                                                                       TypeUtilMethods.GetTypeOrNull,
+			                                                                                       target),
+			                                                        proxiedMethodTokenExpression, interceptors.ToExpression())
+			{ VirtualCall = true };
+
+			emitter.CodeBuilder.AddExpression(
+				new IfNullExpression(methodInterceptorsField,
+				                     new AssignStatement(methodInterceptorsField,
+				                                         new NullCoalescingOperatorExpression(selectInterceptors, emptyInterceptors))));
+
+			return methodInterceptorsField.ToExpression();
 		}
 	}
 }

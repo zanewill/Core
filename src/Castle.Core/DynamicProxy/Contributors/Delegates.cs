@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System.Reflection;
 
 	using Castle.DynamicProxy.Generators.Emitters;
-	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
-	public delegate MethodEmitter OverrideMethodDelegate(string name, MethodAttributes attributes, MethodInfo methodToOverride);
-
-	public delegate Expression GetTargetExpressionDelegate(ClassEmitter @class, MethodInfo method);
-
-	public delegate Reference GetTargetReferenceDelegate(ClassEmitter @class, MethodInfo method);
+	public delegate MethodEmitter CreateMethodDelegate(string name, MethodAttributes attributes, MethodInfo methodToOverride);
 }

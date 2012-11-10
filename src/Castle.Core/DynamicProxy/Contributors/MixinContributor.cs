@@ -27,13 +27,11 @@ namespace Castle.DynamicProxy.Contributors
 		private readonly bool canChangeTarget;
 		private readonly IList<Type> empty = new List<Type>();
 		private readonly IDictionary<Type, FieldReference> fields = new Dictionary<Type, FieldReference>();
-		private readonly GetTargetExpressionDelegate getTargetExpression;
 
 		public MixinContributor(INamingScope namingScope, bool canChangeTarget)
 			: base(namingScope)
 		{
 			this.canChangeTarget = canChangeTarget;
-			getTargetExpression = BuildGetTargetExpression();
 		}
 
 		public IEnumerable<FieldReference> Fields
@@ -77,31 +75,19 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			if (!method.Proxyable)
 			{
-				return new ForwardingMethodGenerator(method, overrideMethod, fields[method.Method.DeclaringType]);
+				return new ForwardingMethodGenerator(method, createMethod, fields[method.Method.DeclaringType]);
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
-			                                         getTargetExpression,
-			                                         overrideMethod,
+			                                         GetTargetExpression(method, @class),
+			                                         createMethod,
 			                                         null);
-		}
-
-		private GetTargetExpressionDelegate BuildGetTargetExpression()
-		{
-			if (!canChangeTarget)
-			{
-				return (c, m) => fields[m.DeclaringType].ToExpression();
-			}
-
-			return (c, m) => new NullCoalescingOperatorExpression(
-				                 new AsTypeReference(c.GetField("__target"), m.DeclaringType).ToExpression(),
-				                 fields[m.DeclaringType].ToExpression());
 		}
 
 		private FieldReference BuildTargetField(ClassEmitter @class, Type type)
@@ -124,6 +110,17 @@ namespace Castle.DynamicProxy.Contributors
 			{
 				Logger = Logger
 			}.GetProxyType();
+		}
+
+		private Expression GetTargetExpression(MetaMethod method, ClassEmitter @class)
+		{
+			if (!canChangeTarget)
+			{
+				return fields[method.Method.DeclaringType].ToExpression();
+			}
+			return new NullCoalescingOperatorExpression(
+				new AsTypeReference(@class.GetField("__target"), method.Method.DeclaringType).ToExpression(),
+				fields[method.Method.DeclaringType].ToExpression());
 		}
 	}
 }

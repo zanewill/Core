@@ -23,30 +23,27 @@ namespace Castle.DynamicProxy.Contributors
 
 	public class OptionallyForwardingMethodGenerator : MethodGenerator
 	{
-		private readonly GetTargetReferenceDelegate getTargetReference;
+		private readonly Reference target;
 
-		public OptionallyForwardingMethodGenerator(MetaMethod method, OverrideMethodDelegate overrideMethod,
-		                                           GetTargetReferenceDelegate getTargetReference)
-			: base(method, overrideMethod)
+		public OptionallyForwardingMethodGenerator(MetaMethod method, CreateMethodDelegate createMethod, Reference target)
+			: base(method, createMethod)
 		{
-			this.getTargetReference = getTargetReference;
+			this.target = target;
 		}
 
 		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
 		{
-			var targetReference = getTargetReference(proxy, MethodToOverride);
-
-			emitter.CodeBuilder.AddExpression(new IfNullExpression(targetReference, IfNull(emitter.ReturnType), IfNotNull(targetReference)));
+			emitter.CodeBuilder.AddExpression(new IfNullExpression(target, IfNull(emitter.ReturnType), IfNotNull()));
 			return emitter;
 		}
 
-		private Expression IfNotNull(Reference targetReference)
+		private Expression IfNotNull()
 		{
 			var expression = new MultiStatementExpression();
 			var arguments = ArgumentsUtil.ConvertToArgumentReferenceExpression(MethodToOverride.GetParameters());
 
 			expression.AddStatement(
-				new ReturnStatement(new MethodInvocationExpression(targetReference, MethodToOverride, arguments)
+				new ReturnStatement(new MethodInvocationExpression(target, MethodToOverride, arguments)
 				{
 					VirtualCall = true
 				}));

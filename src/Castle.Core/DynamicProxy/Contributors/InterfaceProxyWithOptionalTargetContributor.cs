@@ -17,20 +17,20 @@ namespace Castle.DynamicProxy.Contributors
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Reflection;
 
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
+	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 	public class InterfaceProxyWithOptionalTargetContributor : CompositeTypeContributor
 	{
-		private readonly GetTargetExpressionDelegate getTargetExpression;
-		private readonly GetTargetReferenceDelegate getTargetReference;
+		private Type proxyTargetType;
 
-		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope, GetTargetExpressionDelegate getTargetExpression, GetTargetReferenceDelegate getTargetReference)
+		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope, Type proxyTargetType)
 			: base(namingScope)
 		{
-			this.getTargetExpression = getTargetExpression;
-			this.getTargetReference = getTargetReference;
+			this.proxyTargetType = proxyTargetType;
 		}
 
 		protected override IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook)
@@ -44,19 +44,29 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			if (!method.Proxyable)
 			{
-				return new OptionallyForwardingMethodGenerator(method, overrideMethod, getTargetReference);
+				return new OptionallyForwardingMethodGenerator(method, createMethod, GetTarget(@class, method.Method));
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
-			                                         getTargetExpression,
-			                                         overrideMethod,
+			                                         GetTarget(@class, method.Method).ToExpression(),
+			                                         createMethod,
 			                                         null);
+		}
+
+
+		private Reference GetTarget(ClassEmitter @class, MethodInfo method)
+		{
+			if (method.DeclaringType.IsAssignableFrom(proxyTargetType))
+			{
+				return @class.GetField("target");
+			}
+			return new AsTypeReference(@class.GetField("__target"), method.DeclaringType);
 		}
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy)

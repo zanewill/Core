@@ -55,8 +55,7 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			if (methodsToSkip.Contains(method.Method))
 			{
@@ -65,19 +64,19 @@ namespace Castle.DynamicProxy.Contributors
 
 			if (!method.Proxyable)
 			{
-				return new MinimialisticMethodGenerator(method, overrideMethod);
+				return new MinimialisticMethodGenerator(method, createMethod);
 			}
 
 			if (IsDirectlyAccessible(method) == false)
 			{
-				return IndirectlyCalledMethodGenerator(method, @class, overrideMethod);
+				return IndirectlyCalledMethodGenerator(method, @class, createMethod);
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
-			                                         (c, m) => c.GetField("__target").ToExpression(),
-			                                         overrideMethod,
+			                                         @class.GetField("__target").ToExpression(),
+			                                         createMethod,
 			                                         null);
 		}
 
@@ -109,7 +108,7 @@ namespace Castle.DynamicProxy.Contributors
 			}.GetProxyType();
 		}
 
-		private MethodGenerator IndirectlyCalledMethodGenerator(MetaMethod method, ClassEmitter proxy, OverrideMethodDelegate overrideMethod)
+		private MethodGenerator IndirectlyCalledMethodGenerator(MetaMethod method, ClassEmitter proxy, CreateMethodDelegate createMethod)
 		{
 			var @delegate = GetDelegateType(method, proxy);
 			var contributor = GetContributor(@delegate, method);
@@ -121,8 +120,8 @@ namespace Castle.DynamicProxy.Contributors
 			                                         {
 				                                         Logger = Logger
 			                                         }.GetProxyType(),
-			                                         (c, m) => c.GetField("__target").ToExpression(),
-			                                         overrideMethod,
+			                                         proxy.GetField("__target").ToExpression(),
+			                                         createMethod,
 			                                         contributor);
 		}
 
