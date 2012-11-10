@@ -22,13 +22,15 @@ namespace Castle.DynamicProxy.Tests.Interceptors
 	public class LogInvocationInterceptor : StandardInterceptor
 	{
 		private StringBuilder sb = new StringBuilder();
-		private List<string> invocations = new List<string>();
+		private List<string> methods = new List<string>();
+		private readonly List<IInvocation> invocations = new List<IInvocation>();
 
 		public bool Proceed = true;
 
 		protected override void PreProceed(IInvocation invocation)
 		{
-			invocations.Add(invocation.Method.Name);
+			invocations.Add(invocation);
+			methods.Add(invocation.Method.Name);
 
 			sb.Append(String.Format("{0} ", invocation.Method.Name));
 		}
@@ -50,9 +52,14 @@ namespace Castle.DynamicProxy.Tests.Interceptors
 			get { return sb.ToString(); }
 		}
 
-		public IList Invocations
+		public List<IInvocation> Invocations
 		{
 			get { return invocations; }
+		}
+
+		public IList Methods
+		{
+			get { return methods; }
 		}
 	}
 }

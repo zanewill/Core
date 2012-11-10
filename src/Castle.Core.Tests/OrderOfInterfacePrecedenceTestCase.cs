@@ -122,7 +122,7 @@ namespace Castle.DynamicProxy.Tests
 			var mixin = new ClassImplementingISimpleMixin();
 			object proxy = generator.CreateClassProxy(typeof(SimpleMixin), MixIn(mixin), interceptor);
 			Assert.AreEqual(1, (proxy as ISimpleMixin).DoSomething());
-			Assert.IsEmpty(interceptor.Invocations);
+			Assert.IsEmpty(interceptor.Methods);
 		}
 
 		[Test]
@@ -133,7 +133,7 @@ namespace Castle.DynamicProxy.Tests
 			object proxy = generator.CreateClassProxy(typeof(SimpleMixin), new[] { typeof(ISimpleMixin) }, MixIn(mixin),
 													  interceptor);
 			Assert.AreEqual(1, (proxy as ISimpleMixin).DoSomething());
-			Assert.IsNotEmpty(interceptor.Invocations);
+			Assert.IsNotEmpty(interceptor.Methods);
 		}
 
 		[Test]
@@ -144,7 +144,7 @@ namespace Castle.DynamicProxy.Tests
 			object proxy = generator.CreateClassProxy(typeof(SimpleMixin), new[] { typeof(IDerivedSimpleMixin) }, MixIn(mixin),
 													  interceptor);
 			Assert.AreEqual(2, (proxy as IDerivedSimpleMixin).DoSomethingDerived());
-			Assert.IsNotEmpty(interceptor.Invocations);
+			Assert.IsNotEmpty(interceptor.Methods);
 		}
 
 

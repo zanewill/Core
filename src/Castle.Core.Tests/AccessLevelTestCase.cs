@@ -60,9 +60,9 @@ namespace Castle.DynamicProxy.Tests
 										  generator.CreateClassProxy(typeof(NonPublicMethodsClass), logger);
 
 			proxy.DoSomething();
-			Assert.AreEqual(2, logger.Invocations.Count);
-			Assert.AreEqual("DoSomething", logger.Invocations[0]);
-			Assert.AreEqual("DoOtherThing", logger.Invocations[1]);
+			Assert.AreEqual(2, logger.Methods.Count);
+			Assert.AreEqual("DoSomething", logger.Methods[0]);
+			Assert.AreEqual("DoOtherThing", logger.Methods[1]);
 		}
 
 		[Test]

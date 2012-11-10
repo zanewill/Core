@@ -34,8 +34,8 @@ namespace Castle.DynamicProxy.Tests
 		{
 			var proxy = generator.CreateClassProxyWithTarget(typeof(VirtualClassWithNoDefaultCtor),
 			                                                 new VirtualClassWithNoDefaultCtor(42),
-			                                                 new object[] {12});
-			var result = ((VirtualClassWithNoDefaultCtor) proxy).Method();
+			                                                 new object[] { 12 });
+			var result = ((VirtualClassWithNoDefaultCtor)proxy).Method();
 			Assert.AreEqual(42, result);
 		}
 
@@ -65,7 +65,7 @@ namespace Castle.DynamicProxy.Tests
 			var result = proxy.PublicMethod();
 			Assert.AreEqual(42, result);
 		}
-		
+
 #if !SILVERLIGHT
 		[Test]
 		[Bug("DYNPROXY-170")]
@@ -81,6 +81,14 @@ namespace Castle.DynamicProxy.Tests
 		public void Can_proxy_class_with_two_protected_methods_differing_by_return_type()
 		{
 			generator.CreateClassProxyWithTarget(new HasTwoProtectedMethods());
+		}
+
+		[Test]
+		public void Can_proxy_abstract_class_without_intercepting_abstract_methods()
+		{
+			var options = new ProxyGenerationOptions(new ProxyNothingHook());
+			var proxy = generator.CreateClassProxyWithTarget<AbstractClassWithMethod>(new InheritsAbstractClassWithMethod(), options);
+			proxy.Method();
 		}
 
 		[Test]
@@ -126,7 +134,7 @@ namespace Castle.DynamicProxy.Tests
 			generator.CreateClassProxyWithTarget(typeof(VirtualClassWithPublicField), Type.EmptyTypes,
 			                                     new VirtualClassWithPublicField(), new ProxyGenerationOptions(hook),
 			                                     new object[0]);
-			Assert.IsNotEmpty((ICollection) hook.NonVirtualMembers);
+			Assert.IsNotEmpty((ICollection)hook.NonVirtualMembers);
 			var memberInfo = hook.NonVirtualMembers.Single(m => m is FieldInfo);
 			Assert.AreEqual("field", memberInfo.Name);
 			Assert.AreEqual(MemberTypes.Field, memberInfo.MemberType);
@@ -139,7 +147,7 @@ namespace Castle.DynamicProxy.Tests
 			generator.CreateClassProxyWithTarget(typeof(VirtualClassWithPublicField), Type.EmptyTypes,
 			                                     new VirtualClassWithPublicField(), new ProxyGenerationOptions(hook),
 			                                     new object[0]);
-			Assert.IsNotEmpty((ICollection) hook.NonVirtualMembers);
+			Assert.IsNotEmpty((ICollection)hook.NonVirtualMembers);
 			var memberInfo = hook.NonVirtualMembers.Single(m => m is FieldInfo);
 			Assert.AreEqual("field", memberInfo.Name);
 			Assert.AreEqual(MemberTypes.Field, memberInfo.MemberType);

@@ -19,7 +19,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System.Runtime.CompilerServices;
 
 	using Castle.DynamicProxy.Generators;
-	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Internal;
 
 	public class WrappedClassMembersCollector : ClassMembersCollector

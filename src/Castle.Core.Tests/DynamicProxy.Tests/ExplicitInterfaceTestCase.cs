@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,22 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.GenInterfaces;
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.Interfaces;
+
 	using CastleTests.DynamicProxy.Tests.Explicit;
 	using CastleTests.GenInterfaces;
+
 	using NUnit.Framework;
 
 #if !SILVERLIGHT
 	[TestFixture]
 	public class ExplicitInterfaceTestCase : BasePEVerifyTestCase
 	{
+		public override void Init()
+		{
+			base.Init();
+			interceptor = new LogInvocationInterceptor();
+		}
+
 		private LogInvocationInterceptor interceptor;
 
 		[Test]
@@ -54,8 +62,8 @@ namespace Castle.DynamicProxy.Tests
 		public void ExplicitGenericInterface_GenericMethod()
 		{
 			var proxy = (ISimpleGeneric<int>)generator.CreateClassProxy(typeof(SimpleGenericExplicit<int>),
-			                                                           new[] {typeof (ISimpleGeneric<int>)},
-			                                                           interceptor);
+			                                                            new[] { typeof(ISimpleGeneric<int>) },
+			                                                            interceptor);
 
 			proxy.Method<string>();
 
@@ -98,8 +106,8 @@ namespace Castle.DynamicProxy.Tests
 
 			var result = proxy.Do();
 
-			Assert.AreEqual(1, interceptor.Invocations.Count);
-			Assert.AreEqual("Do", interceptor.Invocations[0]);
+			Assert.AreEqual(1, interceptor.Methods.Count);
+			Assert.AreEqual("Do", interceptor.Methods[0]);
 			Assert.AreEqual(5, result); // indicates that original method was called
 		}
 
@@ -116,10 +124,10 @@ namespace Castle.DynamicProxy.Tests
 			var result = ((ISimpleInterface)proxy).Do();
 			proxy.DoVirtual();
 
-			Assert.AreEqual(3, interceptor.Invocations.Count);
-			Assert.AreEqual("DoVirtual", interceptor.Invocations[0]);
-			Assert.AreEqual("Do", interceptor.Invocations[1]);
-			Assert.AreEqual("DoVirtual", interceptor.Invocations[2]);
+			Assert.AreEqual(3, interceptor.Methods.Count);
+			Assert.AreEqual("DoVirtual", interceptor.Methods[0]);
+			Assert.AreEqual("Do", interceptor.Methods[1]);
+			Assert.AreEqual("DoVirtual", interceptor.Methods[2]);
 
 			Assert.AreEqual(0, result); // indicates that original method was not called
 		}
@@ -168,10 +176,40 @@ namespace Castle.DynamicProxy.Tests
 			Assert.AreEqual("Did ", interceptor.LogContents);
 		}
 
-		public override void Init()
+		[Test]
+		public void Explicit_generic_interface_generic_method_on_two_different_classes()
 		{
-			base.Init();
-			interceptor = new LogInvocationInterceptor();
+			var proxy1 = (ISimpleGeneric<int>)generator.CreateClassProxy(typeof(SimpleGenericExplicit<int>),
+			                                                             new[] { typeof(ISimpleGeneric<int>) },
+			                                                             interceptor);
+
+			var proxy2 = (ISimpleGeneric<int>)generator.CreateClassProxy(typeof(SimpleGenericExplicit2<int>),
+			                                                             new[] { typeof(ISimpleGeneric<int>) },
+			                                                             interceptor);
+
+			proxy1.Method<string>();
+			proxy2.Method<string>();
+
+			Assert.AreEqual(2, interceptor.Methods.Count);
+			Assert.AreNotSame(interceptor.Invocations[0].GetType(), interceptor.Invocations[1].GetType());
+		}
+
+		[Test]
+		public void Explicit_generic_interface_on_two_different_classes()
+		{
+			var proxy1 = (GenInterface<int>)generator.CreateClassProxy(typeof(GenInterfaceExplicit),
+			                                                           new[] { typeof(GenInterface<int>) },
+			                                                           interceptor);
+
+			var proxy2 = (GenInterface<int>)generator.CreateClassProxy(typeof(GenInterfaceExplicit2),
+			                                                           new[] { typeof(GenInterface<int>) },
+			                                                           interceptor);
+
+			proxy1.DoSomething(4);
+			proxy2.DoSomething(2);
+
+			Assert.AreEqual(2, interceptor.Methods.Count);
+			Assert.AreNotSame(interceptor.Invocations[0].GetType(), interceptor.Invocations[1].GetType());
 		}
 
 		[Test]
@@ -183,9 +221,9 @@ namespace Castle.DynamicProxy.Tests
 			var result = ((ISimpleInterface)instance).Do();
 			instance.DoVirtual();
 
-			Assert.AreEqual(2, interceptor.Invocations.Count);
-			Assert.AreEqual("DoVirtual", interceptor.Invocations[0]);
-			Assert.AreEqual("DoVirtual", interceptor.Invocations[1]);
+			Assert.AreEqual(2, interceptor.Methods.Count);
+			Assert.AreEqual("DoVirtual", interceptor.Methods[0]);
+			Assert.AreEqual("DoVirtual", interceptor.Methods[1]);
 
 			Assert.AreEqual(5, result);
 		}

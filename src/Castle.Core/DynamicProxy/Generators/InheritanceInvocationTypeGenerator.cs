@@ -17,18 +17,37 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Reflection;
 
+	using Castle.Core.Logging;
+	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator
+	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator, IProxyTypeGenerator
 	{
 		public static readonly Type BaseType = typeof(InheritanceInvocation);
+		private readonly ModuleScope moduleScope;
+		private readonly ClassEmitter @class;
+		private readonly ProxyGenerationOptions options;
+		private readonly INamingScope namingScope;
 
 		public InheritanceInvocationTypeGenerator(Type targetType, MetaMethod method, MethodInfo callback,
-		                                          IInvocationCreationContributor contributor)
+		                                          IInvocationCreationContributor contributor, ModuleScope moduleScope, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
 			: base(targetType, method, callback, contributor)
 		{
+			this.moduleScope = moduleScope;
+			this.@class = @class;
+			this.options = options;
+			this.namingScope = namingScope;
+		}
+
+		public ILogger Logger { get; set; }
+
+		public Type GetProxyType()
+		{
+			Logger.DebugFormat("No cache for invocation for target method {0}.", method.Method);
+			var type = Generate(@class, options, namingScope).BuildType();
+			return type;
 		}
 
 		protected override ArgumentReference[] GetBaseCtorArguments(Type targetFieldType,

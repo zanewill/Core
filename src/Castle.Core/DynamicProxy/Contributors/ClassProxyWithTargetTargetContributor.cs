@@ -66,8 +66,7 @@ namespace Castle.DynamicProxy.Contributors
 
 			if (!method.Proxyable)
 			{
-				return new MinimialisticMethodGenerator(method,
-				                                        overrideMethod);
+				return new MinimialisticMethodGenerator(method, overrideMethod);
 			}
 
 			if (IsDirectlyAccessible(method) == false)
@@ -85,14 +84,6 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
-			if (!method.HasTarget)
-			{
-				return new InheritanceInvocationTypeGenerator(targetType,
-				                                              method,
-				                                              null, null)
-					.Generate(@class, options, namingScope)
-					.BuildType();
-			}
 			return new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
 			                                              method,
 			                                              method.Method,
@@ -122,7 +113,9 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
+			Debug.Assert(method.HasTarget, "method.HasTarget");
 			var scope = @class.ModuleScope;
+
 			var invocationInterfaces = new[] { typeof(IInvocation) };
 
 			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, invocationInterfaces, null);

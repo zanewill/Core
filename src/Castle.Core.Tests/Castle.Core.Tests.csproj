@@ -224,6 +224,8 @@
     <Compile Include="BugsReported\NullCtorArgumentsForClassProxyException.cs" />
     <Compile Include="BugsReported\DynProxy159.cs" />
     <Compile Include="BugsReported\DynProxy145_SynchronizationContext.cs" />
+    <Compile Include="DynamicProxy.Tests\Explicit\GenInterfaceExplicit2.cs" />
+    <Compile Include="DynamicProxy.Tests\Explicit\SimpleGenericExplicit2.cs" />
     <Compile Include="MultipleSavedAssembliesTestCase.cs" />
     <Compile Include="Components.DictionaryAdapter.Tests\AdaptingGenericDictionaryTestCase.cs" />
     <Compile Include="Components.DictionaryAdapter.Tests\VirtualObjectTestCase.cs" />

@@ -17,7 +17,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Linq;
 	using System.Reflection;
 	using System.Reflection.Emit;
 
@@ -83,31 +82,25 @@ namespace Castle.DynamicProxy.Contributors
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => BuildInvocationType(method, @class, options, GetCallback(method, @class, method.Method), null),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         null);
 		}
 
-		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, MethodBuilder callback, IInvocationCreationContributor contributor)
 		{
-			var methodInfo = method.Method;
-			if (!method.HasTarget)
-			{
-				return new InheritanceInvocationTypeGenerator(method.Method.DeclaringType,
-				                                              method,
-				                                              null, null)
-					.Generate(@class, options, namingScope)
-					.BuildType();
-			}
-			var callback = CreateCallbackMethod(@class, methodInfo, method.MethodOnTarget);
-			// should be callback.DeclaringType closed over appropriate generic parameters of the invocation type
-			// currently as it stands callback.DeclaringType is just an open generic type definition
 			return new InheritanceInvocationTypeGenerator(method.Method.DeclaringType,
 			                                              method,
-			                                              callback, null)
-				.Generate(@class, options, namingScope)
-				.BuildType();
+			                                              callback,
+			                                              contributor,
+			                                              @class.ModuleScope,
+			                                              @class,
+			                                              options,
+			                                              namingScope)
+			{
+				Logger = Logger
+			}.GetProxyType();
 		}
 
 		private MethodBuilder CreateCallbackMethod(ClassEmitter emitter, MethodInfo methodInfo, MethodInfo methodOnTarget)
@@ -151,13 +144,19 @@ namespace Castle.DynamicProxy.Contributors
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => new InheritanceInvocationTypeGenerator(
-				                                               method.Method.DeclaringType, method, null, contributor)
-				                                               .Generate(@class, options, namingScope)
-				                                               .BuildType(),
+			                                         () => BuildInvocationType(method, @class, options, null, contributor),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         contributor);
+		}
+
+		private MethodBuilder GetCallback(MetaMethod method, ClassEmitter @class, MethodInfo methodInfo)
+		{
+			if (method.HasTarget)
+			{
+				return CreateCallbackMethod(@class, methodInfo, method.MethodOnTarget);
+			}
+			return null;
 		}
 
 		private IInvocationCreationContributor GetContributor(Type @delegate, MetaMethod method)
@@ -177,12 +176,6 @@ namespace Castle.DynamicProxy.Contributors
 			{
 				Logger = Logger
 			}.GetProxyType();
-		}
-
-		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
-		{
-			// NOTE: No caching since invocation is tied to this specific proxy type via its invocation method
-			return BuildInvocationType(method, @class, options);
 		}
 	}
 }

@@ -161,7 +161,7 @@ namespace Castle.DynamicProxy.Tests
 				(IDoubleGeneric<int>) generator.CreateInterfaceProxyWithTarget(typeof (IDoubleGeneric<int>),
 				                                                               new DoubleGenericImpl<int>(), logger);
 			proxy.Call(1, "");
-			Assert.AreEqual("Call", logger.Invocations[0]);
+			Assert.AreEqual("Call", logger.Methods[0]);
 		}
 
 		[Test]
@@ -200,9 +200,9 @@ namespace Castle.DynamicProxy.Tests
 				                                                              new Type[0], logging);
 			Assert.IsNotNull(o);
 			o.TestMethod();
-			Assert.AreEqual(1, logging.Invocations.Count);
+			Assert.AreEqual(1, logging.Methods.Count);
 			var t = o.TestProperty;
-			Assert.AreEqual(2, logging.Invocations.Count);
+			Assert.AreEqual(2, logging.Methods.Count);
 		}
 #endif
 
@@ -281,7 +281,7 @@ namespace Castle.DynamicProxy.Tests
 			proxy.Foo += null;
 			proxy.Foo -= null;
 
-			Assert.AreEqual(2, logger.Invocations.Count);
+			Assert.AreEqual(2, logger.Methods.Count);
 		}
 
 		[Test]
@@ -298,7 +298,7 @@ namespace Castle.DynamicProxy.Tests
 			proxy.Foo += null;
 			proxy.Foo -= null;
 
-			Assert.AreEqual(2, logger.Invocations.Count);
+			Assert.AreEqual(2, logger.Methods.Count);
 		}
 
 		[Test]
@@ -307,7 +307,7 @@ namespace Castle.DynamicProxy.Tests
 			var logging = new LogInvocationInterceptor();
 			var o = (MakeVirtualCallFromCtor) generator.CreateClassProxy(typeof (MakeVirtualCallFromCtor),
 			                                                             new Type[0], logging);
-			Assert.AreEqual(1, logging.Invocations.Count);
+			Assert.AreEqual(1, logging.Methods.Count);
 			Assert.IsNotNull(o);
 		}
 	}
