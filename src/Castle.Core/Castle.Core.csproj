@@ -406,6 +406,7 @@
     <Compile Include="DynamicProxy\AbstractInvocation.cs" />
     <Compile Include="DynamicProxy\AllMethodsHook.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DynamicProxy\Contributors\DelegateMembersCollector.cs" />
     <Compile Include="DynamicProxy\Generators\ChangeTargetInvocationTypeGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\GenericMap.cs" />
     <Compile Include="DynamicProxy\Generators\Emitters\SimpleAST\TryStatement.cs" />
@@ -434,7 +435,6 @@
     <Compile Include="DynamicProxy\Contributors\InterfaceMembersOnClassCollector.cs" />
     <Compile Include="DynamicProxy\Contributors\Delegates.cs" />
     <Compile Include="DynamicProxy\Contributors\InterfaceProxyWithoutTargetContributor.cs" />
-    <Compile Include="DynamicProxy\Generators\DelegateMembersCollector.cs" />
     <Compile Include="DynamicProxy\Generators\DelegateProxyGenerationHook.cs" />
     <Compile Include="DynamicProxy\Generators\DelegateProxyGenerator.cs" />
     <Compile Include="DynamicProxy\Contributors\DelegateProxyTargetContributor.cs" />
