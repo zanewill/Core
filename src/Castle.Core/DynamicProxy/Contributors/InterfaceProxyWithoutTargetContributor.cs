@@ -64,18 +64,22 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			var scope = proxy.ModuleScope;
 
-			Type[] invocationInterfaces;
-			var baseType = default(Type);
 			if (canChangeTarget)
 			{
-				invocationInterfaces = new[] { typeof (IInvocation), typeof (IChangeProxyTarget) };
-				baseType = ChangeTargetInvocationTypeGenerator.BaseType;
+				return new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
+				                                               method,
+				                                               method.Method,
+				                                               proxy.ModuleScope,
+				                                               proxy,
+				                                               options,
+				                                               namingScope)
+				{
+					Logger = Logger
+				}.GetProxyType();
 			}
-			else
-			{
-				invocationInterfaces = new[] { typeof (IInvocation) };
-				baseType = CompositionInvocationTypeGenerator.BaseType;
-			}
+
+			var invocationInterfaces = new[] { typeof(IInvocation) };
+			var baseType = CompositionInvocationTypeGenerator.BaseType;
 
 			var key = new CacheKey(method.Method, baseType, invocationInterfaces, null);
 
@@ -86,23 +90,11 @@ namespace Castle.DynamicProxy.Contributors
 			{
 				return invocation;
 			}
-
-			if (canChangeTarget)
-			{
-				invocation = new ChangeTargetInvocationTypeGenerator(method.Method.DeclaringType,
-				                                                     method,
-				                                                     method.Method,
-				                                                     null)
-					.Generate(proxy, options, namingScope).BuildType();
-			}
-			else
-			{
-				invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
-				                                                    method,
-				                                                    method.Method,
-				                                                    null)
-					.Generate(proxy, options, namingScope).BuildType();
-			}
+			invocation = new CompositionInvocationTypeGenerator(method.Method.DeclaringType,
+			                                                    method,
+			                                                    method.Method,
+			                                                    null)
+				.Generate(proxy, options, namingScope).BuildType();
 
 			scope.RegisterInCache(key, invocation);
 
