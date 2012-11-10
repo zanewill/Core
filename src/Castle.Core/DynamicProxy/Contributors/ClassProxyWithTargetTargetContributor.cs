@@ -17,7 +17,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Linq;
 	using System.Reflection;
 
 	using Castle.DynamicProxy.Generators;
@@ -113,36 +112,18 @@ namespace Castle.DynamicProxy.Contributors
 			                                                    new FieldReference(InvocationMethods.Target));
 		}
 
-		private Type GetDelegateType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetDelegateType(MetaMethod method, ClassEmitter @class)
 		{
-			var scope = @class.ModuleScope;
-			var key = new CacheKey(
-				typeof (Delegate),
-				targetType,
-				new[] { method.MethodOnTarget.ReturnType }
-					.Concat(ArgumentsUtil.GetTypes(method.MethodOnTarget.GetParameters())).
-					ToArray(),
-				null);
-
-			var type = scope.GetFromCache(key);
-			if (type != null)
+			return new DelegateTypeGenerator(method, targetType, namingScope, @class.ModuleScope)
 			{
-				return type;
-			}
-
-			type = new DelegateTypeGenerator(method, targetType)
-				.Generate(@class, options, namingScope)
-				.BuildType();
-
-			scope.RegisterInCache(key, type);
-
-			return type;
+				Logger = Logger
+			}.GetProxyType();
 		}
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
 		{
 			var scope = @class.ModuleScope;
-			var invocationInterfaces = new[] { typeof (IInvocation) };
+			var invocationInterfaces = new[] { typeof(IInvocation) };
 
 			var key = new CacheKey(method.Method, CompositionInvocationTypeGenerator.BaseType, invocationInterfaces, null);
 
@@ -164,7 +145,7 @@ namespace Castle.DynamicProxy.Contributors
 		                                                        ProxyGenerationOptions options,
 		                                                        OverrideMethodDelegate overrideMethod)
 		{
-			var @delegate = GetDelegateType(method, proxy, options);
+			var @delegate = GetDelegateType(method, proxy);
 			var contributor = GetContributor(@delegate, method);
 			return new MethodWithInvocationGenerator(method,
 			                                         proxy.GetField("__interceptors"),

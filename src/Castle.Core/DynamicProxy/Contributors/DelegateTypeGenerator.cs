@@ -15,14 +15,16 @@
 namespace Castle.DynamicProxy.Contributors
 {
 	using System;
+	using System.Linq;
 	using System.Reflection;
 
+	using Castle.Core.Logging;
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Internal;
 
-	public class DelegateTypeGenerator : IGenerator<AbstractTypeEmitter>
+	public class DelegateTypeGenerator : IProxyTypeGenerator
 	{
 		private const TypeAttributes DelegateFlags = TypeAttributes.Class |
 		                                             TypeAttributes.Public |
@@ -31,20 +33,44 @@ namespace Castle.DynamicProxy.Contributors
 		                                             TypeAttributes.AutoClass;
 
 		private readonly MetaMethod method;
+		private readonly ModuleScope moduleScope;
+		private readonly INamingScope namingScope;
 		private readonly Type targetType;
 
-		public DelegateTypeGenerator(MetaMethod method, Type targetType)
+		public ILogger Logger { get; set; }
+
+		public DelegateTypeGenerator(MetaMethod method, Type targetType, INamingScope namingScope, ModuleScope moduleScope)
 		{
 			this.method = method;
 			this.targetType = targetType;
+			this.namingScope = namingScope;
+			this.moduleScope = moduleScope;
 		}
 
-		public AbstractTypeEmitter Generate(ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
+		public Type GetProxyType()
 		{
-			var emitter = GetEmitter(@class, namingScope);
-			BuildConstructor(emitter);
-			BuildInvokeMethod(emitter);
-			return emitter;
+			var key = new CacheKey(
+				typeof(Delegate),
+				targetType,
+				new[] { method.MethodOnTarget.ReturnType }
+					.Concat(ArgumentsUtil.GetTypes(method.MethodOnTarget.GetParameters())).
+					ToArray(),
+				null);
+
+			var type = moduleScope.GetFromCache(key);
+			if (type != null)
+			{
+				Logger.DebugFormat("Found cached delegate type {0} for target method {1}.", type.FullName, method.MethodOnTarget);
+				return type;
+			}
+
+			// Log details about the cache miss
+			Logger.DebugFormat("No cached delegate type was found for target method {0}.", method.MethodOnTarget);
+			type = Generate().BuildType();
+
+			moduleScope.RegisterInCache(key, type);
+
+			return type;
 		}
 
 		private void BuildConstructor(AbstractTypeEmitter emitter)
@@ -67,15 +93,22 @@ namespace Castle.DynamicProxy.Contributors
 			invoke.MethodBuilder.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 		}
 
-		private AbstractTypeEmitter GetEmitter(ClassEmitter @class, INamingScope namingScope)
+		private AbstractTypeEmitter Generate()
 		{
-			var methodInfo = method.MethodOnTarget;
+			var emitter = GetEmitter();
+			BuildConstructor(emitter);
+			BuildInvokeMethod(emitter);
+			return emitter;
+		}
+
+		private AbstractTypeEmitter GetEmitter()
+		{
 			var suggestedName = string.Format("Castle.Proxies.Delegates.{0}_{1}",
-			                                  methodInfo.DeclaringType.Name,
+			                                  method.MethodOnTarget.DeclaringType.Name,
 			                                  method.Method.Name);
 			var uniqueName = namingScope.ParentScope.GetUniqueName(suggestedName);
 
-			var @delegate = new ClassEmitter(@class.ModuleScope,
+			var @delegate = new ClassEmitter(moduleScope,
 			                                 uniqueName,
 			                                 typeof(MulticastDelegate),
 			                                 Type.EmptyTypes,

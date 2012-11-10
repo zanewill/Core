@@ -146,7 +146,7 @@ namespace Castle.DynamicProxy.Contributors
 		                                                                      ProxyGenerationOptions options,
 		                                                                      OverrideMethodDelegate overrideMethod)
 		{
-			var @delegate = GetDelegateType(method, @class, options);
+			var @delegate = GetDelegateType(method, @class);
 			var contributor = GetContributor(@delegate, method);
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
@@ -171,30 +171,12 @@ namespace Castle.DynamicProxy.Contributors
 			                                                    new FieldReference(InvocationMethods.ProxyObject));
 		}
 
-		private Type GetDelegateType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetDelegateType(MetaMethod method, ClassEmitter @class)
 		{
-			var scope = @class.ModuleScope;
-			var key = new CacheKey(
-				typeof (Delegate),
-				targetType,
-				new[] { method.MethodOnTarget.ReturnType }
-					.Concat(ArgumentsUtil.GetTypes(method.MethodOnTarget.GetParameters())).
-					ToArray(),
-				null);
-
-			var type = scope.GetFromCache(key);
-			if (type != null)
+			return new DelegateTypeGenerator(method, targetType, namingScope, @class.ModuleScope)
 			{
-				return type;
-			}
-
-			type = new DelegateTypeGenerator(method, targetType)
-				.Generate(@class, options, namingScope)
-				.BuildType();
-
-			scope.RegisterInCache(key, type);
-
-			return type;
+				Logger = Logger
+			}.GetProxyType();
 		}
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
