@@ -111,17 +111,15 @@ namespace Castle.DynamicProxy.Contributors
 
 		private void ImplementMethod(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, CreateMethodDelegate createMethod)
 		{
+			var generator = GetMethodGenerator(method, @class, createMethod);
+			if (generator == null)
 			{
-				var generator = GetMethodGenerator(method, @class, createMethod);
-				if (generator == null)
-				{
-					return;
-				}
-				var proxyMethod = generator.Generate(@class, options, namingScope);
-				foreach (var attribute in method.Method.GetNonInheritableAttributes())
-				{
-					proxyMethod.DefineCustomAttribute(attribute);
-				}
+				return;
+			}
+			var proxyMethod = generator.Generate(@class, options, namingScope);
+			foreach (var attribute in method.Method.GetNonInheritableAttributes())
+			{
+				proxyMethod.DefineCustomAttribute(attribute);
 			}
 		}
 

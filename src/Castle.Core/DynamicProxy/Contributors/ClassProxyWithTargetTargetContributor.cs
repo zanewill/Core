@@ -73,7 +73,6 @@ namespace Castle.DynamicProxy.Contributors
 			}
 
 			return new MethodWithInvocationGenerator(method,
-			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
 			                                         @class.GetField("__target").ToExpression(),
 			                                         createMethod,
@@ -113,7 +112,6 @@ namespace Castle.DynamicProxy.Contributors
 			var @delegate = GetDelegateType(method, proxy);
 			var contributor = GetContributor(@delegate, method);
 			return new MethodWithInvocationGenerator(method,
-			                                         proxy.GetField("__interceptors"),
 			                                         () => new CompositionInvocationTypeGenerator(method,
 			                                                                                      proxy,
 			                                                                                      namingScope, contributor)

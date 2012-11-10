@@ -41,7 +41,6 @@ namespace Castle.DynamicProxy.Contributors
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			return new MethodWithInvocationGenerator(method,
-			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
 			                                         @class.GetField("__target").ToExpression(),
 			                                         createMethod,

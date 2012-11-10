@@ -17,6 +17,7 @@ namespace Castle.DynamicProxy.Generators
 	using System;
 	using System.Reflection;
 	using System.Reflection.Emit;
+	using System.Xml.Serialization;
 
 	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
@@ -28,18 +29,14 @@ namespace Castle.DynamicProxy.Generators
 	public class MethodWithInvocationGenerator : MethodGenerator
 	{
 		private readonly IInvocationCreationContributor contributor;
-		private readonly Reference interceptors;
 		private readonly Func<Type> invocationFactory;
 		private readonly Expression target;
 
-		public MethodWithInvocationGenerator(MetaMethod method, Reference interceptors, Func<Type> invocationFactory,
-		                                     Expression target,
-		                                     CreateMethodDelegate createMethod, IInvocationCreationContributor contributor)
+		public MethodWithInvocationGenerator(MetaMethod method, Func<Type> invocationFactory, Expression target, CreateMethodDelegate createMethod, IInvocationCreationContributor contributor)
 			: base(method, createMethod)
 		{
 			this.invocationFactory = invocationFactory;
 			this.target = target;
-			this.interceptors = interceptors;
 			this.contributor = contributor;
 		}
 
@@ -50,7 +47,7 @@ namespace Castle.DynamicProxy.Generators
 				typeof(IInterceptor[]),
 				false);
 #if !SILVERLIGHT
-			@class.DefineCustomAttributeFor<System.Xml.Serialization.XmlIgnoreAttribute>(methodInterceptors);
+			@class.DefineCustomAttributeFor<XmlIgnoreAttribute>(methodInterceptors);
 #endif
 			return methodInterceptors;
 		}
@@ -100,7 +97,7 @@ namespace Castle.DynamicProxy.Generators
 			var dereferencedArguments = IndirectReference.WrapIfByRef(emitter.Arguments);
 			var hasByRefArguments = HasByRefArguments(emitter.Arguments);
 
-			var arguments = GetCtorArguments(proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors);
+			var arguments = GetCtorArguments(proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors, proxy);
 			var ctorArguments = ModifyArguments(proxy, arguments);
 
 			var invocationLocal = emitter.CodeBuilder.DeclareLocal(invocationType);
@@ -164,13 +161,13 @@ namespace Castle.DynamicProxy.Generators
 					                               genericParamsArrayLocal)));
 		}
 
-		private Expression[] GetCtorArguments(Expression proxiedMethodTokenExpression, TypeReference[] dereferencedArguments, Expression methodInterceptors)
+		private Expression[] GetCtorArguments(Expression proxiedMethodTokenExpression, TypeReference[] dereferencedArguments, Expression methodInterceptors, ClassEmitter proxy)
 		{
 			return new[]
 			{
 				target,
 				SelfReference.Self.ToExpression(),
-				methodInterceptors ?? interceptors.ToExpression(),
+				methodInterceptors ?? proxy.GetField("__interceptors").ToExpression(),
 				proxiedMethodTokenExpression,
 				new ReferencesToObjectArrayExpression(dereferencedArguments)
 			};
@@ -214,7 +211,7 @@ namespace Castle.DynamicProxy.Generators
 			                                                        new MethodInvocationExpression(default(Reference),
 			                                                                                       TypeUtilMethods.GetTypeOrNull,
 			                                                                                       target),
-			                                                        proxiedMethodTokenExpression, interceptors.ToExpression())
+			                                                        proxiedMethodTokenExpression, @class.GetField("__interceptors").ToExpression())
 			{ VirtualCall = true };
 
 			emitter.CodeBuilder.AddExpression(

@@ -59,7 +59,6 @@ namespace Castle.DynamicProxy.Contributors
 			}
 
 			return new MethodWithInvocationGenerator(method,
-			                                         @class.GetField("__interceptors"),
 			                                         () => GetInvocationType(method, @class),
 			                                         @class.GetField("__target").ToExpression(),
 			                                         createMethod,
