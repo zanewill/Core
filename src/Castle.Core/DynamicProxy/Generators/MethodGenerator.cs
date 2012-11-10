@@ -40,7 +40,7 @@ namespace Castle.DynamicProxy.Generators
 			get { return method.Method; }
 		}
 
-		protected abstract MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope);
+		protected abstract MethodEmitter BuildProxiedMethodBody(MethodEmitter method, ClassEmitter proxy, INamingScope namingScope);
 
 		public MethodEmitter Generate(ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
 		{

@@ -28,15 +28,15 @@ namespace Castle.DynamicProxy.Contributors
 			this.target = target;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter method, ClassEmitter proxy, INamingScope namingScope)
 		{
 			var arguments = ArgumentsUtil.ConvertToArgumentReferenceExpression(MethodToOverride.GetParameters());
-			emitter.CodeBuilder.AddStatement(
+			method.CodeBuilder.AddStatement(
 				new ReturnStatement(new MethodInvocationExpression(target, MethodToOverride, arguments)
 				{
 					VirtualCall = true
 				}));
-			return emitter;
+			return method;
 		}
 	}
 }

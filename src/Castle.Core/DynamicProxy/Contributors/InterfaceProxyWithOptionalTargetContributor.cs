@@ -17,7 +17,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Reflection;
 
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
@@ -25,12 +24,9 @@ namespace Castle.DynamicProxy.Contributors
 
 	public class InterfaceProxyWithOptionalTargetContributor : CompositeTypeContributor
 	{
-		private Type proxyTargetType;
-
-		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope, Type proxyTargetType)
+		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope)
 			: base(namingScope)
 		{
-			this.proxyTargetType = proxyTargetType;
 		}
 
 		protected override IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook)
@@ -48,24 +44,14 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			if (!method.Proxyable)
 			{
-				return new OptionallyForwardingMethodGenerator(method, createMethod, GetTarget(@class, method.Method));
+				return new OptionallyForwardingMethodGenerator(method, createMethod, new AsTypeReference(@class.GetField("__target"), method.Method.DeclaringType));
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         () => GetInvocationType(method, @class),
-			                                         GetTarget(@class, method.Method).ToExpression(),
+			                                         new AsTypeReference(@class.GetField("__target"), method.Method.DeclaringType).ToExpression(),
 			                                         createMethod,
 			                                         null);
-		}
-
-
-		private Reference GetTarget(ClassEmitter @class, MethodInfo method)
-		{
-			if (method.DeclaringType.IsAssignableFrom(proxyTargetType))
-			{
-				return @class.GetField("target");
-			}
-			return new AsTypeReference(@class.GetField("__target"), method.DeclaringType);
 		}
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy)

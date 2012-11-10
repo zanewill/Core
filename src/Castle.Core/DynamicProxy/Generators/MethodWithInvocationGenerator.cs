@@ -52,8 +52,9 @@ namespace Castle.DynamicProxy.Generators
 			return methodInterceptors;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter method, ClassEmitter proxy, INamingScope namingScope)
 		{
+			//invocation type must be created after method, so that all generic parameters have been initialized
 			var invocationType = invocationFactory();
 
 			var genericArguments = Type.EmptyTypes;
@@ -64,9 +65,8 @@ namespace Castle.DynamicProxy.Generators
 			if (MethodToOverride.IsGenericMethod)
 			{
 				// bind generic method arguments to invocation's type arguments
-				genericArguments = emitter.MethodBuilder.GetGenericArguments();
-				var invocationTypeGenericArguments = CollectionExtensions.ConcatAll(proxy.TypeBuilder.GetGenericArguments(), genericArguments);
-				invocationType = invocationType.MakeGenericType(invocationTypeGenericArguments);
+				genericArguments = method.MethodBuilder.GetGenericArguments();
+				invocationType = invocationType.MakeGenericType(CollectionExtensions.ConcatAll(proxy.TypeBuilder.GetGenericArguments(), genericArguments));
 				constructor = TypeBuilder.GetConstructor(invocationType, constructor);
 
 				if (proxy.IsGenericType)
@@ -92,54 +92,53 @@ namespace Castle.DynamicProxy.Generators
 				proxy.ClassConstructor.CodeBuilder.AddStatement(new AssignStatement(proxiedMethodToken, new MethodTokenExpression(methodForToken)));
 			}
 
-			var methodInterceptors = SetMethodInterceptors(proxy, namingScope, emitter, proxiedMethodToken.ToExpression());
+			var methodInterceptors = InitializeMethodInterceptors(proxy, namingScope, method, proxiedMethodToken.ToExpression());
 
-			var dereferencedArguments = IndirectReference.WrapIfByRef(emitter.Arguments);
-			var hasByRefArguments = HasByRefArguments(emitter.Arguments);
+			bool hasByRefArguments;
+			var dereferencedArguments = IndirectReference.WrapIfByRef(method.Arguments, out hasByRefArguments);
 
-			var arguments = GetCtorArguments(proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors, proxy);
-			var ctorArguments = ModifyArguments(proxy, arguments);
+			var ctorArguments = GetCtorArguments(proxiedMethodToken.ToExpression(), dereferencedArguments, methodInterceptors, proxy);
 
-			var invocationLocal = emitter.CodeBuilder.DeclareLocal(invocationType);
-			emitter.CodeBuilder.AddStatement(new AssignStatement(invocationLocal, new NewInstanceExpression(constructor, ctorArguments)));
+			var invocationLocal = method.CodeBuilder.DeclareLocal(invocationType);
+			method.CodeBuilder.AddStatement(new AssignStatement(invocationLocal, new NewInstanceExpression(constructor, ctorArguments)));
 
 			if (MethodToOverride.IsGenericMethod)
 			{
-				EmitLoadGenricMethodArguments(emitter, MethodToOverride.MakeGenericMethod(genericArguments), invocationLocal);
+				EmitLoadGenricMethodArguments(method, MethodToOverride.MakeGenericMethod(genericArguments), invocationLocal);
 			}
 
 			if (hasByRefArguments)
 			{
-				emitter.CodeBuilder.AddStatement(new TryStatement());
+				method.CodeBuilder.AddStatement(new TryStatement());
 			}
 
 			var proceed = new ExpressionStatement(new MethodInvocationExpression(invocationLocal, InvocationMethods.Proceed));
-			emitter.CodeBuilder.AddStatement(proceed);
+			method.CodeBuilder.AddStatement(proceed);
 
 			if (hasByRefArguments)
 			{
-				emitter.CodeBuilder.AddStatement(new FinallyStatement());
+				method.CodeBuilder.AddStatement(new FinallyStatement());
 			}
 
-			GeneratorUtil.CopyOutAndRefParameters(dereferencedArguments, invocationLocal, MethodToOverride, emitter);
+			GeneratorUtil.CopyOutAndRefParameters(dereferencedArguments, invocationLocal, MethodToOverride, method);
 
 			if (hasByRefArguments)
 			{
-				emitter.CodeBuilder.AddStatement(new EndExceptionBlockStatement());
+				method.CodeBuilder.AddStatement(new EndExceptionBlockStatement());
 			}
 
 			if (MethodToOverride.ReturnType != typeof(void))
 			{
 				// Emit code to return with cast from ReturnValue
 				var getRetVal = new MethodInvocationExpression(invocationLocal, InvocationMethods.GetReturnValue);
-				emitter.CodeBuilder.AddStatement(new ReturnStatement(new ConvertExpression(emitter.ReturnType, getRetVal)));
+				method.CodeBuilder.AddStatement(new ReturnStatement(new ConvertExpression(method.ReturnType, getRetVal)));
 			}
 			else
 			{
-				emitter.CodeBuilder.AddStatement(new ReturnStatement());
+				method.CodeBuilder.AddStatement(new ReturnStatement());
 			}
 
-			return emitter;
+			return method;
 		}
 
 		private void EmitLoadGenricMethodArguments(MethodEmitter methodEmitter, MethodInfo method, Reference invocationLocal)
@@ -163,7 +162,7 @@ namespace Castle.DynamicProxy.Generators
 
 		private Expression[] GetCtorArguments(Expression proxiedMethodTokenExpression, TypeReference[] dereferencedArguments, Expression methodInterceptors, ClassEmitter proxy)
 		{
-			return new[]
+			var ctorArguments = new[]
 			{
 				target,
 				SelfReference.Self.ToExpression(),
@@ -171,32 +170,10 @@ namespace Castle.DynamicProxy.Generators
 				proxiedMethodTokenExpression,
 				new ReferencesToObjectArrayExpression(dereferencedArguments)
 			};
+			return ModifyArguments(proxy, ctorArguments);
 		}
 
-		private bool HasByRefArguments(ArgumentReference[] arguments)
-		{
-			for (var i = 0; i < arguments.Length; i++)
-			{
-				if (arguments[i].Type.IsByRef)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		private Expression[] ModifyArguments(ClassEmitter @class, Expression[] arguments)
-		{
-			if (contributor == null)
-			{
-				return arguments;
-			}
-
-			return contributor.GetConstructorInvocationArguments(arguments, @class);
-		}
-
-		private Expression SetMethodInterceptors(ClassEmitter @class, INamingScope namingScope, MethodEmitter emitter, Expression proxiedMethodTokenExpression)
+		private Expression InitializeMethodInterceptors(ClassEmitter @class, INamingScope namingScope, MethodEmitter emitter, Expression proxiedMethodTokenExpression)
 		{
 			var selector = @class.GetField("__selector");
 			if (selector == null)
@@ -220,6 +197,16 @@ namespace Castle.DynamicProxy.Generators
 				                                         new NullCoalescingOperatorExpression(selectInterceptors, emptyInterceptors))));
 
 			return methodInterceptorsField.ToExpression();
+		}
+
+		private Expression[] ModifyArguments(ClassEmitter @class, Expression[] arguments)
+		{
+			if (contributor == null)
+			{
+				return arguments;
+			}
+
+			return contributor.GetConstructorInvocationArguments(arguments, @class);
 		}
 	}
 }

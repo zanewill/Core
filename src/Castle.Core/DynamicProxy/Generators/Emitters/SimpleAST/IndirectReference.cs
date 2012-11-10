@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,15 +57,21 @@ namespace Castle.DynamicProxy.Generators.Emitters.SimpleAST
 		}
 
 		// TODO: Better name
-		public static TypeReference[] WrapIfByRef(TypeReference[] references)
+		public static TypeReference[] WrapIfByRef(TypeReference[] references, out bool hasByRefArguments)
 		{
+			hasByRefArguments = false;
 			var result = new TypeReference[references.Length];
 
 			for (var i = 0; i < references.Length; i++)
 			{
-				result[i] = WrapIfByRef(references[i]);
+				var reference = references[i];
+				if (reference.Type.IsByRef)
+				{
+					reference = new IndirectReference(reference);
+					hasByRefArguments = true;
+				}
+				result[i] = reference;
 			}
-
 			return result;
 		}
 	}

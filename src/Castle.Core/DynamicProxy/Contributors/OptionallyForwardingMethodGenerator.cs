@@ -31,10 +31,10 @@ namespace Castle.DynamicProxy.Contributors
 			this.target = target;
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter method, ClassEmitter proxy, INamingScope namingScope)
 		{
-			emitter.CodeBuilder.AddExpression(new IfNullExpression(target, IfNull(emitter.ReturnType), IfNotNull()));
-			return emitter;
+			method.CodeBuilder.AddExpression(new IfNullExpression(target, IfNull(method.ReturnType), IfNotNull()));
+			return method;
 		}
 
 		private Expression IfNotNull()

@@ -27,20 +27,20 @@ namespace Castle.DynamicProxy.Contributors
 		{
 		}
 
-		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter emitter, ClassEmitter proxy, INamingScope namingScope)
+		protected override MethodEmitter BuildProxiedMethodBody(MethodEmitter method, ClassEmitter proxy, INamingScope namingScope)
 		{
-			InitOutParameters(emitter, MethodToOverride.GetParameters());
+			InitOutParameters(method, MethodToOverride.GetParameters());
 
-			if (emitter.ReturnType == typeof(void))
+			if (method.ReturnType == typeof(void))
 			{
-				emitter.CodeBuilder.AddStatement(new ReturnStatement());
+				method.CodeBuilder.AddStatement(new ReturnStatement());
 			}
 			else
 			{
-				emitter.CodeBuilder.AddStatement(new ReturnStatement(new DefaultValueExpression(emitter.ReturnType)));
+				method.CodeBuilder.AddStatement(new ReturnStatement(new DefaultValueExpression(method.ReturnType)));
 			}
 
-			return emitter;
+			return method;
 		}
 
 		private void InitOutParameters(MethodEmitter emitter, ParameterInfo[] parameters)
