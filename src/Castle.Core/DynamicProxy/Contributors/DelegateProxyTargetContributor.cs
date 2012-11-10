@@ -39,23 +39,19 @@ namespace Castle.DynamicProxy.Contributors
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => GetInvocationType(method, @class),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter @class)
 		{
-			return new CompositionInvocationTypeGenerator(method,
-			                                              @class,
-			                                              options,
-			                                              namingScope)
+			return new CompositionInvocationTypeGenerator(method, @class, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();

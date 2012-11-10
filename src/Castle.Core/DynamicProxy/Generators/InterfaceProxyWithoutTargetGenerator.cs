@@ -114,8 +114,7 @@ namespace Castle.DynamicProxy.Generators
 			return generatedType;
 		}
 
-		protected override InterfaceProxyWithoutTargetContributor GetContributorForAdditionalInterfaces(
-			INamingScope namingScope)
+		protected override CompositeTypeContributor GetContributorForAdditionalInterfaces(INamingScope namingScope)
 		{
 			return new InterfaceProxyWithoutTargetContributor(namingScope, (c, m) => NullExpression.Instance) { Logger = Logger };
 		}

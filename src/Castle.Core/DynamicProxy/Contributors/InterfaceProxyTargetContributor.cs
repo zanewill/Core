@@ -52,7 +52,6 @@ namespace Castle.DynamicProxy.Contributors
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
 			if (!method.Proxyable)
@@ -64,21 +63,18 @@ namespace Castle.DynamicProxy.Contributors
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => GetInvocationType(method, @class),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter @class)
 		{
 			if (canChangeTarget)
 			{
 				return new ChangeTargetInvocationTypeGenerator(method,
-				                                               method.Method,
-				                                               @class.ModuleScope,
 				                                               @class,
-				                                               options,
 				                                               namingScope)
 				{
 					Logger = Logger
@@ -86,7 +82,6 @@ namespace Castle.DynamicProxy.Contributors
 			}
 			return new CompositionInvocationTypeGenerator(method,
 			                                              @class,
-			                                              options,
 			                                              namingScope)
 			{
 				Logger = Logger

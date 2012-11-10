@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,31 +14,57 @@
 
 namespace Castle.DynamicProxy.Contributors
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
+
 	using Castle.DynamicProxy.Generators;
 	using Castle.DynamicProxy.Generators.Emitters;
 
-	public class InterfaceProxyWithOptionalTargetContributor : InterfaceProxyWithoutTargetContributor
+	public class InterfaceProxyWithOptionalTargetContributor : CompositeTypeContributor
 	{
+		private readonly GetTargetExpressionDelegate getTargetExpression;
 		private readonly GetTargetReferenceDelegate getTargetReference;
 
-		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope, GetTargetExpressionDelegate getTarget,
-		                                                   GetTargetReferenceDelegate getTargetReference)
-			: base(namingScope, getTarget)
+		public InterfaceProxyWithOptionalTargetContributor(INamingScope namingScope, GetTargetExpressionDelegate getTargetExpression, GetTargetReferenceDelegate getTargetReference)
+			: base(namingScope)
 		{
+			this.getTargetExpression = getTargetExpression;
 			this.getTargetReference = getTargetReference;
-			canChangeTarget = true;
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
-		                                                      OverrideMethodDelegate overrideMethod)
+		protected override IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook)
+		{
+			Debug.Assert(hook != null, "hook != null");
+			foreach (var @interface in interfaces)
+			{
+				var item = new InterfaceMembersCollector(@interface);
+				item.CollectMembersToProxy(hook);
+				yield return item;
+			}
+		}
+
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
 		{
 			if (!method.Proxyable)
 			{
 				return new OptionallyForwardingMethodGenerator(method, overrideMethod, getTargetReference);
 			}
 
-			return base.GetMethodGenerator(method, @class, options, overrideMethod);
+			return new MethodWithInvocationGenerator(method,
+			                                         @class.GetField("__interceptors"),
+			                                         () => GetInvocationType(method, @class),
+			                                         getTargetExpression,
+			                                         overrideMethod,
+			                                         null);
+		}
+
+		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy)
+		{
+			return new ChangeTargetInvocationTypeGenerator(method, proxy, namingScope)
+			{
+				Logger = Logger
+			}.GetProxyType();
 		}
 	}
 }

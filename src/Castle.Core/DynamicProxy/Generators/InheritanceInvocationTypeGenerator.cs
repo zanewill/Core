@@ -23,27 +23,21 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator, IProxyTypeGenerator
+	public class InheritanceInvocationTypeGenerator : InvocationTypeGenerator
 	{
 		public static readonly Type BaseType = typeof(InheritanceInvocation);
-		private readonly ClassEmitter @class;
-		private readonly ProxyGenerationOptions options;
-		private readonly INamingScope namingScope;
 
-		public InheritanceInvocationTypeGenerator(MetaMethod method, MethodInfo callback, IInvocationCreationContributor contributor, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(method, callback, contributor)
+		public InheritanceInvocationTypeGenerator(MetaMethod method, MethodInfo callback, ClassEmitter proxy, INamingScope namingScope, IInvocationCreationContributor contributor)
+			: base(method, callback, proxy, namingScope, contributor)
 		{
-			this.@class = @class;
-			this.options = options;
-			this.namingScope = namingScope;
 		}
 
 		public ILogger Logger { get; set; }
 
-		public Type GetProxyType()
+		public override Type GetProxyType()
 		{
 			Logger.DebugFormat("No cache for invocation for target method {0}.", method.Method);
-			var type = Generate(@class, options, namingScope).BuildType();
+			var type = Generate().BuildType();
 			return type;
 		}
 

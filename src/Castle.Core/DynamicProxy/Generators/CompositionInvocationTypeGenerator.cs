@@ -23,39 +23,22 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public class CompositionInvocationTypeGenerator : InvocationTypeGenerator, IProxyTypeGenerator
+	public class CompositionInvocationTypeGenerator : InvocationTypeGenerator
 	{
 		public static readonly Type BaseType = typeof(CompositionInvocation);
-		private readonly ModuleScope moduleScope;
-		private readonly INamingScope namingScope;
-		private readonly ProxyGenerationOptions options;
-		private readonly ClassEmitter proxy;
 
-		public CompositionInvocationTypeGenerator(MetaMethod method, ClassEmitter proxy, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(method, method.MethodOnTarget, null)
+		public CompositionInvocationTypeGenerator(MetaMethod method, ClassEmitter proxy, INamingScope namingScope, IInvocationCreationContributor contributor = null)
+			: base(method, method.MethodOnTarget, proxy, namingScope, contributor)
 		{
-			this.proxy = proxy;
-			moduleScope = proxy.ModuleScope;
-			this.options = options;
-			this.namingScope = namingScope;
-		}
-
-		public CompositionInvocationTypeGenerator(MetaMethod method, IInvocationCreationContributor contributor, ClassEmitter proxy, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(method, method.MethodOnTarget, contributor)
-		{
-			this.proxy = proxy;
-			moduleScope = proxy.ModuleScope;
-			this.options = options;
-			this.namingScope = namingScope;
 		}
 
 		public ILogger Logger { get; set; }
 
-		public Type GetProxyType()
+		public override Type GetProxyType()
 		{
 			var key = new CacheKey(method.Method, BaseType, AdditionalInterfaces, null);
 
-			var type = moduleScope.GetFromCache(key);
+			var type = proxy.ModuleScope.GetFromCache(key);
 			if (type != null)
 			{
 				Logger.DebugFormat("Found cached invocation type {0} for target method {1}.", type.FullName, method.MethodOnTarget);
@@ -64,9 +47,9 @@ namespace Castle.DynamicProxy.Generators
 
 			// Log details about the cache miss
 			Logger.DebugFormat("No cached invocation type was found for target method {0}.", method.MethodOnTarget);
-			type = Generate(proxy, options, namingScope).BuildType();
+			type = Generate().BuildType();
 
-			moduleScope.RegisterInCache(key, type);
+			proxy.ModuleScope.RegisterInCache(key, type);
 
 			return type;
 		}
@@ -97,9 +80,7 @@ namespace Castle.DynamicProxy.Generators
 		protected override void ImplementInvokeMethodOnTarget(AbstractTypeEmitter invocation, ParameterInfo[] parameters,
 		                                                      MethodEmitter invokeMethodOnTarget, Reference targetField)
 		{
-			invokeMethodOnTarget.CodeBuilder.AddStatement(
-				new ExpressionStatement(
-					new MethodInvocationExpression(SelfReference.Self, InvocationMethods.EnsureValidTarget)));
+			EmitCallEnsureValidTarget(invokeMethodOnTarget);
 			base.ImplementInvokeMethodOnTarget(invocation, parameters, invokeMethodOnTarget, targetField);
 		}
 	}

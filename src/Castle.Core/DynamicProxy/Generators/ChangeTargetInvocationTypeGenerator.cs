@@ -23,22 +23,13 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Tokens;
 
-	public class ChangeTargetInvocationTypeGenerator : InvocationTypeGenerator, IProxyTypeGenerator
+	public class ChangeTargetInvocationTypeGenerator : InvocationTypeGenerator
 	{
 		public static readonly Type BaseType = typeof(ChangeTargetInvocation);
 
-		private readonly ClassEmitter @class;
-		private readonly ModuleScope moduleScope;
-		private readonly INamingScope namingScope;
-		private readonly ProxyGenerationOptions options;
-
-		public ChangeTargetInvocationTypeGenerator(MetaMethod method, MethodInfo callback, ModuleScope moduleScope, ClassEmitter @class, ProxyGenerationOptions options, INamingScope namingScope)
-			: base(method, callback, null)
+		public ChangeTargetInvocationTypeGenerator(MetaMethod method, ClassEmitter proxy, INamingScope namingScope)
+			: base(method, method.Method, proxy, namingScope, null)
 		{
-			this.moduleScope = moduleScope;
-			this.@class = @class;
-			this.options = options;
-			this.namingScope = namingScope;
 		}
 
 		public ILogger Logger { get; set; }
@@ -48,11 +39,11 @@ namespace Castle.DynamicProxy.Generators
 			get { return new[] { typeof(IChangeProxyTarget) }; }
 		}
 
-		public Type GetProxyType()
+		public override Type GetProxyType()
 		{
 			var key = new CacheKey(method.Method, BaseType, AdditionalInterfaces, null);
 
-			var type = moduleScope.GetFromCache(key);
+			var type = proxy.ModuleScope.GetFromCache(key);
 			if (type != null)
 			{
 				Logger.DebugFormat("Found cached invocation type {0} for target method {1}.", type.FullName, method.MethodOnTarget);
@@ -61,9 +52,9 @@ namespace Castle.DynamicProxy.Generators
 
 			// Log details about the cache miss
 			Logger.DebugFormat("No cached invocation type was found for target method {0}.", method.MethodOnTarget);
-			type = Generate(@class, options, namingScope).BuildType();
+			type = Generate().BuildType();
 
-			moduleScope.RegisterInCache(key, type);
+			proxy.ModuleScope.RegisterInCache(key, type);
 
 			return type;
 		}
@@ -94,9 +85,7 @@ namespace Castle.DynamicProxy.Generators
 		protected override void ImplementInvokeMethodOnTarget(AbstractTypeEmitter invocation, ParameterInfo[] parameters,
 		                                                      MethodEmitter invokeMethodOnTarget, Reference targetField)
 		{
-			invokeMethodOnTarget.CodeBuilder.AddStatement(
-				new ExpressionStatement(
-					new MethodInvocationExpression(SelfReference.Self, InvocationMethods.EnsureValidTarget)));
+			EmitCallEnsureValidTarget(invokeMethodOnTarget);
 			base.ImplementInvokeMethodOnTarget(invocation, parameters, invokeMethodOnTarget, targetField);
 		}
 	}

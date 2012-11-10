@@ -23,7 +23,6 @@ namespace Castle.DynamicProxy.Contributors
 
 	public class InterfaceProxyWithoutTargetContributor : CompositeTypeContributor
 	{
-		protected bool canChangeTarget = false;
 		private readonly GetTargetExpressionDelegate getTargetExpression;
 
 		public InterfaceProxyWithoutTargetContributor(INamingScope namingScope, GetTargetExpressionDelegate getTarget)
@@ -43,9 +42,7 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
-		                                                      OverrideMethodDelegate overrideMethod)
+		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
 		{
 			if (!method.Proxyable)
 			{
@@ -54,30 +51,15 @@ namespace Castle.DynamicProxy.Contributors
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => GetInvocationType(method, @class),
 			                                         getTargetExpression,
 			                                         overrideMethod,
 			                                         null);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter proxy)
 		{
-			if (canChangeTarget)
-			{
-				return new ChangeTargetInvocationTypeGenerator(method,
-				                                               method.Method,
-				                                               proxy.ModuleScope,
-				                                               proxy,
-				                                               options,
-				                                               namingScope)
-				{
-					Logger = Logger
-				}.GetProxyType();
-			}
-			return new CompositionInvocationTypeGenerator(method,
-			                                              proxy,
-			                                              options,
-			                                              namingScope)
+			return new CompositionInvocationTypeGenerator(method, proxy, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();

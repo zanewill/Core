@@ -78,7 +78,6 @@ namespace Castle.DynamicProxy.Contributors
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
 			if (!method.Proxyable)
@@ -90,7 +89,7 @@ namespace Castle.DynamicProxy.Contributors
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => GetInvocationType(method, @class),
 			                                         getTargetExpression,
 			                                         overrideMethod,
 			                                         null);
@@ -114,25 +113,17 @@ namespace Castle.DynamicProxy.Contributors
 			return @class.CreateField(namingScope.GetUniqueName(name), type);
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter @class)
 		{
 			if (canChangeTarget)
 			{
-				return new ChangeTargetInvocationTypeGenerator(method,
-				                                               method.Method,
-				                                               @class.ModuleScope,
-				                                               @class,
-				                                               options,
-				                                               namingScope)
+				return new ChangeTargetInvocationTypeGenerator(method, @class, namingScope)
 				{
 					Logger = Logger
 				}.GetProxyType();
 			}
 
-			return new CompositionInvocationTypeGenerator(method,
-			                                              @class,
-			                                              options,
-			                                              namingScope)
+			return new CompositionInvocationTypeGenerator(method, @class, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();

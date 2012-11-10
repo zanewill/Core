@@ -56,7 +56,6 @@ namespace Castle.DynamicProxy.Contributors
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
 			if (methodsToSkip.Contains(method.Method))
@@ -71,12 +70,12 @@ namespace Castle.DynamicProxy.Contributors
 
 			if (IsDirectlyAccessible(method) == false)
 			{
-				return IndirectlyCalledMethodGenerator(method, @class, options, overrideMethod);
+				return IndirectlyCalledMethodGenerator(method, @class, overrideMethod);
 			}
 
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => GetInvocationType(method, @class, options),
+			                                         () => GetInvocationType(method, @class),
 			                                         (c, m) => c.GetField("__target").ToExpression(),
 			                                         overrideMethod,
 			                                         null);
@@ -101,28 +100,24 @@ namespace Castle.DynamicProxy.Contributors
 			}.GetProxyType();
 		}
 
-		private Type GetInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options)
+		private Type GetInvocationType(MetaMethod method, ClassEmitter @class)
 		{
 			Debug.Assert(method.HasTarget, "method.HasTarget");
-			return new CompositionInvocationTypeGenerator(method, @class, options, namingScope)
+			return new CompositionInvocationTypeGenerator(method, @class, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();
 		}
 
-		private MethodGenerator IndirectlyCalledMethodGenerator(MetaMethod method, ClassEmitter proxy,
-		                                                        ProxyGenerationOptions options,
-		                                                        OverrideMethodDelegate overrideMethod)
+		private MethodGenerator IndirectlyCalledMethodGenerator(MetaMethod method, ClassEmitter proxy, OverrideMethodDelegate overrideMethod)
 		{
 			var @delegate = GetDelegateType(method, proxy);
 			var contributor = GetContributor(@delegate, method);
 			return new MethodWithInvocationGenerator(method,
 			                                         proxy.GetField("__interceptors"),
 			                                         () => new CompositionInvocationTypeGenerator(method,
-			                                                                                      contributor,
 			                                                                                      proxy,
-			                                                                                      options,
-			                                                                                      namingScope)
+			                                                                                      namingScope, contributor)
 			                                         {
 				                                         Logger = Logger
 			                                         }.GetProxyType(),

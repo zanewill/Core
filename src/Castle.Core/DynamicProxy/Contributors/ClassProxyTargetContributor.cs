@@ -56,7 +56,6 @@ namespace Castle.DynamicProxy.Contributors
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                      ProxyGenerationOptions options,
 		                                                      OverrideMethodDelegate overrideMethod)
 		{
 			if (methodsToSkip.Contains(method.Method))
@@ -66,8 +65,7 @@ namespace Castle.DynamicProxy.Contributors
 
 			if (!method.Proxyable)
 			{
-				return new MinimialisticMethodGenerator(method,
-				                                        overrideMethod);
+				return new MinimialisticMethodGenerator(method, overrideMethod);
 			}
 
 			if (ExplicitlyImplementedInterfaceMethod(method))
@@ -75,27 +73,22 @@ namespace Castle.DynamicProxy.Contributors
 #if SILVERLIGHT
 				return null;
 #else
-				return ExplicitlyImplementedInterfaceMethodGenerator(method, @class, options, overrideMethod);
+				return ExplicitlyImplementedInterfaceMethodGenerator(method, @class, overrideMethod);
 #endif
 			}
 
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => BuildInvocationType(method, @class, options, GetCallback(method, @class, method.Method), null),
+			                                         () => BuildInvocationType(method, @class, GetCallback(method, @class, method.Method), null),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         null);
 		}
 
-		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, MethodBuilder callback, IInvocationCreationContributor contributor)
+		private Type BuildInvocationType(MetaMethod method, ClassEmitter @class, MethodInfo callback, IInvocationCreationContributor contributor)
 		{
-			return new InheritanceInvocationTypeGenerator(method,
-			                                              callback,
-			                                              contributor,
-			                                              @class,
-			                                              options,
-			                                              namingScope)
+			return new InheritanceInvocationTypeGenerator(method, callback, @class, namingScope, contributor)
 			{
 				Logger = Logger
 			}.GetProxyType();
@@ -133,16 +126,14 @@ namespace Castle.DynamicProxy.Contributors
 			return method.MethodOnTarget.IsPrivate;
 		}
 
-		private MethodGenerator ExplicitlyImplementedInterfaceMethodGenerator(MetaMethod method, ClassEmitter @class,
-		                                                                      ProxyGenerationOptions options,
-		                                                                      OverrideMethodDelegate overrideMethod)
+		private MethodGenerator ExplicitlyImplementedInterfaceMethodGenerator(MetaMethod method, ClassEmitter @class, OverrideMethodDelegate overrideMethod)
 		{
 			var @delegate = GetDelegateType(method, @class);
 			var contributor = GetContributor(@delegate, method);
 			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         @class.GetField("__interceptors"),
-			                                         () => BuildInvocationType(method, @class, options, null, contributor),
+			                                         () => BuildInvocationType(method, @class, null, contributor),
 			                                         (c, m) => new TypeTokenExpression(type),
 			                                         overrideMethod,
 			                                         contributor);
