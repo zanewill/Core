@@ -20,9 +20,10 @@ namespace Castle.Components.Binder
 	using System.ComponentModel;
 	using System.Reflection;
 	using System.Web;
-	using Core;
-	using Core.Logging;
-	using Validator;
+
+	using Castle.Components.Validator;
+	using Castle.Core;
+	using Castle.Core.Logging;
 
 	/// <summary>
 	/// </summary>
