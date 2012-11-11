@@ -51,6 +51,8 @@ namespace Castle.DynamicProxy.Generators
 		/// <param name="target"> Type of the target. </param>
 		/// <param name="interfaces"> The interfaces. </param>
 		/// <param name="options"> The options. </param>
+		/// <param name="canChangeTarget"> If <c>true</c> <see cref="IInvocation" /> s used by this proxy will support <see
+		///     cref="IChangeProxyTarget" /> . </param>
 		public CacheKey(Type target, Type[] interfaces, ProxyGenerationOptions options, bool canChangeTarget = false)
 			: this(target, null, interfaces, options, canChangeTarget)
 		{
