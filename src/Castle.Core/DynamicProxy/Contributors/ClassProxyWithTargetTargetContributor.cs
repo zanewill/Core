@@ -100,7 +100,6 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Type GetInvocationType(MetaMethod method, ClassEmitter @class)
 		{
-			Debug.Assert(method.HasTarget, "method.HasTarget");
 			return new CompositionInvocationTypeGenerator(method, @class, namingScope)
 			{
 				Logger = Logger
@@ -125,7 +124,7 @@ namespace Castle.DynamicProxy.Contributors
 
 		private bool IsDirectlyAccessible(MetaMethod method)
 		{
-			return method.MethodOnTarget.IsPublic;
+			return method.MethodOnTarget.IsPublic || method.Method.DeclaringType.IsInterface;
 		}
 	}
 }
