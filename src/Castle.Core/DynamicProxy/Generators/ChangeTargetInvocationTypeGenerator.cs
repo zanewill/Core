@@ -46,12 +46,12 @@ namespace Castle.DynamicProxy.Generators
 			var type = proxy.ModuleScope.GetFromCache(key);
 			if (type != null)
 			{
-				Logger.DebugFormat("Found cached invocation type {0} for target method {1}.", type.FullName, method.MethodOnTarget);
+				Logger.DebugFormat("Found cached invocation type {0} for target method {1}.", type.FullName, method.Method);
 				return type;
 			}
 
 			// Log details about the cache miss
-			Logger.DebugFormat("No cached invocation type was found for target method {0}.", method.MethodOnTarget);
+			Logger.DebugFormat("No cached invocation type was found for target method {0}.", method.Method);
 			type = Generate().BuildType();
 
 			proxy.ModuleScope.RegisterInCache(key, type);
