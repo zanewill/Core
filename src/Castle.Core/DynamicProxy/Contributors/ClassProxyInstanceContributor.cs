@@ -52,7 +52,7 @@ namespace Castle.DynamicProxy.Contributors
 			return SelfReference.Self.ToExpression();
 		}
 
-		public override void Generate(ClassEmitter @class, ProxyGenerationOptions options)
+		public override void Generate(ClassEmitter @class)
 		{
 			var interceptors = @class.GetField("__interceptors");
 #if !SILVERLIGHT

@@ -95,7 +95,7 @@ namespace Castle.DynamicProxy.Generators
 			var constructorArguments = new List<FieldReference>();
 			foreach (var contributor in contributors)
 			{
-				contributor.Generate(emitter, ProxyGenerationOptions);
+				contributor.Generate(emitter);
 
 				// TODO: redo it
 				if (contributor is MixinContributor)

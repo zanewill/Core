@@ -50,7 +50,7 @@ namespace Castle.DynamicProxy.Contributors
 			empty.Add(@interface);
 		}
 
-		public override void Generate(ClassEmitter @class, ProxyGenerationOptions options)
+		public override void Generate(ClassEmitter @class)
 		{
 			foreach (var @interface in interfaces)
 			{
@@ -62,7 +62,7 @@ namespace Castle.DynamicProxy.Contributors
 				fields[emptyInterface] = BuildTargetField(@class, emptyInterface);
 			}
 
-			base.Generate(@class, options);
+			base.Generate(@class);
 		}
 
 		protected override IEnumerable<MembersCollector> CollectElementsToProxyInternal(IProxyGenerationHook hook)

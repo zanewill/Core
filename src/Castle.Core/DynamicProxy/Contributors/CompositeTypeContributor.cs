@@ -79,7 +79,7 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		public virtual void Generate(ClassEmitter @class, ProxyGenerationOptions options)
+		public virtual void Generate(ClassEmitter @class)
 		{
 			foreach (var method in methods)
 			{
@@ -88,28 +88,28 @@ namespace Castle.DynamicProxy.Contributors
 					continue;
 				}
 
-				ImplementMethod(method, @class, options, @class.CreateMethod);
+				ImplementMethod(method, @class, @class.CreateMethod);
 			}
 
 			foreach (var property in properties)
 			{
-				ImplementProperty(@class, property, options);
+				ImplementProperty(@class, property);
 			}
 
 			foreach (var @event in events)
 			{
-				ImplementEvent(@class, @event, options);
+				ImplementEvent(@class, @event);
 			}
 		}
 
-		private void ImplementEvent(ClassEmitter emitter, MetaEvent @event, ProxyGenerationOptions options)
+		private void ImplementEvent(ClassEmitter emitter, MetaEvent @event)
 		{
 			@event.BuildEventEmitter(emitter);
-			ImplementMethod(@event.Adder, emitter, options, @event.Emitter.CreateAddMethod);
-			ImplementMethod(@event.Remover, emitter, options, @event.Emitter.CreateRemoveMethod);
+			ImplementMethod(@event.Adder, emitter, @event.Emitter.CreateAddMethod);
+			ImplementMethod(@event.Remover, emitter, @event.Emitter.CreateRemoveMethod);
 		}
 
-		private void ImplementMethod(MetaMethod method, ClassEmitter @class, ProxyGenerationOptions options, CreateMethodDelegate createMethod)
+		private void ImplementMethod(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
 		{
 			var generator = GetMethodGenerator(method, @class, createMethod);
 			if (generator == null)
@@ -123,17 +123,17 @@ namespace Castle.DynamicProxy.Contributors
 			}
 		}
 
-		private void ImplementProperty(ClassEmitter emitter, MetaProperty property, ProxyGenerationOptions options)
+		private void ImplementProperty(ClassEmitter emitter, MetaProperty property)
 		{
 			property.BuildPropertyEmitter(emitter);
 			if (property.CanRead)
 			{
-				ImplementMethod(property.Getter, emitter, options, property.Emitter.CreateGetMethod);
+				ImplementMethod(property.Getter, emitter, property.Emitter.CreateGetMethod);
 			}
 
 			if (property.CanWrite)
 			{
-				ImplementMethod(property.Setter, emitter, options, property.Emitter.CreateSetMethod);
+				ImplementMethod(property.Setter, emitter, property.Emitter.CreateSetMethod);
 			}
 		}
 	}

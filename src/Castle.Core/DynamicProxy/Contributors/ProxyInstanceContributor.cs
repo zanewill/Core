@@ -44,7 +44,7 @@ namespace Castle.DynamicProxy.Contributors
 
 		protected abstract Expression GetTargetReferenceExpression(ClassEmitter emitter);
 
-		public virtual void Generate(ClassEmitter @class, ProxyGenerationOptions options)
+		public virtual void Generate(ClassEmitter @class)
 		{
 			var interceptors = @class.GetField("__interceptors");
 #if !SILVERLIGHT

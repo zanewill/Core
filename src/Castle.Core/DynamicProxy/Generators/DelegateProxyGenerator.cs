@@ -104,7 +104,7 @@ namespace Castle.DynamicProxy.Generators
 
 			foreach (var contributor in contributors)
 			{
-				contributor.Generate(emitter, ProxyGenerationOptions);
+				contributor.Generate(emitter);
 			}
 
 			// constructor arguments
