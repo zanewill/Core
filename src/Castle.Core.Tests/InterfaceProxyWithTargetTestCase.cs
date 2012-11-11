@@ -14,6 +14,7 @@
 
 namespace CastleTests
 {
+	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.Interfaces;
 	using Castle.InterClasses;
@@ -23,6 +24,20 @@ namespace CastleTests
 	[TestFixture]
 	public class InterfaceProxyWithTargetTestCase : BasePEVerifyTestCase
 	{
+		[Test]
+		[Bug("DYNPROXY-182")]
+		public void Can_create_proxy_with_mixin_interface_implemented_by_target_class()
+		{
+			var options = new ProxyGenerationOptions();
+			var mixin = new One();
+			options.AddMixinInstance(mixin);
+			var target = new OneAndEmpty();
+			var interceptor = new LogInvocationInterceptor();
+			var proxy = (IOne)generator.CreateInterfaceProxyWithTarget(typeof(IEmpty), target, options, interceptor);
+			proxy.OneMethod();
+			Assert.AreSame(target, interceptor.Invocations[0].InvocationTarget);
+		}
+
 		[Test]
 		public void Invocation_type_is_reused_among_target_types()
 		{

@@ -81,5 +81,30 @@ namespace CastleTests.DynamicProxy.Tests
 			proxy.Method();
 			Assert.IsNull(Invocation.InvocationTarget);
 		}
+
+		[Test]
+		public void Can_create_proxy_with_mixin()
+		{
+			var options = new ProxyGenerationOptions();
+			var mixin = new Simple();
+			options.AddMixinInstance(mixin);
+			var target = new InheritsAbstractClassWithMethod();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(AbstractClassWithMethod), target, options, interceptor);
+			proxy.Method();
+			Assert.AreSame(mixin, Invocation.InvocationTarget);
+		}
+
+		[Test]
+		[Bug("DYNPROXY-181")]
+		public void Can_create_proxy_with_mixin_interface_implemented_by_target_class()
+		{
+			var options = new ProxyGenerationOptions();
+			var mixin = new Simple();
+			options.AddMixinInstance(mixin);
+			var target = new SimpleClassWithSimpleInterface();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(SimpleClass), target, options, interceptor);
+			proxy.Method();
+			Assert.AreSame(target, Invocation.InvocationTarget);
+		}
 	}
 }

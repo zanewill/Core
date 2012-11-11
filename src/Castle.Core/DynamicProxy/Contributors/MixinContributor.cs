@@ -113,13 +113,13 @@ namespace Castle.DynamicProxy.Contributors
 
 		private Expression GetTargetExpression(MetaMethod method, ClassEmitter @class)
 		{
-			if (!canChangeTarget)
+			var target = @class.GetField("__target");
+			var mixin = fields[method.Method.DeclaringType].ToExpression();
+			if (target == null)
 			{
-				return fields[method.Method.DeclaringType].ToExpression();
+				return mixin;
 			}
-			return new NullCoalescingOperatorExpression(
-				new AsTypeReference(@class.GetField("__target"), method.Method.DeclaringType).ToExpression(),
-				fields[method.Method.DeclaringType].ToExpression());
+			return new NullCoalescingOperatorExpression(new AsTypeReference(target, method.Method.DeclaringType).ToExpression(), mixin);
 		}
 	}
 }

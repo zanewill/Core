@@ -14,6 +14,9 @@
 
 namespace CastleTests.Interfaces
 {
+	using System;
+
+	[Serializable]
 	public class Simple : ISimple
 	{
 		private int count;
