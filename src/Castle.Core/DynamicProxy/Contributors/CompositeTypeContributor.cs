@@ -116,7 +116,7 @@ namespace Castle.DynamicProxy.Contributors
 			{
 				return;
 			}
-			var proxyMethod = generator.Generate(@class, options, namingScope);
+			var proxyMethod = generator.Generate(@class, namingScope);
 			foreach (var attribute in method.Method.GetNonInheritableAttributes())
 			{
 				proxyMethod.DefineCustomAttribute(attribute);
