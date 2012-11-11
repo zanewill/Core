@@ -132,11 +132,11 @@ namespace Castle.DynamicProxy.Contributors
 
 		private MethodBuilder GetCallback(MetaMethod method, ClassEmitter @class, MethodInfo methodInfo)
 		{
-			if (method.HasTarget)
+			if (method.MethodOnTarget.IsAbstract)
 			{
-				return CreateCallbackMethod(@class, methodInfo, method.MethodOnTarget);
+				return null;
 			}
-			return null;
+			return CreateCallbackMethod(@class, methodInfo, method.MethodOnTarget);
 		}
 
 		private IInvocationCreationContributor GetContributor(Type @delegate, MetaMethod method)

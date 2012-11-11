@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,30 +29,23 @@ namespace Castle.DynamicProxy.Generators
 		                                                                  MethodAttributes.NewSlot |
 		                                                                  MethodAttributes.Final;
 
-		private string name;
-
-		public MetaMethod(MethodInfo method, MethodInfo methodOnTarget, bool standalone, bool proxyable, bool hasTarget)
+		public MetaMethod(MethodInfo method, MethodInfo methodOnTarget, bool standalone, bool proxyable)
 			: base(method.DeclaringType)
 		{
 			Method = method;
-			name = method.Name;
+			Name = method.Name;
 			MethodOnTarget = methodOnTarget;
 			Standalone = standalone;
 			Proxyable = proxyable;
-			HasTarget = hasTarget;
 			Attributes = ObtainAttributes();
 		}
 
 		public MethodAttributes Attributes { get; private set; }
-		public bool HasTarget { get; private set; }
 		public MethodInfo Method { get; private set; }
 
 		public MethodInfo MethodOnTarget { get; private set; }
 
-		public string Name
-		{
-			get { return name; }
-		}
+		public string Name { get; private set; }
 
 		public bool Proxyable { get; private set; }
 
@@ -69,7 +62,7 @@ namespace Castle.DynamicProxy.Generators
 				return true;
 			}
 
-			if (!StringComparer.OrdinalIgnoreCase.Equals(name, other.name))
+			if (!StringComparer.OrdinalIgnoreCase.Equals(Name, other.Name))
 			{
 				return false;
 			}
@@ -101,7 +94,7 @@ namespace Castle.DynamicProxy.Generators
 				Attributes |= MethodAttributes.SpecialName;
 			}
 
-			name = string.Format("{0}.{1}", Method.DeclaringType.Name, Method.Name);
+			Name = string.Format("{0}.{1}", Method.DeclaringType.Name, Method.Name);
 		}
 
 		private MethodAttributes ObtainAttributes()
@@ -123,8 +116,8 @@ namespace Castle.DynamicProxy.Generators
 			{
 				attributes |= MethodAttributes.HideBySig;
 			}
-			if (InternalsUtil.IsInternal(methodInfo) &&
-			    InternalsUtil.IsInternalToDynamicProxy(methodInfo.DeclaringType.Assembly))
+			if (methodInfo.IsInternal() &&
+			    methodInfo.DeclaringType.Assembly.IsInternalToDynamicProxy())
 			{
 				attributes |= MethodAttributes.Assembly;
 			}

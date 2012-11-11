@@ -55,7 +55,7 @@ namespace Castle.DynamicProxy.Contributors
 				return null;
 			}
 
-			return new MetaMethod(method, method, isStandalone, accepted, hasTarget: true);
+			return new MetaMethod(method, method, isStandalone, accepted);
 		}
 
 		protected bool IsGeneratedByTheCompiler(FieldInfo field)
