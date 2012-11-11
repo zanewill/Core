@@ -185,11 +185,11 @@ namespace Castle.DynamicProxy.Generators
 
 			var emptyInterceptors = new NewArrayExpression(0, typeof(IInterceptor));
 			var selectInterceptors = new MethodInvocationExpression(selector, InterceptorSelectorMethods.SelectInterceptors,
-			                                                        new MethodInvocationExpression(default(Reference),
-			                                                                                       TypeUtilMethods.GetTypeOrNull,
-			                                                                                       target),
-			                                                        proxiedMethodTokenExpression, @class.GetField("__interceptors").ToExpression())
-			{ VirtualCall = true };
+			                                                        proxiedMethodTokenExpression,
+			                                                        @class.GetField("__interceptors").ToExpression())
+			{
+				VirtualCall = true
+			};
 
 			emitter.CodeBuilder.AddExpression(
 				new IfNullExpression(methodInterceptorsField,

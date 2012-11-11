@@ -37,8 +37,7 @@ namespace Castle.DynamicProxy.Tests
 		[Test]
 		public void BasicCase()
 		{
-			var options = new ProxyGenerationOptions();
-			options.Selector = new AllInterceptorSelector();
+			var options = new ProxyGenerationOptions { Selector = new AllInterceptorSelector() };
 			var target = generator.CreateInterfaceProxyWithTarget(typeof(ISimpleInterface), new SimpleClass(), options, new StandardInterceptor()) as ISimpleInterface;
 			Assert.IsNotNull(target);
 			target.Do();
@@ -344,14 +343,11 @@ namespace Castle.DynamicProxy.Tests
 		}
 	}
 
-#if !SILVERLIGHT
+
 	[Serializable]
-#endif
 	internal class TypeInterceptorSelector<TInterceptor> : IInterceptorSelector where TInterceptor : IInterceptor
 	{
-		#region IInterceptorSelector Members
-
-		public IInterceptor[] SelectInterceptors(Type type, MethodInfo method, IInterceptor[] interceptors)
+		public IInterceptor[] SelectInterceptors(MethodInfo method, IInterceptor[] interceptors)
 		{
 			var interceptorsOfT = new List<IInterceptor>();
 			foreach (var interceptor in interceptors)
@@ -363,23 +359,15 @@ namespace Castle.DynamicProxy.Tests
 			}
 			return interceptorsOfT.ToArray();
 		}
-
-		#endregion
 	}
 
-#if !SILVERLIGHT
 	[Serializable]
-#endif
 	public class AllInterceptorSelector : IInterceptorSelector
 	{
-		#region IInterceptorSelector Members
-
-		public IInterceptor[] SelectInterceptors(Type type, MethodInfo method, IInterceptor[] interceptors)
+		public IInterceptor[] SelectInterceptors(MethodInfo method, IInterceptor[] interceptors)
 		{
 			return interceptors;
 		}
-
-		#endregion
 	}
 
 	[Serializable]
@@ -414,7 +402,7 @@ namespace Castle.DynamicProxy.Tests
 			return state;
 		}
 
-		public IInterceptor[] SelectInterceptors(Type type, MethodInfo method, IInterceptor[] interceptors)
+		public IInterceptor[] SelectInterceptors(MethodInfo method, IInterceptor[] interceptors)
 		{
 			return interceptors;
 		}
@@ -443,56 +431,5 @@ namespace Castle.DynamicProxy.Tests
 	public interface ISimpleInterface
 	{
 		int Do();
-	}
-
-	public class FakeProxy
-	{
-		// Fields
-		public static ProxyGenerationOptions proxyGenerationOptions;
-		public static MethodInfo token_Do;
-
-		[XmlIgnore]
-		public IInterceptor[] __interceptors;
-
-		public IInterceptorSelector __selector;
-
-		[XmlIgnore]
-		public SimpleClass __target;
-
-		[NonSerialized]
-		[XmlIgnore]
-		public IInterceptor[] interceptors_Do;
-
-		public virtual int Do()
-		{
-			// This item is obfuscated and can not be translated.
-			if (interceptors_Do == null)
-			{
-				interceptors_Do = __selector.SelectInterceptors(TypeUtil.GetTypeOrNull(__target), token_Do, __interceptors) ?? new IInterceptor[0];
-			}
-			var objArray = new object[0];
-			var @do = new ISimpleInterface_Do(__target, this, interceptors_Do, token_Do, objArray);
-			@do.Proceed();
-			return (int)@do.ReturnValue;
-		}
-	}
-
-	public class ISimpleInterface_Do
-	{
-		public ISimpleInterface_Do(SimpleClass simpleClass, FakeProxy fakeProxy, IInterceptor[] interceptorsDo, MethodInfo tokenDo, object[] objArray)
-		{
-			throw new NotImplementedException();
-		}
-
-		public object ReturnValue
-		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
-		}
-
-		public void Proceed()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -1,5 +1,14 @@
 === version 4.0
 ================================================================================================
+change - IInterceptorSelector.SelectInterceptors signature change from
+	IInterceptor[] SelectInterceptors(Type type, MethodInfo method, IInterceptor[] interceptors)
+	IInterceptor[] SelectInterceptors(MethodInfo method, IInterceptor[] interceptors)
+
+description - First argument Type type has been removed. It provided no value and was confusing.
+
+
+fix - If you were relying on the type argument use method.DeclaringType instead.
+================================================================================================
 change - Change to values of Invocation.GenericArguments, Invocation.Method
 	and Invocation.MethodInvocationTarget.
 

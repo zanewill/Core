@@ -226,6 +226,8 @@
     <Compile Include="BugsReported\DynProxy145_SynchronizationContext.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\GenInterfaceExplicit2.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\SimpleGenericExplicit2.cs" />
+    <Compile Include="Inteceptor_selector_values_TestCase.cs" />
+    <Compile Include="Internal\LoggingInterceptorSelector.cs" />
     <Compile Include="MultipleSavedAssembliesTestCase.cs" />
     <Compile Include="Components.DictionaryAdapter.Tests\AdaptingGenericDictionaryTestCase.cs" />
     <Compile Include="Components.DictionaryAdapter.Tests\VirtualObjectTestCase.cs" />
