@@ -228,6 +228,7 @@
     <Compile Include="DynamicProxy.Tests\Explicit\GenInterfaceExplicit2.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\SimpleGenericExplicit2.cs" />
     <Compile Include="Inteceptor_selector_values_TestCase.cs" />
+    <Compile Include="InterfaceProxyWithTargetTestCase.cs" />
     <Compile Include="Interfaces\AbstractSimple.cs" />
     <Compile Include="Interfaces\AbstractSimpleImpl.cs" />
     <Compile Include="Interfaces\ExplicitSimple.cs" />

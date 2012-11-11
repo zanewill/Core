@@ -1,4 +1,4 @@
-// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ namespace Castle.DynamicProxy.Tests
 	using Castle.DynamicProxy.Tests.Interceptors;
 	using Castle.DynamicProxy.Tests.Interfaces;
 	using Castle.InterClasses;
-	using CastleTests;
 
 	using NUnit.Framework;
 
@@ -34,6 +33,18 @@ namespace Castle.DynamicProxy.Tests
 			                                                              ProxyGenerationOptions.Default,
 			                                                              new StandardInterceptor());
 			Assert.Throws(typeof(NotImplementedException), () => (proxy as ITwo).TwoMethod());
+		}
+
+		[Test]
+		public void Invocation_type_is_reused_among_target_types()
+		{
+			var interceptor = new LogInvocationInterceptor();
+			var proxy1 = generator.CreateInterfaceProxyWithTargetInterface<IOne>(new One(), interceptor);
+			var proxy2 = generator.CreateInterfaceProxyWithTargetInterface<IOne>(new OneAndEmpty(), interceptor);
+			proxy1.OneMethod();
+			proxy2.OneMethod();
+
+			Assert.AreSame(interceptor.Invocations[0].GetType(), interceptor.Invocations[1].GetType());
 		}
 
 		[Test]
