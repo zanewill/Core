@@ -49,5 +49,15 @@ namespace CastleTests
 
 			Assert.AreSame(interceptor.Invocations[0].GetType(), interceptor.Invocations[1].GetType());
 		}
+
+		[Test]
+		[Bug("DYNPROXY-177")]
+		public void Proxy_types_are_reused_across_target_types()
+		{
+			var proxy1 = generator.CreateInterfaceProxyWithTarget<IOne>(new One());
+			var proxy2 = generator.CreateInterfaceProxyWithTarget<IOne>(new OneAndEmpty());
+
+			Assert.AreSame(proxy1.GetType(), proxy2.GetType());
+		}
 	}
 }

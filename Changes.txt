@@ -2,7 +2,9 @@
 - fixed DYNPROXY-181 - Class proxy with target forwards mixin methods not implemented by proxied class to wrong target
 - fixed DYNPROXY-180 - Class proxy with target doesn't forward interface methods not implemented by proxied class
 - fixed DYNPROXY-179 - Exception when creating a generic proxy (from cache)
+- fixed DYNPROXY-177 - Interface proxy with target types should be cached more aggresively
 - fixed DYNPROXY-175 - invalid CompositionInvocation type used when code uses interface proxies with and without InterceptorSelector
+- fixed DYNPROXY-123 - Generic proxies should be reused
 
 3.1.0 (2012-08-05)
 ==================
