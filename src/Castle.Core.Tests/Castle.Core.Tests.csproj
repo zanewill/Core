@@ -224,6 +224,7 @@
     <Compile Include="BugsReported\NullCtorArgumentsForClassProxyException.cs" />
     <Compile Include="BugsReported\DynProxy159.cs" />
     <Compile Include="BugsReported\DynProxy145_SynchronizationContext.cs" />
+    <Compile Include="DynamicProxy.Tests\ClassProxyWithTargetMixinsAndAdditionalInterfacesTestCase.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\GenInterfaceExplicit2.cs" />
     <Compile Include="DynamicProxy.Tests\Explicit\SimpleGenericExplicit2.cs" />
     <Compile Include="Inteceptor_selector_values_TestCase.cs" />
