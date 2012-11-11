@@ -54,6 +54,15 @@ namespace CastleTests.DynamicProxy.Tests
 		}
 
 		[Test]
+		public void Can_create_proxy_with_additional_interface_implemented_by_proxied_class_explicitly()
+		{
+			var target = new ExplicitSimple();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(ExplicitSimple), new[] { typeof(ISimple) }, target, interceptor);
+			proxy.Method();
+			Assert.AreSame(target, Invocation.InvocationTarget);
+		}
+
+		[Test]
 		[Bug("DYNPROXY-180")]
 		public void Can_create_proxy_with_additional_interface_implemented_by_target_class()
 		{

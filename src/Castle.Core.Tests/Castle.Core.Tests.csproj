@@ -230,6 +230,7 @@
     <Compile Include="Inteceptor_selector_values_TestCase.cs" />
     <Compile Include="Interfaces\AbstractSimple.cs" />
     <Compile Include="Interfaces\AbstractSimpleImpl.cs" />
+    <Compile Include="Interfaces\ExplicitSimple.cs" />
     <Compile Include="Interfaces\Simple.cs" />
     <Compile Include="Interfaces\SimpleClassWithSimpleInterface.cs" />
     <Compile Include="Internal\LoggingInterceptorSelector.cs" />

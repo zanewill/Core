@@ -69,16 +69,12 @@ namespace Castle.DynamicProxy.Contributors
 		{
 			if (canChangeTarget)
 			{
-				return new ChangeTargetInvocationTypeGenerator(method,
-				                                               @class,
-				                                               namingScope)
+				return new ChangeTargetInvocationTypeGenerator(method, @class, namingScope)
 				{
 					Logger = Logger
 				}.GetProxyType();
 			}
-			return new CompositionInvocationTypeGenerator(method,
-			                                              @class,
-			                                              namingScope)
+			return new CompositionInvocationTypeGenerator(method, @class, namingScope)
 			{
 				Logger = Logger
 			}.GetProxyType();

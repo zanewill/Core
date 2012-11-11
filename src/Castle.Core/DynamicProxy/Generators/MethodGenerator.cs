@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,18 +21,13 @@ namespace Castle.DynamicProxy.Generators
 
 	public abstract class MethodGenerator : IGenerator<MethodEmitter>
 	{
-		private readonly MetaMethod method;
 		private readonly CreateMethodDelegate createMethod;
+		private readonly MetaMethod method;
 
 		protected MethodGenerator(MetaMethod method, CreateMethodDelegate createMethod)
 		{
 			this.method = method;
 			this.createMethod = createMethod;
-		}
-
-		protected MethodInfo MethodOnTarget
-		{
-			get { return method.MethodOnTarget; }
 		}
 
 		protected MethodInfo MethodToOverride

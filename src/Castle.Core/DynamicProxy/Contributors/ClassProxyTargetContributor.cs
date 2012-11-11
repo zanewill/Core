@@ -67,16 +67,22 @@ namespace Castle.DynamicProxy.Contributors
 				return new MinimialisticMethodGenerator(method, createMethod);
 			}
 
+
+			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			if (ExplicitlyImplementedInterfaceMethod(method))
 			{
 #if SILVERLIGHT
 				return null;
 #else
-				return ExplicitlyImplementedInterfaceMethodGenerator(method, @class, createMethod);
+				var @delegate = GetDelegateType(method, @class);
+				var contributor = GetContributor(@delegate, method);
+				return new MethodWithInvocationGenerator(method,
+				                                         () => BuildInvocationType(method, @class, null, contributor),
+				                                         new TypeTokenExpression(type),
+				                                         createMethod,
+				                                         contributor);
 #endif
 			}
-
-			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
 			return new MethodWithInvocationGenerator(method,
 			                                         () => BuildInvocationType(method, @class, GetCallback(method, @class, method.Method), null),
 			                                         new TypeTokenExpression(type),
@@ -122,18 +128,6 @@ namespace Castle.DynamicProxy.Contributors
 		private bool ExplicitlyImplementedInterfaceMethod(MetaMethod method)
 		{
 			return method.MethodOnTarget.IsPrivate;
-		}
-
-		private MethodGenerator ExplicitlyImplementedInterfaceMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
-		{
-			var @delegate = GetDelegateType(method, @class);
-			var contributor = GetContributor(@delegate, method);
-			var type = targetType.IsGenericTypeDefinition ? targetType.MakeGenericType(@class.GenericTypeParams) : targetType;
-			return new MethodWithInvocationGenerator(method,
-			                                         () => BuildInvocationType(method, @class, null, contributor),
-			                                         new TypeTokenExpression(type),
-			                                         createMethod,
-			                                         contributor);
 		}
 
 		private MethodBuilder GetCallback(MetaMethod method, ClassEmitter @class, MethodInfo methodInfo)

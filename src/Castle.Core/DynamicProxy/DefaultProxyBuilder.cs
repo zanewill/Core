@@ -66,8 +66,7 @@ namespace Castle.DynamicProxy
 			return generator.GetProxyType();
 		}
 
-		public Type CreateClassProxyTypeWithTarget(Type classToProxy, Type[] additionalInterfacesToProxy,
-		                                           ProxyGenerationOptions options)
+		public Type CreateClassProxyTypeWithTarget(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options)
 		{
 			AssertValidType(classToProxy);
 			AssertValidTypes(additionalInterfacesToProxy);
