@@ -23,6 +23,7 @@ namespace CastleTests.OpenGenerics
 	using Castle.DynamicProxy.Tests.Interfaces;
 
 	using CastleTests.GenInterfaces;
+	using CastleTests.Interfaces;
 
 	using NUnit.Framework;
 

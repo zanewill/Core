@@ -21,6 +21,8 @@ namespace CastleTests.OpenGenerics
 	using Castle.DynamicProxy.Tests.GenInterfaces;
 	using Castle.DynamicProxy.Tests.Interfaces;
 	using CastleTests.GenInterfaces;
+	using CastleTests.Interfaces;
+
 	using NUnit.Framework;
 
 	public class InterfaceProxyWithTargetInterfaceEmptyInterfaceTestCase : BasePEVerifyTestCase

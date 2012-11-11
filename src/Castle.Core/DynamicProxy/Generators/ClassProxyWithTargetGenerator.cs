@@ -74,8 +74,10 @@ namespace Castle.DynamicProxy.Generators
 			                                                      ProxyTypeConstants.ClassWithTarget);
 			// TODO: the trick with methodsToSkip is not very nice...
 			var proxyTarget = new ClassProxyWithTargetTargetContributor(targetType, methodsToSkip, namingScope)
-			{ Logger = Logger };
-			IDictionary<Type, ITypeContributor> typeImplementerMapping = new Dictionary<Type, ITypeContributor>();
+			{
+				Logger = Logger
+			};
+			var typeImplementerMapping = new Dictionary<Type, ITypeContributor>();
 
 			// Order of interface precedence:
 			// 1. first target
@@ -110,8 +112,11 @@ namespace Castle.DynamicProxy.Generators
 					}
 				}
 			}
-			var additionalInterfacesContributor = new InterfaceProxyWithoutTargetContributor(namingScope)
-			{ Logger = Logger };
+			var additionalInterfacesContributor = new InterfaceProxyWithOptionalTargetContributor(namingScope)
+			{
+				Logger = Logger
+			};
+			
 			// 3. then additional interfaces
 			foreach (var @interface in additionalInterfacesToProxy)
 			{

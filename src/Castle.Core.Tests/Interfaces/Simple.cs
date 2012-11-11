@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Castle.DynamicProxy.Tests.Interfaces
+namespace CastleTests.Interfaces
 {
-	public interface IIdenticalTwo
+	public class Simple : ISimple
 	{
-		string Foo();
-	}
+		private int count;
 
-	public interface IIdenticalOne
-	{
-		string Foo();
+		public int Count
+		{
+			get { return count; }
+		}
+
+		public void Method()
+		{
+			count++;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2004-2010 Castle Project - http://www.castleproject.org/
+﻿// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ namespace Castle.DynamicProxy.Tests.Interfaces
 	public interface IHaveIndexers
 	{
 		string this[string name] { get; }
+
 		string this[Guid id] { get; }
+
 		string this[Type type] { get; }
 	}
 }

@@ -1,3 +1,4 @@
+- fixed DYNPROXY-180 - Class proxy with target doesn't forward interface methods not implemented by proxied class
 - fixed DYNPROXY-179 - Exception when creating a generic proxy (from cache)
 - fixed DYNPROXY-175 - invalid CompositionInvocation type used when code uses interface proxies with and without InterceptorSelector
 

@@ -14,9 +14,13 @@
 
 namespace CastleTests.DynamicProxy.Tests
 {
+	using System.Collections.Generic;
+
+	using Castle.DynamicProxy;
 	using Castle.DynamicProxy.Tests.Classes;
 	using Castle.DynamicProxy.Tests.Interceptors;
-	using Castle.DynamicProxy.Tests.Interfaces;
+
+	using CastleTests.Interfaces;
 
 	using NUnit.Framework;
 
@@ -25,17 +29,48 @@ namespace CastleTests.DynamicProxy.Tests
 	{
 		private LogInvocationInterceptor interceptor;
 
+		protected IInvocation Invocation
+		{
+			get { return Invocations[0]; }
+		}
+
+		protected List<IInvocation> Invocations
+		{
+			get { return interceptor.Invocations; }
+		}
+
 		protected override void AfterInit()
 		{
 			interceptor = new LogInvocationInterceptor();
 		}
 
 		[Test]
+		public void Can_create_proxy_with_additional_interface_implemented_by_proxied_class()
+		{
+			var target = new AbstractSimpleImpl();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(AbstractSimple), new[] { typeof(ISimple) }, target, interceptor);
+			proxy.Method();
+			Assert.AreSame(target, Invocation.InvocationTarget);
+		}
+
+		[Test]
+		[Bug("DYNPROXY-180")]
+		public void Can_create_proxy_with_additional_interface_implemented_by_target_class()
+		{
+			var target = new SimpleClassWithSimpleInterface();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(SimpleClass), new[] { typeof(ISimple) }, target, interceptor);
+			proxy.Method();
+			Assert.AreSame(target, Invocation.InvocationTarget);
+		}
+
+		[Test]
 		public void Can_create_proxy_with_additional_interface_not_implemented_by_target()
 		{
 			interceptor.Proceed = false;
-			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(AbstractClassWithMethod), new[] { typeof(ISimple) }, new InheritsAbstractClassWithMethod(), interceptor);
+			var target = new InheritsAbstractClassWithMethod();
+			var proxy = (ISimple)generator.CreateClassProxyWithTarget(typeof(AbstractClassWithMethod), new[] { typeof(ISimple) }, target, interceptor);
 			proxy.Method();
+			Assert.IsNull(Invocation.InvocationTarget);
 		}
 	}
 }
