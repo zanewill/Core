@@ -1,4 +1,4 @@
-// Copyright 2004-2011 Castle Project - http://www.castleproject.org/
+// Copyright 2004-2012 Castle Project - http://www.castleproject.org/
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,8 +38,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		public ClassEmitter(ModuleScope modulescope, String name, Type baseType, Type[] interfaces, TypeAttributes flags, bool forceUnsigned)
 			: this(CreateTypeBuilder(modulescope, name, baseType, interfaces, flags, forceUnsigned))
 		{
-			interfaces = InitializeGenericArgumentsFromBases(ref baseType, interfaces);
-
 			if (interfaces != null)
 			{
 				foreach (var inter in interfaces)
@@ -62,15 +60,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 			get { return moduleScope; }
 		}
 
-		protected virtual Type[] InitializeGenericArgumentsFromBases(ref Type baseType, Type[] interfaces)
-		{
-			if (baseType != null && baseType.IsGenericTypeDefinition)
-			{
-				throw new NotSupportedException("ClassEmitter does not support open generic base types. Type: " + baseType.FullName);
-			}
-			return interfaces;
-		}
-
 		private static TypeBuilder CreateTypeBuilder(ModuleScope modulescope, string name, Type baseType,
 		                                             IEnumerable<Type> interfaces,
 		                                             TypeAttributes flags, bool forceUnsigned)
@@ -82,18 +71,6 @@ namespace Castle.DynamicProxy.Generators.Emitters
 		private static bool ShouldForceUnsigned()
 		{
 			return StrongNameUtil.CanStrongNameAssembly == false;
-		}
-	}
-
-	public class ClassEmitterSupportingGenericsTEMP : ClassEmitter
-	{
-		public ClassEmitterSupportingGenericsTEMP(ModuleScope modulescope, string name, Type baseType, Type[] interfaces) : base(modulescope, name, baseType, interfaces)
-		{
-		}
-
-		protected override Type[] InitializeGenericArgumentsFromBases(ref Type baseType, Type[] interfaces)
-		{
-			return interfaces;
 		}
 	}
 }
