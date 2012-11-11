@@ -589,7 +589,6 @@
     <Compile Include="DynamicProxy\Tokens\InterceptorSelectorMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\InvocationMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\MethodBaseMethods.cs" />
-    <Compile Include="DynamicProxy\Tokens\MethodInfoMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\SerializationInfoMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\TypeBuilderMethods.cs" />
     <Compile Include="DynamicProxy\Tokens\TypeMethods.cs" />
