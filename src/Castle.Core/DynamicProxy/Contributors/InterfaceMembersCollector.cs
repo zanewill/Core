@@ -18,7 +18,6 @@ namespace Castle.DynamicProxy.Contributors
 	using System.Reflection;
 
 	using Castle.DynamicProxy.Generators;
-	using Castle.DynamicProxy.Internal;
 
 	public class InterfaceMembersCollector : MembersCollector
 	{
@@ -29,11 +28,6 @@ namespace Castle.DynamicProxy.Contributors
 
 		protected override MetaMethod GetMethodToGenerate(MethodInfo method, IProxyGenerationHook hook, bool isStandalone)
 		{
-			if (method.IsAccessible() == false)
-			{
-				return null;
-			}
-
 			var proxyable = AcceptMethod(method, false, hook);
 			return new MetaMethod(method, method, isStandalone, proxyable);
 		}

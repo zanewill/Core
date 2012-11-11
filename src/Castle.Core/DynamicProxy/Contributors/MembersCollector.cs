@@ -21,7 +21,6 @@ namespace Castle.DynamicProxy.Contributors
 
 	using Castle.Core.Logging;
 	using Castle.DynamicProxy.Generators;
-	using Castle.DynamicProxy.Generators.Emitters;
 	using Castle.DynamicProxy.Internal;
 
 	public abstract class MembersCollector
@@ -29,7 +28,7 @@ namespace Castle.DynamicProxy.Contributors
 		private const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		private ILogger logger = NullLogger.Instance;
 
-		private ICollection<MethodInfo> checkedMethods = new HashSet<MethodInfo>();
+		private HashSet<MethodInfo> checkedMethods = new HashSet<MethodInfo>();
 		private readonly IDictionary<PropertyInfo, MetaProperty> properties = new Dictionary<PropertyInfo, MetaProperty>();
 		private readonly IDictionary<EventInfo, MetaEvent> events = new Dictionary<EventInfo, MetaEvent>();
 		private readonly IDictionary<MethodInfo, MetaMethod> methods = new Dictionary<MethodInfo, MetaMethod>();
@@ -169,16 +168,11 @@ namespace Castle.DynamicProxy.Contributors
 
 		private MetaMethod AddMethod(MethodInfo method, IProxyGenerationHook hook, bool isStandalone)
 		{
-			if (checkedMethods.Contains(method))
+			if (checkedMethods.Add(method) == false)
 			{
 				return null;
 			}
-			checkedMethods.Add(method);
 
-			if (methods.ContainsKey(method))
-			{
-				return null;
-			}
 			var methodToGenerate = GetMethodToGenerate(method, hook, isStandalone);
 			if (methodToGenerate != null)
 			{

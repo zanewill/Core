@@ -19,9 +19,7 @@ namespace Castle.DynamicProxy.Generators
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Reflection;
-#if !SILVERLIGHT
 	using System.Xml.Serialization;
-#endif
 
 	using Castle.Core.Internal;
 	using Castle.DynamicProxy.Contributors;
@@ -29,6 +27,8 @@ namespace Castle.DynamicProxy.Generators
 	using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 	using Castle.DynamicProxy.Internal;
 	using Castle.DynamicProxy.Serialization;
+#if !SILVERLIGHT
+#endif
 
 	public class InterfaceProxyWithTargetGenerator : BaseProxyGenerator
 	{
@@ -114,11 +114,11 @@ namespace Castle.DynamicProxy.Generators
 		}
 
 		protected virtual ITypeContributor AddMappingForTargetType(IDictionary<Type, ITypeContributor> typeImplementerMapping,
-		                                                           Type proxyTargetType, ICollection<Type> targetInterfaces,
+		                                                           ICollection<Type> targetInterfaces,
 		                                                           ICollection<Type> additionalInterfaces,
 		                                                           INamingScope namingScope)
 		{
-			var contributor = new InterfaceProxyWithTargetInterfaceTargetContributor(proxyTargetType, AllowChangeTarget, namingScope)
+			var contributor = new InterfaceProxyTargetContributor(namingScope, AllowChangeTarget)
 			{ Logger = Logger };
 			var proxiedInterfaces = targetType.GetAllInterfaces();
 			foreach (var @interface in proxiedInterfaces)
@@ -217,7 +217,7 @@ namespace Castle.DynamicProxy.Generators
 			// 1. first target
 			var targetInterfaces = proxyTargetType.GetAllInterfaces();
 			var additionalInterfaces = TypeUtil.GetAllInterfaces(interfaces);
-			var target = AddMappingForTargetType(typeImplementerMapping, proxyTargetType, targetInterfaces, additionalInterfaces,
+			var target = AddMappingForTargetType(typeImplementerMapping, targetInterfaces, additionalInterfaces,
 			                                     namingScope);
 
 			// 2. then mixins

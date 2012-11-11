@@ -554,7 +554,6 @@
     <Compile Include="DynamicProxy\Generators\InterfaceProxyWithTargetGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\InterfaceProxyWithTargetInterfaceGenerator.cs" />
     <Compile Include="DynamicProxy\Contributors\ITypeContributor.cs" />
-    <Compile Include="DynamicProxy\Contributors\InterfaceProxyWithTargetInterfaceTargetContributor.cs" />
     <Compile Include="DynamicProxy\Generators\InvocationTypeGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\MethodGenerator.cs" />
     <Compile Include="DynamicProxy\Generators\MethodSignatureComparer.cs" />

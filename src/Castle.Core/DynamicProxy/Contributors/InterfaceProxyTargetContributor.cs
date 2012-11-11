@@ -24,12 +24,10 @@ namespace Castle.DynamicProxy.Contributors
 	public class InterfaceProxyTargetContributor : CompositeTypeContributor
 	{
 		private readonly bool canChangeTarget;
-		private readonly Type proxyTargetType;
 
-		public InterfaceProxyTargetContributor(Type proxyTargetType, bool canChangeTarget, INamingScope namingScope)
+		public InterfaceProxyTargetContributor(INamingScope namingScope, bool canChangeTarget)
 			: base(namingScope)
 		{
-			this.proxyTargetType = proxyTargetType;
 			this.canChangeTarget = canChangeTarget;
 		}
 
@@ -39,16 +37,11 @@ namespace Castle.DynamicProxy.Contributors
 
 			foreach (var @interface in interfaces)
 			{
-				var item = GetCollectorForInterface(@interface);
+				var item = new InterfaceMembersCollector(@interface);
 				item.Logger = Logger;
 				item.CollectMembersToProxy(hook);
 				yield return item;
 			}
-		}
-
-		protected virtual MembersCollector GetCollectorForInterface(Type @interface)
-		{
-			return new InterfaceMembersOnClassCollector(@interface, false, proxyTargetType.GetInterfaceMap(@interface));
 		}
 
 		protected override MethodGenerator GetMethodGenerator(MetaMethod method, ClassEmitter @class, CreateMethodDelegate createMethod)
